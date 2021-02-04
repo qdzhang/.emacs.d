@@ -1,7 +1,15 @@
 (setq inhibit-splash-screen 1)
 
-(setq package-archives '(("gnu"   . "http://mirrors.bfsu.edu.cn/elpa/gnu/")
-                         ("melpa" . "http://mirrors.bfsu.edu.cn/elpa/melpa/")))
+(setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
+                         ("melpa" . "http://elpa.emacs-china.org/melpa/")))
 (package-initialize)
 
-(set-face-attribute 'default nil :height 160)
+(set-face-attribute 'default nil :family "Sarasa Mono SC" :height 160)
+
+(global-set-key (kbd "M-i") 'imenu)
+
+(require 'helm-config)
+
+(ido-mode 1)
+(setq ido-everywhere t)
+(setq ido-enable-flex-matching t)
