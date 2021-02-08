@@ -51,3 +51,6 @@
   :ensure t
   :config
   (evil-collection-init))
+
+(add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
+(add-hook 'lispy-mode-hook #'lispyville-mode)
