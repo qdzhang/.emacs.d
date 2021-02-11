@@ -29,6 +29,10 @@
 
 ;; ==============================
 
+(use-package kaolin-themes
+  :config
+  (load-theme 'kaolin-light t))
+
 (use-package helm
   :config (require 'helm-config))
 
