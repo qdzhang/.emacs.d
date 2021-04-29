@@ -58,3 +58,18 @@
 
 (add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
 (add-hook 'lispy-mode-hook #'lispyville-mode)
+(with-eval-after-load 'lispyville
+  (lispyville-set-key-theme
+   '(operators
+     c-w
+     (escape insert)
+     (additional-movement normal visual motion))))
+
+; (use-package smartparens-config
+;   :ensure smartparens
+;   :config (progn (show-smartparens-global-mode t)))
+
+; (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
+; (add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
+
+; (add-hook 'smartparens-strict-mode #'evil-cleverparens-mode)
