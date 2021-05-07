@@ -96,6 +96,18 @@
   :config
   (evil-commentary-mode))
 
+(use-package rime
+  :config
+  (setq rime-disable-predicates
+        '(rime-predicate-evil-mode-p
+          rime-predicate-after-alphabet-char-p
+	  rime-predicate-space-after-cc-p
+          rime-predicate-prog-in-code-p))
+  (setq mode-line-mule-info '((:eval (rime-lighter))))
+  :custom
+  (default-input-method "rime"))
+
+
 ; (add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
 ; (add-hook 'lispy-mode-hook #'lispyville-mode)
 ; (with-eval-after-load 'lispyville
