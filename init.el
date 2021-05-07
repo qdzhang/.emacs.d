@@ -32,6 +32,7 @@
 (defun my/disable-line-numbers (&optional dummy)
     (display-line-numbers-mode -1))
 (add-hook 'shell-mode-hook 'my/disable-line-numbers)
+(add-hook 'term-mode-hook 'my/disable-line-numbers)
 
 ;; Use-package settings
 (require 'use-package)
@@ -107,6 +108,15 @@
   :custom
   (default-input-method "rime"))
 
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package which-key
+  :defer 0
+  :diminish which-key-mode
+  :config
+  (which-key-mode)
+  (setq which-key-idle-delay 1))
 
 ; (add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
 ; (add-hook 'lispy-mode-hook #'lispyville-mode)
@@ -117,11 +127,11 @@
 ;      (escape insert)
 ;      (additional-movement normal visual motion))))
 
-; (use-package smartparens-config
-;   :ensure smartparens
-;   :config (progn (show-smartparens-global-mode t)))
-
-; (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
-; (add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
+(use-package smartparens-config
+  :ensure smartparens
+  :config (progn (show-smartparens-global-mode t)))
+(add-hook 'prog-mode-hook #'smartparens-strict-mode)
+;; (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
+;; (add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
 
 ; (add-hook 'smartparens-strict-mode #'evil-cleverparens-mode)
