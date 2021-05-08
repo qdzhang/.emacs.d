@@ -25,6 +25,9 @@
 (setq ido-everywhere t)
 (setq ido-enable-flex-matching t)
 
+;; highlight current line
+(global-hl-line-mode 1)
+
 ;; Line number
 (column-number-mode)
 (global-display-line-numbers-mode 1)
@@ -95,6 +98,7 @@
 
 (use-package evil-commentary
   :after evil
+  :diminish
   :config
   (evil-commentary-mode))
 
@@ -127,6 +131,7 @@
 
 (use-package smartparens-config
   :ensure smartparens
+  :diminish smartparens-mode
   :config (progn (show-smartparens-global-mode t)))
 (add-hook 'prog-mode-hook #'smartparens-strict-mode)
 (add-hook 'smartparens-strict-mode-hook #'evil-cleverparens-mode)
