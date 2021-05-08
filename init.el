@@ -41,9 +41,13 @@
 
 ;; ==============================
 
-(use-package kaolin-themes
+(use-package acme-theme
   :config
-  (load-theme 'kaolin-light t))
+  (load-theme 'acme t))
+
+;; (use-package kaolin-themes
+;;   :config
+;;   (load-theme 'kaolin-valley-light t))
 
 (use-package ivy
   :diminish
@@ -69,14 +73,11 @@
 ;; (use-package mood-line
 ;;   :init (mood-line-mode 1))
 
-; (use-package helm
-;   :config (require 'helm-config))
-
-; (use-package company
-;   :init
-;   (setq company-idle-delay 0)
-;   :hook
-;   (after-init . global-company-mode))
+(use-package company
+  :init
+  (setq company-idle-delay 0)
+  :hook
+  (after-init . global-company-mode))
 
 (use-package evil
   :ensure t
@@ -108,9 +109,6 @@
   :custom
   (default-input-method "rime"))
 
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-
 (use-package which-key
   :defer 0
   :diminish which-key-mode
@@ -118,20 +116,17 @@
   (which-key-mode)
   (setq which-key-idle-delay 1))
 
-; (add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
-; (add-hook 'lispy-mode-hook #'lispyville-mode)
-; (with-eval-after-load 'lispyville
-;   (lispyville-set-key-theme
-;    '(operators
-;      c-w
-;      (escape insert)
-;      (additional-movement normal visual motion))))
+;; (add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
+;; (add-hook 'lispy-mode-hook #'lispyville-mode)
+;; (with-eval-after-load 'lispyville
+;;   (lispyville-set-key-theme
+;;    '(operators
+;;      c-w
+;;      (escape insert)
+;;      (additional-movement normal visual motion))))
 
 (use-package smartparens-config
   :ensure smartparens
   :config (progn (show-smartparens-global-mode t)))
 (add-hook 'prog-mode-hook #'smartparens-strict-mode)
-;; (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
-;; (add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
-
-; (add-hook 'smartparens-strict-mode #'evil-cleverparens-mode)
+(add-hook 'smartparens-strict-mode-hook #'evil-cleverparens-mode)
