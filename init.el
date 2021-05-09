@@ -57,7 +57,7 @@
   :init (ivy-mode 1)
   :bind (("C-s" . swiper)
          :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)      	
+         ("TAB" . ivy-alt-done)
          ("C-l" . ivy-alt-done)
          ("C-j" . ivy-next-line)
          ("C-k" . ivy-previous-line)
@@ -82,13 +82,26 @@
   :hook
   (after-init . global-company-mode))
 
+(use-package yasnippet
+  :defer 1
+  :config (yas-global-mode))
+
+(use-package yasnippet-snippets
+  :after yasnippet
+  :config (yasnippet-snippets-initialize))
+
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode))
+
 (use-package evil
   :ensure t
   :init
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
   :config
-  (evil-mode 1))
+  (evil-mode 1)
+  (setq evil-undo-system 'undo-tree))
 
 (use-package evil-collection
   :after evil
@@ -107,7 +120,7 @@
   (setq rime-disable-predicates
         '(rime-predicate-evil-mode-p
           rime-predicate-after-alphabet-char-p
-	  rime-predicate-space-after-cc-p
+          rime-predicate-space-after-cc-p
           rime-predicate-prog-in-code-p))
   (setq mode-line-mule-info '((:eval (rime-lighter))))
   :custom
