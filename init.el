@@ -90,18 +90,14 @@
   :after yasnippet
   :config (yasnippet-snippets-initialize))
 
-(use-package undo-tree
-  :config
-  (global-undo-tree-mode))
-
 (use-package evil
   :ensure t
   :init
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
+  (setq evil-undo-system 'undo-fu)
   :config
-  (evil-mode 1)
-  (setq evil-undo-system 'undo-tree))
+  (evil-mode 1))
 
 (use-package evil-collection
   :after evil
@@ -114,6 +110,16 @@
   :diminish
   :config
   (evil-commentary-mode))
+
+(use-package undo-fu
+  :config
+  (define-key evil-normal-state-map "u" 'undo-fu-only-undo)
+  (define-key evil-normal-state-map "\C-r" 'undo-fu-only-redo))
+
+(use-package undo-fu-session
+  :config
+  (setq undo-fu-session-incompatible-files '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'")))
+(global-undo-fu-session-mode)
 
 (use-package rime
   :config
