@@ -72,6 +72,10 @@
          ("C-k" . ivy-previous-line)
          ("C-d" . ivy-reverse-i-search-kill)))
 
+(use-package counsel
+  :bind (("C-x b" . counsel-ibuffer)
+         ("C-x C-f" . counsel-find-file)))
+
 ;; (use-package doom-modeline
 ;;   :init
 ;;   (doom-modeline-mode 1))
