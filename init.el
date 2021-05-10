@@ -45,6 +45,8 @@
 
 ;; ==============================
 
+(use-package diminish)
+
 (use-package acme-theme
   :config
   (load-theme 'acme t))
@@ -155,3 +157,9 @@
   :config (progn (show-smartparens-global-mode t)))
 (add-hook 'prog-mode-hook #'smartparens-strict-mode)
 (add-hook 'smartparens-strict-mode-hook #'evil-cleverparens-mode)
+
+(use-package terminal-here
+  :bind
+  ("C-<f12>" . terminal-here-launch)
+  :config
+  (setq terminal-here-linux-terminal-command '("termite")))
