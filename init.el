@@ -15,6 +15,7 @@
   (package-refresh-contents))
 
 (set-face-attribute 'default nil :family "Sarasa Mono SC" :height 160)
+(set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
 
 (global-set-key (kbd "M-i") 'imenu)
 
