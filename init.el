@@ -10,7 +10,7 @@
 
 (setq package-archives '(("gnu"   . "https://mirrors.bfsu.edu.cn/elpa/gnu/")
                          ("melpa" . "https://mirrors.bfsu.edu.cn/elpa/melpa/")
-			 ("org" . "https://mirrors.bfsu.edu.cn/elpa/org/")))
+                         ("org" . "https://mirrors.bfsu.edu.cn/elpa/org/")))
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
@@ -166,3 +166,10 @@
   :defer t
   :ensure org-plus-contrib
   :pin org)
+
+(use-package org-superstar
+  :after org
+  :hook
+  (org-mode . org-superstar-mode)
+  :config
+  (setq org-superstar-headline-bullets-list '("🞷" "✚" "◉" "○" "▶")))
