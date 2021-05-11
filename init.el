@@ -17,14 +17,13 @@
 (set-face-attribute 'default nil :family "Sarasa Mono SC" :height 160)
 (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
 
-(global-set-key (kbd "M-i") 'imenu)
-
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 ;; (ido-mode 1)
 ;; (setq ido-everywhere t)
 ;; (setq ido-enable-flex-matching t)
+;; (global-set-key (kbd "M-i") 'imenu)
 
 ;; highlight current line
 (global-hl-line-mode 1)
@@ -73,15 +72,7 @@
          ("C-d" . ivy-reverse-i-search-kill)))
 
 (use-package counsel
-  :bind (("C-x b" . counsel-ibuffer)
-         ("C-x C-f" . counsel-find-file)))
-
-;; (use-package doom-modeline
-;;   :init
-;;   (doom-modeline-mode 1))
-
-;; (use-package mood-line
-;;   :init (mood-line-mode 1))
+  :bind ("C-x C-f" . counsel-find-file))
 
 (use-package company
   :init
@@ -90,7 +81,6 @@
   (after-init . global-company-mode))
 
 (use-package yasnippet
-  :defer 1
   :config (yas-global-mode))
 
 (use-package yasnippet-snippets
@@ -157,15 +147,6 @@
   :config
   (which-key-mode)
   (setq which-key-idle-delay 1))
-
-;; (add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
-;; (add-hook 'lispy-mode-hook #'lispyville-mode)
-;; (with-eval-after-load 'lispyville
-;;   (lispyville-set-key-theme
-;;    '(operators
-;;      c-w
-;;      (escape insert)
-;;      (additional-movement normal visual motion))))
 
 (use-package smartparens-config
   :ensure smartparens
