@@ -38,6 +38,9 @@
 (add-hook 'shell-mode-hook 'my/disable-line-numbers)
 (add-hook 'term-mode-hook 'my/disable-line-numbers)
 
+;; Remember cursor position
+(save-place-mode 1) 
+
 ;; Use-package settings
 (require 'use-package)
 (require 'use-package-ensure)
