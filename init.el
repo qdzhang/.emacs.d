@@ -8,8 +8,9 @@
 
 (require 'package)
 
-(setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
-                         ("melpa" . "http://elpa.emacs-china.org/melpa/")))
+(setq package-archives '(("gnu"   . "https://mirrors.bfsu.edu.cn/elpa/gnu/")
+                         ("melpa" . "https://mirrors.bfsu.edu.cn/elpa/melpa/")
+			 ("org" . "https://mirrors.bfsu.edu.cn/elpa/org/")))
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
@@ -160,3 +161,8 @@
   ("C-<f12>" . terminal-here-launch)
   :config
   (setq terminal-here-linux-terminal-command '("termite")))
+
+(use-package org
+  :defer t
+  :ensure org-plus-contrib
+  :pin org)
