@@ -22,9 +22,9 @@
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-(ido-mode 1)
-(setq ido-everywhere t)
-(setq ido-enable-flex-matching t)
+;; (ido-mode 1)
+;; (setq ido-everywhere t)
+;; (setq ido-enable-flex-matching t)
 
 ;; highlight current line
 (global-hl-line-mode 1)
