@@ -165,7 +165,8 @@
 (use-package org
   :defer t
   :ensure org-plus-contrib
-  :pin org)
+  :pin org
+  :hook (org-mode . visual-line-mode))
 
 (use-package org-superstar
   :after org
