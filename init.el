@@ -42,11 +42,14 @@
 (save-place-mode 1) 
 
 ;; Use-package settings
+;; ==============================
+;; Install use-package if not installed
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 (require 'use-package)
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
-
-;; ==============================
 
 (use-package diminish)
 
