@@ -56,3 +56,11 @@ flycheck_*.el
 # End of https://www.toptal.com/developers/gitignore/api/emacs
 
 ido.last*
+undo-fu-session/
+recentf
+places
+.historian
+.last-package-update-day
+parinfer-rust/
+transient/
+rime/
