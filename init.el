@@ -68,6 +68,9 @@
 
 (use-package diminish)
 
+;; The built-in tango theme looks fairly well
+(load-theme 'tango t)
+
 ;; (use-package acme-theme
 ;;   :config
 ;;   (load-theme 'acme t))
@@ -80,11 +83,11 @@
 ;;   :config
 ;;   (load-theme 'sanityinc-tomorrow-day t))
 
-(use-package modus-themes
-  :init
-  (modus-themes-load-themes)
-  :config
-  (modus-themes-load-operandi))
+;; (use-package modus-themes
+;;   :init
+;;   (modus-themes-load-themes)
+;;   :config
+;;   (modus-themes-load-operandi))
 
 (use-package ivy
   :diminish
