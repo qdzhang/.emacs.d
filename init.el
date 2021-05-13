@@ -18,7 +18,10 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
-(set-face-attribute 'default nil :family "Sarasa Mono SC" :height 160)
+(set-face-attribute
+  'default nil
+  :font (font-spec :family "Sarasa Mono SC" :size 23))
+(set-fontset-font t 'han "LXGW WenKai")
 (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
 
 ;; Make ESC quit prompts
@@ -45,9 +48,9 @@
 (save-place-mode 1) 
 
 ;; Coding system
+(set-language-environment "UTF-8")  ; Seems to cause using Japanese fonts for Chinese Characters if not setting Chinese font explicitly
 (set-selection-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
-(set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
