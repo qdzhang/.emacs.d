@@ -92,7 +92,8 @@
          ("C-d" . ivy-reverse-i-search-kill)))
 
 (use-package counsel
-  :bind ("C-x C-f" . counsel-find-file))
+  :bind(("C-x C-f" . counsel-find-file)
+        ("C-c f" . counsel-fzf)))
 
 (use-package company
   :init
