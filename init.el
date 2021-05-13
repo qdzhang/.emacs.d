@@ -10,7 +10,10 @@
 
 (setq package-archives '(("gnu"   . "https://mirrors.bfsu.edu.cn/elpa/gnu/")
                          ("melpa" . "https://mirrors.bfsu.edu.cn/elpa/melpa/")
-                         ("org" . "https://mirrors.bfsu.edu.cn/elpa/org/")))
+                         ("org" . "https://mirrors.bfsu.edu.cn/elpa/org/"))
+      package-archive-priorities '(("org" . 10)
+				   ("gnu" . 5)
+				   ("melpa" . 0)))
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
@@ -53,13 +56,23 @@
 
 (use-package diminish)
 
-(use-package acme-theme
-  :config
-  (load-theme 'acme t))
+;; (use-package acme-theme
+;;   :config
+;;   (load-theme 'acme t))
 
 ;; (use-package kaolin-themes
 ;;   :config
 ;;   (load-theme 'kaolin-valley-light t))
+
+;; (use-package color-theme-sanityinc-tomorrow
+;;   :config
+;;   (load-theme 'sanityinc-tomorrow-day t))
+
+(use-package modus-themes
+  :init
+  (modus-themes-load-themes)
+  :config
+  (modus-themes-load-operandi))
 
 (use-package ivy
   :diminish
