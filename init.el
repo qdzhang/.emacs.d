@@ -204,7 +204,9 @@
   :defer t
   :ensure org-plus-contrib
   :pin org
-  :hook (org-mode . visual-line-mode))
+  :hook (org-mode . visual-line-mode)
+  :config
+  (setq org-default-notes-file (concat org-directory "/notes.org")))
 
 (use-package org-superstar
   :after org
