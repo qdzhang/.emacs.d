@@ -20,10 +20,14 @@
 
 (set-face-attribute
   'default nil
-  :font (font-spec :family "Sarasa Mono SC" :size 23))
+  :font (font-spec :family "Sarasa Mono SC" :size 24))
 (set-fontset-font t 'han "LXGW WenKai")
 (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
 
+;; Global key bindings
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c c") 'org-capture)
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
