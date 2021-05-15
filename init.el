@@ -174,7 +174,7 @@
   :init
   (setq x-underline-at-descent-line t)
   :config
-  (load-theme 'solarized-light t)
+  (load-theme 'solarized-light-high-contrast t)
   (let ((line (face-attribute 'mode-line :underline)))
     (set-face-attribute 'mode-line          nil :overline   line)
     (set-face-attribute 'mode-line-inactive nil :overline   line)
@@ -208,12 +208,14 @@
         ("C-c f" . counsel-fzf)))
 
 (use-package company
+  :diminish
   :init
   (setq company-idle-delay 0)
   :hook
   (after-init . global-company-mode))
 
 (use-package yasnippet
+  :diminish yas-minor-mode
   :config (yas-global-mode))
 
 (use-package yasnippet-snippets
