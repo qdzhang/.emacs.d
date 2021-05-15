@@ -285,8 +285,15 @@
   :ensure smartparens
   :diminish smartparens-mode
   :config (progn (show-smartparens-global-mode t)))
-(add-hook 'prog-mode-hook #'smartparens-strict-mode)
-(add-hook 'smartparens-strict-mode-hook #'evil-cleverparens-mode)
+
+(use-package smartparens
+  :hook
+  (prog-mode . smartparens-strict-mode))
+
+(use-package evil-cleverparens
+  :diminish
+  :hook
+  (smartparens-strict-mode . evil-cleverparens-mode))
 
 (use-package terminal-here
   :bind
