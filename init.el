@@ -40,9 +40,11 @@
 (global-hl-line-mode 1)
 
 ;; Line number
-(column-number-mode)
+(global-linum-mode 0)
 (global-display-line-numbers-mode 1)
-(setq display-line-numbers-grow-only 4)
+(column-number-mode)  ; Display line number in the mode line
+(setq display-line-numbers-grow-only t)
+(setq display-line-numbers-width-start t)
 ;; Disable line numbers for some modes
 (defun my/disable-line-numbers (&optional dummy)
     (display-line-numbers-mode -1))
