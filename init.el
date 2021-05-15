@@ -42,6 +42,7 @@
 ;; Line number
 (column-number-mode)
 (global-display-line-numbers-mode 1)
+(setq display-line-numbers-grow-only 4)
 ;; Disable line numbers for some modes
 (defun my/disable-line-numbers (&optional dummy)
     (display-line-numbers-mode -1))
