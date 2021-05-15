@@ -140,11 +140,11 @@
 (use-package diminish)
 
 ;; The built-in tango theme looks fairly well
-(load-theme 'tango t)
+;; (load-theme 'tango t)
 
-;; (use-package acme-theme
-;;   :config
-;;   (load-theme 'acme t))
+(use-package acme-theme
+  :config
+  (load-theme 'acme t))
 
 ;; (use-package kaolin-themes
 ;;   :config
