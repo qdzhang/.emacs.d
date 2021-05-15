@@ -80,6 +80,7 @@
   (normal-top-level-add-subdirs-to-load-path))
 
 ;; Use Lazycat's awesome-pair package
+;; (show-paren-mode 1)
 ;; (require 'awesome-pair)
 ;; (dolist (hook (list
 ;;                'c-mode-common-hook
@@ -290,7 +291,10 @@
 
 (use-package smartparens
   :hook
-  (prog-mode . smartparens-strict-mode))
+  (prog-mode . smartparens-strict-mode)
+  :bind
+  ("M-<up>" . sp-splice-sexp-killing-backward)
+  ("M-<down>" . sp-splice-sexp-killing-forward))
 
 (use-package evil-cleverparens
   :diminish
