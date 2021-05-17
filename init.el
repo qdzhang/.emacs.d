@@ -150,6 +150,12 @@
 
 (use-package diminish)
 
+(use-package gcmh
+  :demand
+  :config
+  (gcmh-mode 1))
+(provide 'init-gc)
+
 ;; The built-in tango theme looks fairly well
 ;; (load-theme 'tango t)
 
