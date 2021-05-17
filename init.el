@@ -46,7 +46,7 @@
 (setq display-line-numbers-grow-only t)
 (setq display-line-numbers-width-start t)
 ;; Disable line numbers for some modes
-(defun my/disable-line-numbers (&optional dummy)
+(defun my/disable-line-numbers (&optional arg)
     (display-line-numbers-mode -1))
 (add-hook 'shell-mode-hook 'my/disable-line-numbers)
 (add-hook 'term-mode-hook 'my/disable-line-numbers)
@@ -152,6 +152,7 @@
 
 (use-package gcmh
   :demand
+  :diminish
   :config
   (gcmh-mode 1))
 (provide 'init-gc)
