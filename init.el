@@ -174,6 +174,7 @@
 (use-package solarized-theme
   :init
   (setq x-underline-at-descent-line t)
+  (setq solarized-scale-org-headlines nil)
   :config
   (load-theme 'solarized-light-high-contrast t)
   (let ((line (face-attribute 'mode-line :underline)))
