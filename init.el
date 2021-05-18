@@ -1,11 +1,3 @@
-(setq inhibit-splash-screen 1)
-
-(scroll-bar-mode -1)        ; Disable visible scrollbar
-(tool-bar-mode -1)          ; Disable the toolbar
-(tooltip-mode -1)           ; Disable tooltips
-(set-fringe-mode 10)        ; Give some breathing room
-(menu-bar-mode -1)          ; Disable the menu bar
-
 (require 'package)
 
 (setq package-archives '(("gnu"   . "https://mirrors.bfsu.edu.cn/elpa/gnu/")
@@ -72,6 +64,16 @@
 (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 (setq scroll-step 1) ;; keyboard scroll one line at a time
+
+;; Show init time in a message
+;; Use a hook so the message doesn't get clobbered by other messages.
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs ready in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
 
 ;; Packages managed by git submodules
 ;;===================================
@@ -149,13 +151,6 @@
 (setq use-package-always-ensure t)
 
 (use-package diminish)
-
-(use-package gcmh
-  :demand
-  :diminish
-  :config
-  (gcmh-mode 1))
-(provide 'init-gc)
 
 ;; The built-in tango theme looks fairly well
 ;; (load-theme 'tango t)
