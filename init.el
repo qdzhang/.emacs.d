@@ -295,9 +295,10 @@
 (use-package smartparens
   :hook
   (prog-mode . smartparens-strict-mode)
-  :bind
-  ("M-<up>" . sp-splice-sexp-killing-backward)
-  ("M-<down>" . sp-splice-sexp-killing-forward))
+  :bind (:map smartparens-strict-mode-map
+	      ("M-<up>" . sp-splice-sexp-killing-backward)
+	      ("M-<down>" . sp-splice-sexp-killing-forward)
+	      ("M-<delete>". sp-unwrap-sexp)))
 
 (use-package evil-cleverparens
   :diminish
