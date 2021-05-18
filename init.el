@@ -187,8 +187,8 @@
     (set-face-attribute 'mode-line-inactive nil :box        nil)
     (set-face-attribute 'mode-line-inactive nil :background "#f9f2d9")))
 
-(use-package simple-modeline
-  :hook (after-init . simple-modeline-mode))
+;; (use-package simple-modeline
+;;   :hook (after-init . simple-modeline-mode))
 
 (use-package ivy
   :diminish
@@ -331,3 +331,8 @@
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
+
+(use-package expand-region
+  :bind
+  (("C-=" . er/expand-region)
+   ("C-+" . er/contract-region)))
