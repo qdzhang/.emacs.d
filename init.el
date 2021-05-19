@@ -75,6 +75,8 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
+(put 'narrow-to-region 'disabled nil)
+
 ;; Packages managed by git submodules
 ;;===================================
 (let ((default-directory  "~/.emacs.d/site-lisp/"))
