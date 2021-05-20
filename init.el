@@ -226,8 +226,12 @@
            :wk "scratch")
     "bd" 'kill-current-buffer
     "bb" 'switch-to-buffer
-    "be" 'eval-buffer
     "bk" 'kill-current-buffer
+    "bl" 'evil-switch-to-windows-last-buffer
+
+    "e" '(:ignore t :which-key "eval")
+    "eb" 'eval-buffer
+    "ee" 'eval-last-sexp
 
     "f" '(:ignore t :which-key "file")
     "fD" '((lambda () (interactive) (delete-file (buffer-file-name))) :wk "delete")
