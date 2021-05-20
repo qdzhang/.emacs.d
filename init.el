@@ -17,9 +17,6 @@
 (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
 
 ;; Global key bindings
-(global-set-key (kbd "C-c l") 'org-store-link)
-(global-set-key (kbd "C-c a") 'org-agenda)
-(global-set-key (kbd "C-c c") 'org-capture)
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -230,6 +227,7 @@
     "bd" 'kill-current-buffer
     "bb" 'switch-to-buffer
     "be" 'eval-buffer
+    "bk" 'kill-current-buffer
 
     "f" '(:ignore t :which-key "file")
     "fD" '((lambda () (interactive) (delete-file (buffer-file-name))) :wk "delete")
@@ -255,7 +253,22 @@
     "hk" 'describe-key
     "hK" 'describe-keymap
     "hp" 'describe-package
-    "hv" 'describe-variable))
+    "hv" 'describe-variable
+
+    "n" '(:ignore t :which-key "notes")
+    "na" 'org-agenda
+    "nc" 'org-capture
+    "nl" 'org-store-link
+
+    "o" '(:ignore t :which-key "open")
+    "od" 'dired-jump
+
+    "s" '(:ignore t :which-key "search")
+    "sb" 'swiper
+    "sB" 'swiper-all
+
+    "w" '(:ignore t :which-key "window")
+    ))
 
 (use-package evil
   :ensure t
