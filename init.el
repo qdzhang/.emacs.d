@@ -148,6 +148,7 @@
 (require 'use-package)
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
+(setq use-package-compute-statistics t)
 
 (use-package diminish)
 
@@ -256,6 +257,7 @@
     "hm" 'describe-mode
     "hk" 'describe-key
     "hK" 'describe-keymap
+    "hs" 'use-package-report
     "hp" 'describe-package
     "hv" 'describe-variable
 
@@ -270,6 +272,7 @@
     "s" '(:ignore t :which-key "search")
     "sb" 'swiper
     "sB" 'swiper-all
+    "sy" 'ivy-yasnippet
 
     "w" '(:ignore t :which-key "window")
     ))
@@ -328,7 +331,10 @@
 
 (use-package yasnippet
   :diminish yas-minor-mode
-  :config (yas-global-mode))
+  :hook
+  ((prog-mode org-mode markdown-mode text-mode snippet-mode) . yas-minor-mode)
+  :config
+  (yas-reload-all))
 
 (use-package yasnippet-snippets
   :after yasnippet
