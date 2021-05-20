@@ -192,6 +192,95 @@
 ;; (use-package simple-modeline
 ;;   :hook (after-init . simple-modeline-mode))
 
+(use-package which-key
+  :demand t
+  :diminish which-key-mode
+  :config
+  (which-key-mode)
+  (setq which-key-idle-delay 1))
+
+;; Evil and keybinding settings
+;;=============================
+
+(use-package general
+  :demand t
+  :config
+  (general-evil-setup)
+
+  (general-create-definer my/leader-keys
+    :states '(normal insert visual emacs)
+    :keymaps 'override
+    :prefix "SPC"
+    :global-prefix "C-SPC")
+
+  (general-create-definer my/local-leader-keys
+    :states '(normal visual)
+    :keymaps 'override
+    :prefix ","
+    :global-prefix "SPC m")
+
+  (my/leader-keys
+    "SPC" '(execute-extended-command :which-key "execute command")
+
+    "b" '(:ignore t :which-key "buffer")
+    "br"  'revert-buffer
+    "bs" '((lambda () (interactive)
+             (pop-to-buffer "*scratch*"))
+           :wk "scratch")
+    "bd" 'kill-current-buffer
+    "bb" 'switch-to-buffer
+    "be" 'eval-buffer
+
+    "f" '(:ignore t :which-key "file")
+    "fD" '((lambda () (interactive) (delete-file (buffer-file-name))) :wk "delete")
+    "ff" 'find-file
+    "fs" 'save-buffer
+    "fr" 'recentf-open-files
+    "fR" '((lambda (new-path)
+             (interactive (list (read-file-name "Move file to: ") current-prefix-arg))
+             (rename-file (buffer-file-name) (expand-file-name new-path)))
+           :wk "move/rename")
+
+    "g" '(:ignore t :which-key "git")
+    "gg" 'magit-status
+
+    "h" '(:ignore t :which-key "describe")
+    "he" 'view-echo-area-messages
+    "hf" 'describe-function
+    "hF" 'describe-face
+    "hi" 'info
+    "hl" 'view-lossage
+    "hL" 'find-library
+    "hm" 'describe-mode
+    "hk" 'describe-key
+    "hK" 'describe-keymap
+    "hp" 'describe-package
+    "hv" 'describe-variable))
+
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
+  (setq evil-want-keybinding nil)
+  (setq evil-undo-system 'undo-fu)
+  :config
+  (evil-mode 1))
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
+
+(use-package evil-commentary
+  :after evil
+  :diminish
+  :config
+  (evil-commentary-mode))
+
+;;==================
+;; Evil settings end
+
 (use-package ivy
   :diminish
   :init (ivy-mode 1)
@@ -228,26 +317,9 @@
   :after yasnippet
   :config (yasnippet-snippets-initialize))
 
-(use-package evil
-  :ensure t
-  :init
-  (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
-  (setq evil-want-keybinding nil)
-  (setq evil-undo-system 'undo-fu)
-  :config
-  (evil-mode 1))
-
-(use-package evil-collection
-  :after evil
-  :ensure t
-  :config
-  (evil-collection-init))
-
-(use-package evil-commentary
-  :after evil
-  :diminish
-  :config
-  (evil-commentary-mode))
+(use-package ivy-yasnippet
+  :defer t
+  :after yasnippet)
 
 (use-package magit
   :if (executable-find "git")
@@ -281,13 +353,6 @@
   (setq mode-line-mule-info '((:eval (rime-lighter))))
   :custom
   (default-input-method "rime"))
-
-(use-package which-key
-  :defer 0
-  :diminish which-key-mode
-  :config
-  (which-key-mode)
-  (setq which-key-idle-delay 1))
 
 (use-package smartparens-config
   :ensure smartparens
