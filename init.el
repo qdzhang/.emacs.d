@@ -219,6 +219,7 @@
 
   (my/leader-keys
     "SPC" '(execute-extended-command :which-key "execute command")
+    "TAB" 'evil-indent-line
 
     "b" '(:ignore t :which-key "buffer")
     "br"  'revert-buffer
@@ -273,6 +274,9 @@
     "sb" 'swiper
     "sB" 'swiper-all
     "sy" 'ivy-yasnippet
+
+    "t" '(:ignore t :which-key "toggle")
+    "ts" 'sly
 
     "w" '(:ignore t :which-key "window")
     ))
