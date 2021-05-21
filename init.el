@@ -441,3 +441,10 @@
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key))
+
+(use-package eglot
+  :hook
+  (c-mode . eglot-ensure)
+  (c++-mode . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd")))
