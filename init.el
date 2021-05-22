@@ -76,9 +76,17 @@
 
 ;; Packages managed by git submodules
 ;;===================================
-(let ((default-directory  "~/.emacs.d/site-lisp/"))
-  (normal-top-level-add-to-load-path '("."))
-  (normal-top-level-add-subdirs-to-load-path))
+
+(defun add-subdirs-to-load-path (dir)
+  "Recursive add directories to `load-path'."
+  (let ((default-directory (file-name-as-directory dir)))
+    (add-to-list 'load-path dir)
+    (normal-top-level-add-subdirs-to-load-path)))
+(add-subdirs-to-load-path "~/.emacs.d/site-lisp/")
+
+(require 'gitattributes-mode)
+(require 'gitconfig-mode)
+(require 'gitignore-mode)
 
 ;; Use Lazycat's awesome-pair package
 ;; (show-paren-mode 1)
@@ -336,7 +344,7 @@
 (use-package yasnippet
   :diminish yas-minor-mode
   :hook
-  ((prog-mode org-mode markdown-mode text-mode snippet-mode) . yas-minor-mode)
+  ((prog-mode org-mode markdown-mode text-mode snippet-mode gitignore-mode) . yas-minor-mode)
   :config
   (yas-reload-all))
 
