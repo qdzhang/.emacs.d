@@ -281,6 +281,7 @@
     "s" '(:ignore t :which-key "search")
     "sb" 'swiper
     "sB" 'swiper-all
+    "si" '(counsel-imenu :wk "imenu")
     "sy" 'ivy-yasnippet
 
     "t" '(:ignore t :which-key "toggle")
