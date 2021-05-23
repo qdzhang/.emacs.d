@@ -247,7 +247,7 @@
     "fD" '((lambda () (interactive) (delete-file (buffer-file-name))) :wk "delete")
     "ff" 'find-file
     "fs" 'save-buffer
-    "fr" 'recentf-open-files
+    "fr" 'counsel-recentf
     "fR" '((lambda (new-path)
              (interactive (list (read-file-name "Move file to: ") current-prefix-arg))
              (rename-file (buffer-file-name) (expand-file-name new-path)))
@@ -329,7 +329,10 @@
          ("C-d" . ivy-switch-buffer-kill)
          :map ivy-reverse-i-search-map
          ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill)))
+         ("C-d" . ivy-reverse-i-search-kill))
+  :config
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) "))
 
 (use-package counsel
   :bind(("C-x C-f" . counsel-find-file)
