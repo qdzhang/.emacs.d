@@ -241,7 +241,9 @@
 
     "e" '(:ignore t :which-key "eval")
     "eb" 'eval-buffer
+    "ed" 'sly-eval-defun
     "ee" 'eval-last-sexp
+    "er" 'sly-eval-region
 
     "f" '(:ignore t :which-key "file")
     "fD" '((lambda () (interactive) (delete-file (buffer-file-name))) :wk "delete")
