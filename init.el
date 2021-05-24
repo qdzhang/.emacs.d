@@ -287,8 +287,7 @@
     "t" '(:ignore t :which-key "toggle")
     "ts" 'sly
 
-    "w" '(:ignore t :which-key "window")
-    ))
+    "w" '(:ignore t :which-key "window")))
 
 (use-package evil
   :ensure t
@@ -518,14 +517,9 @@
                       `(1 ("o" ,#'insert "insert")
                           ("f" ,(lambda (candidate)
                                   (send-input (format "(find-symbol \"%s\")" candidate)))
-                           "find symbol")
-                          )))
+                           "find symbol"))))
 
   ;; sly-mrepl-mode-map symbol not available at the time of
   ;; use-package, so :bind cannot be used here
   (with-eval-after-load 'sly-mrepl
-    (define-key sly-mrepl-mode-map (kbd "M-r") 'counsel-sly-mrepl-history)
-    ;; (define-key sly-mrepl-mode-map (kbd ",,") 'counsel-sly-mrepl-shortcut)
-    ;; (define-key sly-mrepl-mode-map (kbd ",p") 'sly-mrepl-set-package)
-    ;; (define-key sly-mrepl-mode-map (kbd ",s") 'counsel-sly-package-internal-symbols)
-    ))
+    (define-key sly-mrepl-mode-map (kbd "M-r") 'counsel-sly-mrepl-history)))
