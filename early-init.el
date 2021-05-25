@@ -14,11 +14,25 @@
 
 ;; Speed up startup
 ;;=================
+
+;; Unset file-name-handler-alist temporarily
+;; This manner is borrowed from Doom Emacs
+;; Restore it later, refer to the end of init.el
+(defvar doom--file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
 ;; Minimize garbage collection during startup
 (setq gc-cons-threshold (expt 2 24))
 
+(defun defer-garbage-collection-h ()
+  (setq gc-cons-threshold (expt 2 24)))
+
+(defun restore-garbage-collection-h ()
+  ;; Defer it so that commands launched immediately after will enjoy the
+  ;; benefits.
+  (run-at-time
+   1 nil (lambda () (setq gc-cons-threshold (expt 2 23)))))
+
 ;; Lower threshold back to 8 MiB (default is 800kB)
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold (expt 2 23))))
+(add-hook 'emacs-startup-hook #'restore-garbage-collection-h)
+(add-hook 'minibuffer-setup-hook #'defer-garbage-collection-h)
+(add-hook 'minibuffer-exit-hook #'restore-garbage-collection-h)

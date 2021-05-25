@@ -565,3 +565,8 @@
   ;; use-package, so :bind cannot be used here
   (with-eval-after-load 'sly-mrepl
     (define-key sly-mrepl-mode-map (kbd "M-r") 'counsel-sly-mrepl-history)))
+
+;; Restore file-name-hander-alist
+(add-hook 'emacs-startup-hook
+  (lambda ()
+    (setq file-name-handler-alist doom--file-name-handler-alist)))
