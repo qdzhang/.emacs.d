@@ -329,7 +329,9 @@
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
   (setq evil-undo-system 'undo-fu)
-  (setq evil-mode-line-format '(before . mode-line-front-space)) ; Move evil-mode-line-tag to beginning of modeline
+  :config
+  ;; Move evil-mode-line-tag to beginning of modeline
+  (setq evil-mode-line-format '(before . mode-line-front-space))
   (setq evil-normal-state-tag   (propertize " NORMAL " 'face '((:foreground "dark khaki")))
 	evil-emacs-state-tag    (propertize " EMACS " 'face '((:foreground "turquoise")))
 	evil-insert-state-tag   (propertize " INSERT " 'face '((:foreground "dark sea green")))
@@ -337,7 +339,6 @@
 	evil-motion-state-tag   (propertize " MOTION " 'face '((:foreground "khaki")))
 	evil-visual-state-tag   (propertize " VISUAL " 'face '((:foreground "light salmon")))
 	evil-operator-state-tag (propertize " OPERATE " 'face '((:foreground "sandy brown"))))
-  :config
   (evil-mode 1))
 
 (use-package evil-collection
