@@ -297,6 +297,13 @@
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
   (setq evil-undo-system 'undo-fu)
+  (setq evil-normal-state-tag   (propertize " NORMAL " 'face '((:background "dark khaki" :foreground "black")))
+	evil-emacs-state-tag    (propertize " EMACS " 'face '((:background "turquoise" :foreground "black")))
+	evil-insert-state-tag   (propertize " ------ " 'face '((:background "dark sea green" :foreground "black")))
+	evil-replace-state-tag  (propertize " REPLACE " 'face '((:background "dark orange" :foreground "black")))
+	evil-motion-state-tag   (propertize " MOTION " 'face '((:background "khaki" :foreground "black")))
+	evil-visual-state-tag   (propertize " VISUAL " 'face '((:background "light salmon" :foreground "black")))
+	evil-operator-state-tag (propertize " OPERATE " 'face '((:background "sandy brown" :foreground "black"))))
   :config
   (evil-mode 1))
 
