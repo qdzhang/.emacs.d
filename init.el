@@ -277,6 +277,8 @@
     "eb" 'eval-buffer
     "ed" 'sly-eval-defun
     "ee" 'eval-last-sexp
+    "el" 'sly-eval-last-expression
+    "ep" 'sly-eval-print-last-expression
     "er" 'sly-eval-region
 
     "f" '(:ignore t :which-key "file")
