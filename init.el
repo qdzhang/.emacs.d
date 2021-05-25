@@ -88,6 +88,11 @@
   (other-window 1)
   (ansi-term (executable-find "bash")))
 
+(defun my/ansi-term-bash ()
+  "Start a ternimal emulator using bash without confirming"
+  (interactive)
+  (ansi-term "/bin/bash"))
+
 (defun my/exit-term-kill-buffer ()
   (let* ((buff (current-buffer))
 	 (proc (get-buffer-process buff)))
@@ -310,7 +315,7 @@
     "od" '(dired-jump :wk "dired")
     "oe" 'eshell
     "ot" '(my/open-term-in-split-window :wk "split-term")
-    "oT" '(ansi-term :wk "term")
+    "oT" '(my/ansi-term-bash :wk "term")
 
     "s" '(:ignore t :which-key "search")
     "sb" 'swiper
