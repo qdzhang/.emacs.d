@@ -1,3 +1,5 @@
+;;; early-init.el -*- lexical-binding: t; -*-
+
 (setq inhibit-splash-screen 1)
 
 (and (bound-and-true-p scroll-bar-mode)

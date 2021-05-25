@@ -1,3 +1,5 @@
+;;; init.el -*- lexical-binding: t; -*-
+
 (require 'package)
 
 (setq package-archives '(("gnu"   . "https://mirrors.bfsu.edu.cn/elpa/gnu/")
