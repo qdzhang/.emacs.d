@@ -38,6 +38,7 @@
 (defun my/disable-line-numbers (&optional arg)
     (display-line-numbers-mode -1))
 (add-hook 'shell-mode-hook 'my/disable-line-numbers)
+(add-hook 'eshell-mode-hook 'my/disable-line-numbers)
 (add-hook 'term-mode-hook 'my/disable-line-numbers)
 
 ;; Remember cursor position
@@ -73,6 +74,32 @@
                      gcs-done)))
 
 (put 'narrow-to-region 'disabled nil)
+
+
+;; Term and ansi-term settings
+;;===========================
+;; Open ansi-term in a split window
+(defun my/open-term-in-split-window ()
+  "Start a terminal emulator in a new window."
+  (interactive)
+  (split-window-sensibly)
+  (other-window 1)
+  (ansi-term (executable-find "bash")))
+
+(defun my/exit-term-kill-buffer ()
+  (let* ((buff (current-buffer))
+	 (proc (get-buffer-process buff)))
+    (set-process-sentinel
+     proc
+     `(lambda (process event)
+	(if (and (string= event "finished\n")
+		 (one-window-p))
+	    (kill-buffer ,buff)
+	  (progn (kill-buffer ,buff)
+		 (delete-window)))))))
+
+(add-hook 'term-exec-hook 'my/exit-term-kill-buffer)
+
 
 ;; Packages managed by git submodules
 ;;===================================
@@ -278,7 +305,10 @@
     "nl" 'org-store-link
 
     "o" '(:ignore t :which-key "open")
-    "od" 'dired-jump
+    "od" '(dired-jump :wk "dired")
+    "oe" 'eshell
+    "ot" '(my/open-term-in-split-window :wk "split-term")
+    "oT" '(ansi-term :wk "term")
 
     "s" '(:ignore t :which-key "search")
     "sb" 'swiper
