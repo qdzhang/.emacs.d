@@ -42,6 +42,7 @@
 (add-hook 'shell-mode-hook 'my/disable-line-numbers)
 (add-hook 'eshell-mode-hook 'my/disable-line-numbers)
 (add-hook 'term-mode-hook 'my/disable-line-numbers)
+(add-hook 'vterm-mode-hook 'my/disable-line-numbers)
 
 ;; Remember cursor position
 (save-place-mode 1) 
@@ -87,6 +88,15 @@
   (split-window-sensibly)
   (other-window 1)
   (ansi-term (executable-find "bash")))
+
+
+;; Open vterm in a split window
+(defun my/open-vterm-in-split-window ()
+  "Start vterm in a new split window."
+  (interactive)
+  (split-window-sensibly)
+  (other-window 1)
+  (vterm))
 
 (defun my/ansi-term-bash ()
   "Start a ternimal emulator using bash without confirming"
@@ -309,8 +319,9 @@
     "o" '(:ignore t :which-key "open")
     "od" '(dired-jump :wk "dired")
     "oe" 'eshell
-    "ot" '(my/open-term-in-split-window :wk "split-term")
-    "oT" '(my/ansi-term-bash :wk "term")
+    "ot" '(my/open-vterm-in-split-window :wk "split-term")
+    "oT" 'vterm
+    ;; "oT" '(my/ansi-term-bash :wk "term")
 
     "s" '(:ignore t :which-key "search")
     "sb" 'swiper
@@ -566,6 +577,22 @@
   ;; use-package, so :bind cannot be used here
   (with-eval-after-load 'sly-mrepl
     (define-key sly-mrepl-mode-map (kbd "M-r") 'counsel-sly-mrepl-history)))
+
+(use-package vterm
+  :defer t
+  :config
+  (defun my/vterm-exit-kill-buffer-window (process event)
+    "Kill buffer and window on shell process termination."
+    (when (not (process-live-p process))
+      (let ((buf (process-buffer process)))
+	(when (buffer-live-p buf)
+	  (with-current-buffer buf
+            (kill-buffer)
+            (unless (one-window-p)
+	      (delete-window)))))))
+  :hook
+  (vterm-mode . (lambda () (set-process-sentinel (get-buffer-process (buffer-name) ) #'my/vterm-exit-kill-buffer-window))))
+
 
 ;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook
