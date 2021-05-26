@@ -36,3 +36,10 @@
 (add-hook 'emacs-startup-hook #'restore-garbage-collection-h)
 (add-hook 'minibuffer-setup-hook #'defer-garbage-collection-h)
 (add-hook 'minibuffer-exit-hook #'restore-garbage-collection-h)
+
+;; Load custom.el contains custom-set-variables
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(unless (file-exists-p custom-file)
+  (write-region "" nil custom-file))
+(when (file-exists-p custom-file)
+  (load custom-file))
