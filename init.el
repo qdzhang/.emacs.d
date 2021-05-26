@@ -220,14 +220,7 @@
   (setq x-underline-at-descent-line t)
   (setq solarized-scale-org-headlines nil)
   :config
-  (load-theme 'solarized-light-high-contrast t)
-  (let ((line (face-attribute 'mode-line :underline)))
-    (set-face-attribute 'mode-line          nil :overline   line)
-    (set-face-attribute 'mode-line-inactive nil :overline   line)
-    (set-face-attribute 'mode-line-inactive nil :underline  line)
-    (set-face-attribute 'mode-line          nil :box        nil)
-    (set-face-attribute 'mode-line-inactive nil :box        nil)
-    (set-face-attribute 'mode-line-inactive nil :background "#f9f2d9")))
+  (load-theme 'solarized-dark-high-contrast t))
 
 ;; (use-package simple-modeline
 ;;   :hook (after-init . simple-modeline-mode))
