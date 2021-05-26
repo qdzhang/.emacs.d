@@ -28,7 +28,7 @@
 ;; (global-set-key (kbd "M-i") 'imenu)
 
 ;; highlight current line
-(global-hl-line-mode 1)
+;; (global-hl-line-mode 1)
 
 ;; Line number
 (global-linum-mode 0)
