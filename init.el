@@ -600,6 +600,28 @@
   :hook
   (vterm-mode . (lambda () (set-process-sentinel (get-buffer-process (buffer-name) ) #'my/vterm-exit-kill-buffer-window))))
 
+(use-package dired
+  :ensure nil
+  :general
+  (my/leader-keys
+    "fd" '(dired :wk "directory"))
+  :hook
+  (dired-mode . dired-hide-details-mode)
+  :config
+  (use-package dired-x
+    :ensure nil)
+  (setq dired-dwim-target t)
+  (setq dired-guess-shell-alist-user '(("\\.pdf\\'" "llpp")
+				       ("\\.mkv\\'"  "mpv")
+                                       ("\\.avi\\'"  "mpv")
+                                       ("\\.mp4\\'"  "mpv")
+                                       ("\\.m4v\\'"  "mpv")
+                                       ("\\.flv\\'"  "mpv")
+                                       ("\\.wmv\\'"  "mpv")
+                                       ("\\.mpg\\'"  "mpv")
+                                       ("\\.mpeg\\'" "mpv")
+                                       ("\\.webm\\'" "mpv"))))
+
 
 ;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook
