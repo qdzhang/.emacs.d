@@ -622,6 +622,12 @@
                                        ("\\.mpeg\\'" "mpv")
                                        ("\\.webm\\'" "mpv"))))
 
+(use-package aggressive-indent
+  :defer t
+  :hook
+  (emacs-lisp-mode . aggressive-indent-mode)
+  (lisp-mode . aggressive-indent-mode))
+
 
 ;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook
