@@ -423,7 +423,14 @@
   (defun magit-log-follow-current-file ()
     "A wrapper around `magit-log-buffer-file' with `--follow' argument."
     (interactive)
-    (magit-log-buffer-file t)))
+    (magit-log-buffer-file t))
+
+  ;; Make magit status show full screen
+  ;; https://github.com/magit/magit/issues/1953#issuecomment-221134023
+  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+  :general
+  (my/leader-keys
+    "gl" 'magit-log-buffer-file))
 
 (use-package undo-fu
   :config
