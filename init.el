@@ -483,7 +483,20 @@
   :pin org
   :hook (org-mode . visual-line-mode)
   :config
-  (setq org-default-notes-file (concat org-directory "/notes.org")))
+  (setq org-default-notes-file (concat org-directory "/notes.org"))
+
+  (defun my/org--indent-buffer ()
+    "Indent current buffer"
+    (interactive)
+    (indent-region (point-min) (point-max)))
+
+  (defun my/org--indent-src-block ()
+    "Indent src block in org mode"
+    (interactive)
+    (when (org-in-src-block-p)
+      (org-edit-special)
+      (my/org--indent-buffer)
+      (org-edit-src-exit))))
 
 (use-package org-superstar
   :after org
