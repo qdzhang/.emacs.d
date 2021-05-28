@@ -641,8 +641,13 @@
   (emacs-lisp-mode . aggressive-indent-mode)
   (lisp-mode . aggressive-indent-mode))
 
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
+
 
 ;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook
-  (lambda ()
-    (setq file-name-handler-alist doom--file-name-handler-alist)))
+	  (lambda ()
+	    (setq file-name-handler-alist doom--file-name-handler-alist)))
