@@ -45,7 +45,7 @@
 (add-hook 'vterm-mode-hook 'my/disable-line-numbers)
 
 ;; Remember cursor position
-(save-place-mode 1) 
+(save-place-mode 1)
 
 ;; Coding system
 (set-language-environment "UTF-8")  ; Seems to cause using Japanese fonts for Chinese Characters if not setting Chinese font explicitly
@@ -326,6 +326,8 @@
     "s" '(:ignore t :which-key "search")
     "sb" 'swiper
     "sB" 'swiper-all
+    "sf" 'counsel-fzf
+    "sg" 'counsel-rg
     "si" '(counsel-imenu :wk "imenu")
     "sy" 'ivy-yasnippet
 
@@ -482,6 +484,9 @@
   :ensure org-plus-contrib
   :pin org
   :hook (org-mode . visual-line-mode)
+  :general
+  (my/leader-keys
+    "nf" '(my/org--indent-src-block :wk "format src block"))
   :config
   (setq org-default-notes-file (concat org-directory "/notes.org"))
 
