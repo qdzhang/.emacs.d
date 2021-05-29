@@ -2,6 +2,8 @@
 
 (require 'package)
 
+;; TODO: Org ELPA will be shutting down and Org contrib will be moving to NonGNU ELPA
+;; Keep an eye on the changes of mirrors
 (setq package-archives '(("gnu"   . "https://mirrors.bfsu.edu.cn/elpa/gnu/")
                          ("melpa" . "https://mirrors.bfsu.edu.cn/elpa/melpa/")
                          ("org" . "https://mirrors.bfsu.edu.cn/elpa/org/"))
@@ -324,8 +326,9 @@
     ;; "oT" '(my/ansi-term-bash :wk "term")
 
     "s" '(:ignore t :which-key "search")
-    "sb" 'swiper
+    "sb" '(counsel-bookmark :wk "bookmarks")
     "sB" 'swiper-all
+    "sd" '(counsel-bookmarked-directory :wk "bookmarks(dir)")
     "sf" 'counsel-fzf
     "sg" 'counsel-rg
     "si" '(counsel-imenu :wk "imenu")
