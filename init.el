@@ -625,6 +625,8 @@
   :ensure nil
   :general
   (my/leader-keys
+    "dp" 'image-dired
+
     "fd" '(dired :wk "directory"))
   :hook
   (dired-mode . dired-hide-details-mode)
@@ -641,7 +643,11 @@
                                        ("\\.wmv\\'"  "mpv")
                                        ("\\.mpg\\'"  "mpv")
                                        ("\\.mpeg\\'" "mpv")
-                                       ("\\.webm\\'" "mpv"))))
+                                       ("\\.webm\\'" "mpv")
+				       ("\\.jpg\\'" "qview")
+				       ("\\.png\\'" "qview")
+				       ("\\.gif\\'" "qview")
+				       ("\\.jpeg\\'" "qview"))))
 
 (use-package aggressive-indent
   :defer t
