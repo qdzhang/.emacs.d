@@ -217,9 +217,9 @@
 ;;   :config
 ;;   (load-theme 'kaolin-valley-light t))
 
-;; (use-package color-theme-sanityinc-tomorrow
-;;   :config
-;;   (load-theme 'sanityinc-tomorrow-day t))
+(use-package color-theme-sanityinc-tomorrow
+  :config
+  (load-theme 'sanityinc-tomorrow-night t))
 
 ;; (use-package modus-themes
 ;;   :init
@@ -227,12 +227,12 @@
 ;;   :config
 ;;   (modus-themes-load-operandi))
 
-(use-package solarized-theme
-  :init
-  (setq x-underline-at-descent-line t)
-  (setq solarized-scale-org-headlines nil)
-  :config
-  (load-theme 'solarized-dark-high-contrast t))
+;; (use-package solarized-theme
+;;   :init
+;;   (setq x-underline-at-descent-line t)
+;;   (setq solarized-scale-org-headlines nil)
+;;   :config
+;;   (load-theme 'solarized-dark-high-contrast t))
 
 ;; (use-package simple-modeline
 ;;   :hook (after-init . simple-modeline-mode))
@@ -332,6 +332,7 @@
     "sf" 'counsel-fzf
     "sg" 'counsel-rg
     "si" '(counsel-imenu :wk "imenu")
+    "st" '(counsel-load-theme :wk "themes")
     "sy" 'ivy-yasnippet
 
     "t" '(:ignore t :which-key "toggle")
