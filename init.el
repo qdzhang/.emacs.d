@@ -291,10 +291,7 @@
     "ff" 'find-file
     "fs" 'save-buffer
     "fr" 'counsel-recentf
-    "fR" '((lambda (new-path)
-             (interactive (list (read-file-name "Move file to: ") current-prefix-arg))
-             (rename-file (buffer-file-name) (expand-file-name new-path)))
-           :wk "move/rename")
+    "fR" '(my/rename-file-and-buffer :wk "rename")
 
     "g" '(:ignore t :which-key "git")
     "gg" 'magit-status
@@ -338,7 +335,23 @@
     "t" '(:ignore t :which-key "toggle")
     "ts" 'sly
 
-    "w" '(:ignore t :which-key "window")))
+    "w" '(:ignore t :which-key "window"))
+
+  ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
+  (defun my/rename-file-and-buffer (new-name)
+    "Renames both current buffer and file it's visiting to NEW-NAME."
+    (interactive "sNew name: ")
+    (let ((name (buffer-name))
+	  (filename (buffer-file-name)))
+      (if (not filename)
+	  (message "Buffer '%s' is not visiting a file!" name)
+	(if (get-buffer new-name)
+	    (message "A buffer named '%s' already exists!" new-name)
+	  (progn
+	    (rename-file name new-name 1)
+	    (rename-buffer new-name)
+	    (set-visited-file-name new-name)
+	    (set-buffer-modified-p nil)))))))
 
 (use-package evil
   :ensure t
@@ -626,6 +639,7 @@
   :ensure nil
   :general
   (my/leader-keys
+    "d" '(:ignore t :which-key "dired")
     "dp" 'image-dired
 
     "fd" '(dired :wk "directory"))
