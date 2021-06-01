@@ -327,8 +327,9 @@
     "sB" 'swiper-all
     "sd" '(counsel-bookmarked-directory :wk "bookmarks(dir)")
     "sf" 'counsel-fzf
-    "sg" 'counsel-rg
+    "sg" 'counsel-grep-or-swiper
     "si" '(counsel-imenu :wk "imenu")
+    "sr" 'counsel-rg
     "st" '(counsel-load-theme :wk "themes")
     "sy" 'ivy-yasnippet
 
@@ -407,8 +408,29 @@
   (setq ivy-count-format "(%d/%d) "))
 
 (use-package counsel
-  :bind(("C-x C-f" . counsel-find-file)
-        ("C-c f" . counsel-fzf)))
+  :bind(("C-x C-f" . counsel-find-file))
+  :config
+  (setq counsel-grep-base-command
+	"rg -i -M 120 --no-heading --line-number --color never '%s' %s"))
+
+(use-package swiper
+  :general
+  (my/leader-keys
+    "sc" '(my/swiper-region-or-point :wk "swiper-current")
+    "ss" 'swiper-isearch)
+  :config
+
+  ;;https://emacs.stackexchange.com/questions/28355/how-to-unmark-selection-in-elisp
+  (defun my/swiper-region-or-point (beg end)
+    "Swiper region or current thing at point if none highlighted."
+    (interactive (if (use-region-p)
+                     (list (region-beginning) (region-end))
+                   (list nil nil)))
+    (if (and beg end)
+	(progn
+          (deactivate-mark)
+          (swiper (buffer-substring-no-properties beg end)))
+      (swiper-thing-at-point))))
 
 (use-package company
   :diminish
