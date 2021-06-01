@@ -276,12 +276,13 @@
     "bd" 'kill-current-buffer
     "bb" 'switch-to-buffer
     "bk" 'kill-current-buffer
-    "bl" 'evil-switch-to-windows-last-buffer
+    "bl" '(evil-switch-to-windows-last-buffer :wk "last buffer")
 
     "e" '(:ignore t :which-key "eval")
     "eb" 'eval-buffer
     "ed" 'sly-eval-defun
     "ee" 'eval-last-sexp
+    "ef" 'package-refresh-contents
     "el" 'sly-eval-last-expression
     "ep" 'sly-eval-print-last-expression
     "er" 'sly-eval-region
@@ -375,6 +376,7 @@
 (use-package evil-collection
   :after evil
   :ensure t
+  :diminish evil-collection-unimpaired-mode
   :config
   (evil-collection-init))
 
@@ -694,6 +696,7 @@
 
 (use-package editorconfig
   :ensure t
+  :diminish
   :config
   (editorconfig-mode 1))
 
