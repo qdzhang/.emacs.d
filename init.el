@@ -586,7 +586,8 @@
   :hook (org-mode . visual-line-mode)
   :general
   (my/leader-keys
-    "nf" '(my/org--indent-src-block :wk "format src block"))
+    "nf" '(my/org--indent-src-block :wk "format src block")
+    "np" 'org-toggle-inline-images)
   :config
   (setq org-default-notes-file (concat org-directory "/notes.org"))
 
