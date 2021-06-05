@@ -311,11 +311,6 @@
     "hp" 'describe-package
     "hv" 'describe-variable
 
-    "n" '(:ignore t :which-key "notes")
-    "na" 'org-agenda
-    "nc" 'org-capture
-    "nl" 'org-store-link
-
     "o" '(:ignore t :which-key "open")
     "od" '(dired-jump :wk "dired")
     "oe" 'eshell
@@ -586,10 +581,19 @@
   :hook (org-mode . visual-line-mode)
   :general
   (my/leader-keys
+    "n" '(:ignore t :which-key "notes")
+    "na" 'org-agenda
+    "nc" 'org-capture
+    "nl" 'org-store-link
     "nf" '(my/org--indent-src-block :wk "format src block")
-    "np" 'org-toggle-inline-images)
+    "np" 'org-toggle-inline-images
+    "nt" 'org-todo)
   :config
-  (setq org-default-notes-file (concat org-directory "/notes.org"))
+  (setq org-default-notes-file '("~/org/notes.org"))
+  (setq org-agenda-files '("~/org/agenda.org"))
+  (setq org-todo-keywords
+	'((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELED(c)")))
+  (setq org-ellipsis "  ")
 
   (defun my/org--indent-buffer ()
     "Indent current buffer"
@@ -604,12 +608,12 @@
       (my/org--indent-buffer)
       (org-edit-src-exit))))
 
-(use-package org-superstar
-  :after org
-  :hook
-  (org-mode . org-superstar-mode)
-  :config
-  (setq org-superstar-headline-bullets-list '("◉" "○" "❖" "◈" "✿" "✚" "▶")))
+;; (use-package org-superstar
+;;   :after org
+;;   :hook
+;;   (org-mode . org-superstar-mode)
+;;   :config
+;;   (setq org-superstar-headline-bullets-list '("◉" "○" "❖" "◈" "✿" "✚" "▶")))
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
