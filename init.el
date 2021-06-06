@@ -332,7 +332,8 @@
     "t" '(:ignore t :which-key "toggle")
     "ts" 'sly
 
-    "w" '(:ignore t :which-key "window"))
+    "w" '(:ignore t :which-key "window")
+    "ww" 'other-window)
 
   ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
   (defun my/rename-file-and-buffer (new-name)
@@ -763,6 +764,12 @@
   :diminish
   :config
   (editorconfig-mode 1))
+
+(use-package racket-mode
+  :defer t
+  :hook
+  (racket-mode . racket-unicode-input-method-enable)
+  (racket-repl-mode . racket-unicode-input-method-enable))
 
 
 ;; Restore file-name-hander-alist
