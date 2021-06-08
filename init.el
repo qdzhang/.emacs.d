@@ -80,6 +80,20 @@
 
 (put 'narrow-to-region 'disabled nil)
 
+;;; Tabs and spaces settings
+(defun infer-indentation-style ()
+  ;; if our source file uses tabs, we use tabs, if spaces spaces, and if        
+  ;; neither, we use the current indent-tabs-mode                               
+  (let ((space-count (how-many "^  " (point-min) (point-max)))
+        (tab-count (how-many "^\t" (point-min) (point-max))))
+    (if (> space-count tab-count) (setq indent-tabs-mode nil))
+    (if (> tab-count space-count) (setq indent-tabs-mode t))))
+
+(defun my/c-mode-hook ()
+  (setq indent-tabs-mode nil)
+  (infer-indentation-style))
+(add-hook 'c-mode-hook 'my/c-mode-hook)
+
 
 ;; Term and ansi-term settings
 ;;===========================
