@@ -626,6 +626,7 @@
     "n" '(:ignore t :which-key "notes")
     "na" 'org-agenda
     "nc" 'org-capture
+    "nd" '(my/toggle-side-bullet-org-buffer :wk "daily plan")
     "nl" 'org-store-link
     "nf" '(my/org--indent-src-block :wk "format src block")
     "np" 'org-toggle-inline-images
@@ -648,7 +649,48 @@
     (when (org-in-src-block-p)
       (org-edit-special)
       (my/org--indent-buffer)
-      (org-edit-src-exit))))
+      (org-edit-src-exit)))
+
+  ;; Open daily plan org file in new split buffer
+  ;; https://isamert.net/2021/01/25/how-i-do-keep-my-days-organized-with-org-mode-and-emacs.html#fnr.2
+  (defun my/toggle-side-bullet-org-buffer ()
+    "Toggle `daily.org` in a side buffer for quick note taking.  The buffer is opened in side window so it can't be accidentaly removed."
+    (interactive)
+    (my/toggle-side-buffer-with-file "~/org/daily.org"))
+
+  (defun my/buffer-visible-p (buffer)
+    "Check if given BUFFER is visible or not.  BUFFER is a string representing the buffer name."
+    (or (eq buffer (window-buffer (selected-window)))
+	(get-buffer-window buffer)))
+
+  (defun my/display-buffer-in-side-window (buffer)
+    "Just like `display-buffer-in-side-window' but only takes a BUFFER and rest of the parameters are for my taste."
+    (select-window
+     (display-buffer-in-side-window
+      buffer
+      (list (cons 'side 'right)
+            (cons 'slot 0)
+            (cons 'window-width 84)
+            (cons 'window-parameters (list (cons 'no-delete-other-windows t)
+                                           (cons 'no-other-window nil)))))))
+
+  (defun my/remove-window-with-buffer (the-buffer-name)
+    "Remove window containing given THE-BUFFER-NAME."
+    (mapc (lambda (window)
+            (when (string-equal (buffer-name (window-buffer window)) the-buffer-name)
+              (delete-window window)))
+          (window-list (selected-frame))))
+
+  (defun my/toggle-side-buffer-with-file (file-path)
+    "Toggle FILE-PATH in a side buffer. The buffer is opened in side window so it can't be accidentaly removed."
+    (interactive)
+    (let ((fname (file-name-nondirectory file-path)))
+      (if (my/buffer-visible-p fname)
+	  (my/remove-window-with-buffer fname)
+	(my/display-buffer-in-side-window
+	 (save-window-excursion
+	   (find-file file-path)
+	   (current-buffer)))))))
 
 ;; (use-package org-superstar
 ;;   :after org
