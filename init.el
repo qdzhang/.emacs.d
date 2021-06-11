@@ -133,6 +133,21 @@
 
 (add-hook 'term-exec-hook 'my/exit-term-kill-buffer)
 
+;;; Add some advice for upcase and downcase functions
+;;; https://oremacs.com/2014/12/23/upcase-word-you-silly/
+(defadvice upcase-word (before upcase-word-advice activate)
+  (unless (looking-back "\\b")
+    (backward-word)))
+
+(defadvice downcase-word (before downcase-word-advice activate)
+  (unless (looking-back "\\b")
+    (backward-word)))
+
+(defadvice capitalize-word (before capitalize-word-advice activate)
+  (unless (or (looking-back "\\b")
+              (bound-and-true-p subword-mode))
+    (backward-word)))
+
 
 ;; Packages managed by git submodules
 ;;===================================
@@ -292,6 +307,12 @@
     "bk" 'kill-current-buffer
     "bl" '(evil-switch-to-windows-last-buffer :wk "last buffer")
 
+    "c" '(:ignore t :which-key "change text")
+    "c;" '(my/semicolon-at-end-of-line :which-key "semicolon(end)")
+    "cc" 'capitalize-word
+    "cd" 'downcase-word
+    "cu" 'upcase-word
+
     "e" '(:ignore t :which-key "eval")
     "eb" 'eval-buffer
     "ed" 'sly-eval-defun
@@ -363,7 +384,13 @@
 	    (rename-file name new-name 1)
 	    (rename-buffer new-name)
 	    (set-visited-file-name new-name)
-	    (set-buffer-modified-p nil)))))))
+	    (set-buffer-modified-p nil))))))
+
+  (defun my/semicolon-at-end-of-line ()
+    (interactive)
+    (save-excursion
+      (end-of-line)
+      (insert ";"))))
 
 (use-package evil
   :ensure t
