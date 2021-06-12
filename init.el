@@ -103,6 +103,9 @@ Ignores `ARGS'."
                      gcs-done)))
 
 (put 'narrow-to-region 'disabled nil)
+(defadvice narrow-to-region (after my/deactivate-mark activate)
+  (if (use-region-p)
+      (deactivate-mark)))
 
 ;;;===================
 ;;; Auto save settings
