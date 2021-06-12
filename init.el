@@ -80,6 +80,54 @@
 
 (put 'narrow-to-region 'disabled nil)
 
+;;;===================
+;;; Auto save settings
+;;;===================
+;;; https://github.com/JJPandari/.emacs.d/blob/master/modes/init-file.el#L26
+
+(setq auto-save-default nil)
+
+;; Auto save every 5 seconds
+;; (defvar my-auto-save-idle 5 "Time in seconds before auto-saving all buffers.")
+;; (run-with-idle-timer my-auto-save-idle t #'jester/save-all-buffers)
+
+;; (cancel-function-timers 'my/save-all-buffers) ; for debugging
+
+;; Save all buffers when losing focus in Emacs
+(add-hook 'focus-out-hook #'my/save-all-buffers)
+
+;; Save all buffers when switch to other buffer or window
+;; https://batsov.com/articles/2012/03/08/emacs-tip-number-5-save-buffers-automatically-on-buffer-or-window-switch/
+(defadvice switch-to-buffer (before save-buffer-now activate)
+  (when buffer-file-name (my/save-all-buffers)))
+(defadvice other-window (before other-window-now activate)
+  (when buffer-file-name (my/save-all-buffers)))
+(defadvice windmove-up (before other-window-now activate)
+  (when buffer-file-name (my/save-all-buffers)))
+(defadvice windmove-down (before other-window-now activate)
+  (when buffer-file-name (my/save-all-buffers)))
+(defadvice windmove-left (before other-window-now activate)
+  (when buffer-file-name (my/save-all-buffers)))
+(defadvice windmove-right (before other-window-now activate)
+  (when buffer-file-name (my/save-all-buffers)))
+
+;; Save all buffers
+(defun my/save-all-buffers ()
+  "Save all buffers."
+  ;; yas overlay and company-select-next has problem with this.
+  (when (and (not yas--active-snippets)
+             (not company-candidates)
+             (not (eq major-mode 'snippet-mode)))
+    ;; https://github.com/manateelazycat/lazycat-emacs/commit/da13a688ef89f8ab2c577a3e9d2a7bcf0ef9b71d
+    ;; https://emacs-china.org/t/topic/7687/30?u=jjpandari
+    ;; this prevents blink of eldoc
+    (with-temp-message
+        (with-current-buffer " *Minibuf-0*" (buffer-string))
+      ;; this prevents blink of ivy
+      (let ((inhibit-message t))
+        (save-some-buffers t #'(lambda () (and (buffer-file-name) (buffer-modified-p))))))))
+
+
 ;;; Tabs and spaces settings
 (defun infer-indentation-style ()
   ;; if our source file uses tabs, we use tabs, if spaces spaces, and if        
