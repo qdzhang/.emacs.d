@@ -680,11 +680,12 @@ Ignores `ARGS'."
     "np" 'org-toggle-inline-images
     "nt" 'org-todo)
   :config
-  (setq org-default-notes-file '("~/org/notes.org"))
-  (setq org-agenda-files '("~/org/agenda.org"))
-  (setq org-todo-keywords
-	'((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELED(c)")))
-  (setq org-ellipsis "  ")
+  (setq org-default-notes-file '("~/org/notes.org")
+	org-agenda-files '("~/org/agenda.org")
+	org-todo-keywords '((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELED(c)"))
+	org-ellipsis "  "
+	org-log-into-drawer "LOGBOOK"
+	org-archive-location "~/org/archive.org::datetree/")
 
   (defun my/org--indent-buffer ()
     "Indent current buffer"
