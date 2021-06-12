@@ -14,6 +14,22 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
+;;; Refresh package contents before package-install
+;;; https://genehack.blog/2020/04/a-bit-of-emacs-advice/
+(defvar my/packages-refreshed nil
+  "Flag for whether package lists have been refreshed yet.")
+
+(defun my/package-refresh (&rest args)
+  "Refresh package metadata, if needed.
+Ignores `ARGS'."
+  (unless (eq my/packages-refreshed t)
+    (progn
+      (package-refresh-contents)
+      (setq my/packages-refreshed t))))
+
+(advice-add 'package-install :before #'my/package-refresh)
+
+
 ;;; Add directories that containing elisp files
 (defun add-subdirs-to-load-path (dir)
   "Recursive add directories to `load-path'."
