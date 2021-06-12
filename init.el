@@ -368,6 +368,7 @@
     "ts" 'sly
 
     "w" '(:ignore t :which-key "window")
+    "wt" '(my/window-split-toggle :wk "toggle split")
     "ww" 'other-window)
 
   ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
@@ -390,7 +391,23 @@
     (interactive)
     (save-excursion
       (end-of-line)
-      (insert ";"))))
+      (insert ";")))
+
+  ;; Change Emacs windows from vertical split to horizontal split
+  ;; https://emacs.stackexchange.com/questions/5371/how-to-change-emacs-windows-from-vertical-split-to-horizontal-split
+  (defun my/window-split-toggle ()
+    "Toggle between horizontal and vertical split with two windows."
+    (interactive)
+    (if (> (length (window-list)) 2)
+	(error "Can't toggle with more than 2 windows!")
+      (let ((func (if (window-full-height-p)
+                      #'split-window-vertically
+                    #'split-window-horizontally)))
+	(delete-other-windows)
+	(funcall func)
+	(save-selected-window
+          (other-window 1)
+          (switch-to-buffer (other-buffer)))))))
 
 (use-package evil
   :ensure t
@@ -670,7 +687,7 @@
       buffer
       (list (cons 'side 'right)
             (cons 'slot 0)
-            (cons 'window-width 84)
+            (cons 'window-width 70)
             (cons 'window-parameters (list (cons 'no-delete-other-windows t)
                                            (cons 'no-other-window nil)))))))
 
