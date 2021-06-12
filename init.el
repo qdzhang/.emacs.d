@@ -136,15 +136,15 @@
 ;;; Add some advice for upcase and downcase functions
 ;;; https://oremacs.com/2014/12/23/upcase-word-you-silly/
 (defadvice upcase-word (before upcase-word-advice activate)
-  (unless (looking-back "\\b" (beginning-of-line))
+  (unless (looking-back "\\b" nil)
     (backward-word)))
 
 (defadvice downcase-word (before downcase-word-advice activate)
-  (unless (looking-back "\\b" (beginning-of-line))
+  (unless (looking-back "\\b" nil)
     (backward-word)))
 
 (defadvice capitalize-word (before capitalize-word-advice activate)
-  (unless (or (looking-back "\\b" (beginning-of-line))
+  (unless (or (looking-back "\\b" nil)
               (bound-and-true-p subword-mode))
     (backward-word)))
 
