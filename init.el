@@ -902,8 +902,11 @@ Ignores `ARGS'."
   (racket-mode . racket-unicode-input-method-enable)
   (racket-repl-mode . racket-unicode-input-method-enable))
 
+(use-package wgrep
+  :defer t
+  :config
+  (setq wgrep-auto-save-buffer t))
 
-;; Restore file-name-hander-alist
-(add-hook 'emacs-startup-hook
-	  (lambda ()
-	    (setq file-name-handler-alist doom--file-name-handler-alist)))
+
+;;; Restore file-name-hander-alist
+(add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
