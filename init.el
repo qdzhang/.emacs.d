@@ -132,6 +132,31 @@ Ignores `ARGS'."
   (infer-indentation-style))
 (add-hook 'c-mode-hook 'my/c-mode-hook)
 
+;;; General indent settings
+;;;========================
+;;; Use C-u <count> my/shift-right(left) will shift current line <count> spaces right(left)
+(defun my/shift-text (distance)
+  (if (use-region-p)
+      (let ((mark (mark)))
+        (save-excursion
+          (indent-rigidly (region-beginning)
+                          (region-end)
+                          distance)
+          (push-mark mark t t)
+          (setq deactivate-mark nil)))
+    (indent-rigidly (line-beginning-position)
+                    (line-end-position)
+                    distance)))
+
+(defun my/shift-right (count)
+  (interactive "p")
+  (my/shift-text count))
+
+(defun my/shift-left (count)
+  (interactive "p")
+  (my/shift-text (- count)))
+
+
 
 ;; Term and ansi-term settings
 ;;===========================
@@ -672,6 +697,7 @@ Ignores `ARGS'."
   :general
   (my/leader-keys
     "n" '(:ignore t :which-key "notes")
+    "n TAB" 'org-indent-item-tree
     "na" 'org-agenda
     "nc" 'org-capture
     "nd" '(my/toggle-side-bullet-org-buffer :wk "daily plan")
