@@ -1,5 +1,11 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
+(set-face-attribute
+ 'default nil
+ :font (font-spec :family "Sarasa Mono SC" :size 24))
+(set-fontset-font t 'han "LXGW WenKai")
+(set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
+
 (require 'package)
 
 ;; TODO: Org ELPA will be shutting down and Org contrib will be moving to NonGNU ELPA
@@ -38,11 +44,19 @@ Ignores `ARGS'."
     (normal-top-level-add-subdirs-to-load-path)))
 (add-subdirs-to-load-path "~/.emacs.d/site-lisp/")
 
-(set-face-attribute
-  'default nil
-  :font (font-spec :family "Sarasa Mono SC" :size 24))
-(set-fontset-font t 'han "LXGW WenKai")
-(set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
+;; Use-package settings
+;; ==============================
+;; Install use-package if not installed
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+(require 'use-package-ensure)
+(setq use-package-always-ensure t)
+(setq use-package-compute-statistics t)
+
+(use-package diminish)
+
 
 ;; Global key bindings
 ;; Make ESC quit prompts
@@ -115,6 +129,7 @@ Ignores `ARGS'."
 
 (require 'super-save)
 (super-save-mode +1)
+(diminish 'super-save-mode)
 (add-to-list 'super-save-hook-triggers 'find-file-hook)
 (setq super-save-exclude '(".gpg"))
 
@@ -278,18 +293,9 @@ Ignores `ARGS'."
 ;; (define-key awesome-pair-mode-map (kbd "M-n") 'awesome-pair-jump-left)
 ;; (define-key awesome-pair-mode-map (kbd "M-:") 'awesome-pair-jump-out-pair-and-newline)
 
-;; Use-package settings
-;; ==============================
-;; Install use-package if not installed
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
-(require 'use-package-ensure)
-(setq use-package-always-ensure t)
-(setq use-package-compute-statistics t)
 
-(use-package diminish)
+;;; Packages managed by use-package
+;;;================================
 
 ;; The built-in tango theme looks fairly well
 ;; (load-theme 'tango t)
