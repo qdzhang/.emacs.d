@@ -710,8 +710,25 @@ Ignores `ARGS'."
 	org-agenda-files '("~/org/agenda.org")
 	org-todo-keywords '((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELED(c)"))
 	org-ellipsis "  "
+	org-startup-indented t
 	org-log-into-drawer "LOGBOOK"
 	org-archive-location "~/org/archive.org::datetree/")
+
+  ;; Org crypt
+  ;; Now any text below a headline that has a :crypt: tag will be automatically be encrypted when the file is saved. If you want to use a different tag just customize the org-crypt-tag-matcher setting.
+
+  ;; Preventing tag inheritance stops you having encrypted text inside encrypted text.
+
+  ;; To decrypt the text just call M-x org-decrypt-entry and the encrypted text where the point is will be replaced with the plain text. If you use this feature a lot, you will probably want to bind M-x org-decrypt-entry to a key.
+
+  ;; Entries with a :crypt: tag will be automatically be encrypted when you save the file. 
+  (require 'org-crypt)
+  (org-crypt-use-before-save-magic)
+  (setq org-tags-exclude-from-inheritance (quote ("crypt")))
+  ;; GPG key to use for encryption
+  ;; Either the Key ID or set to nil to use symmetric encryption.
+  (setq org-crypt-key nil)
+
 
   (defun my/org--indent-buffer ()
     "Indent current buffer"
