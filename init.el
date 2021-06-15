@@ -342,7 +342,7 @@ Ignores `ARGS'."
 
 ;; Some built-in theme looks fairly well
 ;; (load-theme 'tango t)
-(load-theme 'tsdh-light t)
+;; (load-theme 'tsdh-light t)
 
 ;; (use-package acme-theme
 ;;   :config
@@ -352,9 +352,9 @@ Ignores `ARGS'."
 ;;   :config
 ;;   (load-theme 'kaolin-valley-light t))
 
-;; (use-package color-theme-sanityinc-tomorrow
-;;   :config
-;;   (load-theme 'sanityinc-tomorrow-night t))
+(use-package color-theme-sanityinc-tomorrow
+  :config
+  (load-theme 'sanityinc-tomorrow-night t))
 
 ;; (use-package modus-themes
 ;;   :init
@@ -792,7 +792,9 @@ Ignores `ARGS'."
     "na" 'org-agenda
     "nc" 'org-capture
     "nd" '(my/toggle-side-bullet-org-buffer :wk "daily plan")
+    "nD" '(my/toggle-bullet-org-buffer :wk "daily(fullframe)")
     "nl" 'org-store-link
+    "nn" 'org-add-note
     "nf" '(my/org--indent-src-block :wk "format src block")
     "np" 'org-toggle-inline-images
     "nt" 'org-todo)
@@ -840,6 +842,12 @@ Ignores `ARGS'."
     "Toggle `daily.org` in a side buffer for quick note taking.  The buffer is opened in side window so it can't be accidentaly removed."
     (interactive)
     (my/toggle-side-buffer-with-file "~/org/daily.org"))
+
+  ;; Open daily plan org file in new full-frame buffer
+  (defun my/toggle-bullet-org-buffer ()
+    "Open daily plan org file in new buffer"
+    (interactive)
+    (find-file "~/org/daily.org"))
 
   (defun my/buffer-visible-p (buffer)
     "Check if given BUFFER is visible or not.  BUFFER is a string representing the buffer name."
