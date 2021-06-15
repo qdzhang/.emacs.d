@@ -297,8 +297,9 @@ Ignores `ARGS'."
 ;;; Packages managed by use-package
 ;;;================================
 
-;; The built-in tango theme looks fairly well
+;; Some built-in theme looks fairly well
 ;; (load-theme 'tango t)
+(load-theme 'tsdh-light t)
 
 ;; (use-package acme-theme
 ;;   :config
@@ -308,9 +309,9 @@ Ignores `ARGS'."
 ;;   :config
 ;;   (load-theme 'kaolin-valley-light t))
 
-(use-package color-theme-sanityinc-tomorrow
-  :config
-  (load-theme 'sanityinc-tomorrow-night t))
+;; (use-package color-theme-sanityinc-tomorrow
+;;   :config
+;;   (load-theme 'sanityinc-tomorrow-night t))
 
 ;; (use-package modus-themes
 ;;   :init
@@ -480,13 +481,13 @@ Ignores `ARGS'."
   :config
   ;; Move evil-mode-line-tag to beginning of modeline
   (setq evil-mode-line-format '(before . mode-line-front-space))
-  (setq evil-normal-state-tag   (propertize " NORMAL " 'face '((:foreground "dark khaki")))
-	evil-emacs-state-tag    (propertize " EMACS " 'face '((:foreground "turquoise")))
-	evil-insert-state-tag   (propertize " INSERT " 'face '((:foreground "dark sea green")))
-	evil-replace-state-tag  (propertize " REPLACE " 'face '((:foreground "dark orange")))
-	evil-motion-state-tag   (propertize " MOTION " 'face '((:foreground "khaki")))
-	evil-visual-state-tag   (propertize " VISUAL " 'face '((:foreground "light salmon")))
-	evil-operator-state-tag (propertize " OPERATE " 'face '((:foreground "sandy brown"))))
+  ;; (setq evil-normal-state-tag   (propertize " NORMAL " 'face '((:foreground "dark khaki")))
+  ;; 	evil-emacs-state-tag    (propertize " EMACS " 'face '((:foreground "turquoise")))
+  ;; 	evil-insert-state-tag   (propertize " INSERT " 'face '((:foreground "dark sea green")))
+  ;; 	evil-replace-state-tag  (propertize " REPLACE " 'face '((:foreground "dark orange")))
+  ;; 	evil-motion-state-tag   (propertize " MOTION " 'face '((:foreground "khaki")))
+  ;; 	evil-visual-state-tag   (propertize " VISUAL " 'face '((:foreground "light salmon")))
+  ;; 	evil-operator-state-tag (propertize " OPERATE " 'face '((:foreground "sandy brown"))))
   (evil-mode 1))
 
 (use-package evil-collection
