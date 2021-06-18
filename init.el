@@ -681,6 +681,12 @@ Ignores `ARGS'."
   (("C-x g" . magit-status)
    (:map magit-status-mode-map
          ("M-RET" . magit-diff-visit-file-other-window)))
+  :general
+  (my/leader-keys
+    "gl" 'magit-log-buffer-file
+    "gc" '(my/git-clone-clipboard-url :wk "clone-clipboard")
+    "gd" '(my/magit-dotfiles-status :wk "dotfiles"))
+
   :config
   (defun magit-log-follow-current-file ()
     "A wrapper around `magit-log-buffer-file' with `--follow' argument."
@@ -729,11 +735,26 @@ Ignores `ARGS'."
                                        (user-error (format "%s\n%s" command output))))))
       (set-process-filter proc #'comint-output-filter)))
 
+  ;; This function can make magit working in home directory
+  ;; with a bare git respository,such as dotfiles directory
+  (defun ~/magit-process-environment (env)
+    "Add GIT_DIR and GIT_WORK_TREE to ENV when in a special directory.
+https://github.com/magit/magit/issues/460 (@cpitclaudel)."
+    (let ((default (file-name-as-directory (expand-file-name default-directory)))
+          (home (expand-file-name "~/")))
+      (when (string= default home)
+	(let ((gitdir (expand-file-name "~/.dotfiles/")))
+          (push (format "GIT_WORK_TREE=%s" home) env)
+          (push (format "GIT_DIR=%s" gitdir) env))))
+    env)
 
-  :general
-  (my/leader-keys
-    "gl" 'magit-log-buffer-file
-    "gc" '(my/git-clone-clipboard-url :wk "clone-clipboard")))
+  (advice-add 'magit-process-environment
+              :filter-return #'~/magit-process-environment)
+
+  (defun my/magit-dotfiles-status ()
+    "Show magit status in home directory containing dotfiles"
+    (interactive)
+    (magit-status "~/")))
 
 (use-package undo-fu
   :config
