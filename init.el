@@ -130,7 +130,7 @@ Ignores `ARGS'."
 ;;; https://github.com/jamesnvc/dotfiles/blob/master/emacs.d/modules/cogent-modeline.el
 ;;; https://www.reddit.com/r/emacs/comments/1nihkt/how_to_display_full_charset_name_in_modeline_eg/
 ;;; https://emacs-china.org/t/topic/655
-;;; https://emacs.stackexchange.com/questions/13652/how-to-customize-mode-line-format 
+;;; https://emacs.stackexchange.com/questions/13652/how-to-customize-mode-line-format
 
 (use-package nyan-mode
   :init
@@ -379,7 +379,7 @@ corresponding to the mode line clicked."
      simple-modeline-segment-buffer-name
      simple-modeline-segment-nyan
      simple-modeline-segment-position)
-    (simple-modeline-rime-indicator 
+    (simple-modeline-rime-indicator
      simple-modeline-segment-minor-modes
      simple-modeline-segment-misc-info
      simple-modeline-segment-process
@@ -417,19 +417,37 @@ corresponding to the mode line clicked."
 (add-hook 'vterm-mode-hook 'my/disable-line-numbers)
 
 ;;; Whitespace-mode settings
-(global-whitespace-mode)
-(diminish whitespace-mode)
-(setq whitespace-style
-      '(face
-        ;; show tab as » (see `whitespace-display-mappings')
-        tab-mark))
+
+;;; Add a keybinding to show whitespace
+;;; https://www.reddit.com/r/emacs/comments/33vah8/whitespace_mode/
+(defun better-whitespace ()
+  (interactive)
+  (whitespace-mode -1)
+  (let ((ws-small '(face lines-tail))
+        (ws-big '(face tabs spaces trailing lines-tail space-before-tab
+                       newline indentation empty space-after-tab space-mark
+                       tab-mark newline-mark)))
+    (if (eq whitespace-style ws-small)
+        (setq whitespace-style ws-big)
+      (setq whitespace-style ws-small)))
+  (whitespace-mode 1))
+(define-key prog-mode-map (kbd "C-c w") 'better-whitespace)
+
+;;; Show tabs
+(defun my/show-tabs ()
+  (setq whitespace-style
+        '(face
+          ;; show tab as » (see `whitespace-display-mappings')
+          tab-mark))
+  (whitespace-mode 1))
 
 ;;; Show trailing whitespace
 (defun my/show-trailing-whitespace ()
   (set-face-attribute 'trailing-whitespace nil
-                      :background (face-attribute 'font-lock-comment-face :foreground))
+                      :background "green")
   (setq show-trailing-whitespace 1))
 (add-hook 'prog-mode-hook 'my/show-trailing-whitespace)
+(add-hook 'prog-mode-hook 'my/show-tabs)
 
 ;; Remember cursor position
 (save-place-mode 1)
@@ -1143,7 +1161,7 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
 
   ;; To decrypt the text just call M-x org-decrypt-entry and the encrypted text where the point is will be replaced with the plain text. If you use this feature a lot, you will probably want to bind M-x org-decrypt-entry to a key.
 
-  ;; Entries with a :crypt: tag will be automatically be encrypted when you save the file. 
+  ;; Entries with a :crypt: tag will be automatically be encrypted when you save the file.
   (require 'org-crypt)
   (org-crypt-use-before-save-magic)
   (setq org-tags-exclude-from-inheritance (quote ("crypt")))
