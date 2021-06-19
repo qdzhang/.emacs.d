@@ -57,8 +57,8 @@ created."
                          ("melpa" . "https://mirrors.bfsu.edu.cn/elpa/melpa/")
                          ("org" . "https://mirrors.bfsu.edu.cn/elpa/org/"))
       package-archive-priorities '(("org" . 10)
-				   ("gnu" . 5)
-				   ("melpa" . 0)))
+                                   ("gnu" . 5)
+                                   ("melpa" . 0)))
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
@@ -222,16 +222,16 @@ corresponding to the mode line clicked."
   (let ((map (make-sparse-keymap)))
     (define-key map [mode-line mouse-1]
       (lambda (e)
-	(interactive "e")
-	(with-selected-window (posn-window (event-start e))
-	  (when (and enable-multibyte-characters
-		     buffer-file-coding-system)
-	    (describe-coding-system buffer-file-coding-system)))))
+        (interactive "e")
+        (with-selected-window (posn-window (event-start e))
+          (when (and enable-multibyte-characters
+                     buffer-file-coding-system)
+            (describe-coding-system buffer-file-coding-system)))))
     (define-key map [mode-line mouse-3]
       (lambda (e)
-	(interactive "e")
-	(with-selected-window (posn-window (event-start e))
-	  (call-interactively #'set-buffer-file-coding-system))))
+        (interactive "e")
+        (with-selected-window (posn-window (event-start e))
+          (call-interactively #'set-buffer-file-coding-system))))
     (purecopy map))
   "Local keymap for the coding-system part of the simple-modeline.")
 
@@ -242,7 +242,7 @@ corresponding to the mode line clicked."
       "%z"
       'help-echo
       (lambda (window)
-	(with-current-buffer (window-buffer window)
+        (with-current-buffer (window-buffer window)
           (if buffer-file-coding-system
               (format "Buffer coding system (%s): %s\nmouse-1: Describe coding system\nmouse-3: Set coding system"
                       (if enable-multibyte-characters "multi-byte" "unibyte")
@@ -256,20 +256,20 @@ corresponding to the mode line clicked."
   `((line-number-mode
      ((column-number-mode
        (column-number-indicator-zero-based
-	(8 " %l:%c")
-	(8 " %l:%C"))
+        (8 " %l:%c")
+        (8 " %l:%C"))
        (5 " L%l")))
      ((column-number-mode
        (column-number-indicator-zero-based
-	(5 " C%c")
-	(5 " C%C")))))
+        (5 " C%c")
+        (5 " C%C")))))
     ,(if (region-active-p)
          (propertize (format "+%s"
                              (apply #'+ (mapcar
-					 (lambda (pos)
+                                         (lambda (pos)
                                            (- (cdr pos)
                                               (car pos)))
-					 (region-bounds))))
+                                         (region-bounds))))
                      'font-lock-face 'font-lock-variable-name-face))))
 
 (defun simple-modeline-segment-eol ()
@@ -295,7 +295,7 @@ corresponding to the mode line clicked."
                     (interactive "e")
                     (with-selected-window (posn-window (event-start event))
                       (let ((eol (coding-system-eol-type buffer-file-coding-system)))
-			(set-buffer-file-coding-system
+                        (set-buffer-file-coding-system
                          (cond ((eq eol 0) 'dos) ((eq eol 1) 'mac) (t 'unix))))))))
      'mouse-face 'mode-line-highlight)))
 
@@ -344,8 +344,8 @@ corresponding to the mode line clicked."
 (defun simple-modeline-segment-nyan ()
   "Display nyan cat in the mode-line"
   (list " "
-	(nyan-create)
-	" "))
+        (nyan-create)
+        " "))
 
 (defun simple-modeline-segment-vc ()
   "Displays color-coded version control information in the mode-line."
@@ -392,14 +392,14 @@ corresponding to the mode line clicked."
                (repeat :tag "Right aligned" function)))
 
 (setq-default mode-line-format
-	      (list
-	       mode-line-front-space
-	       '(:eval evil-mode-line-tag)
-	       '(:eval
-		 (simple-modeline--format
-		  (car simple-modeline-segments)
-		  (cadr simple-modeline-segments)))
-	       mode-line-end-spaces))
+              (list
+               mode-line-front-space
+               '(:eval evil-mode-line-tag)
+               '(:eval
+                 (simple-modeline--format
+                  (car simple-modeline-segments)
+                  (cadr simple-modeline-segments)))
+               mode-line-end-spaces))
 
 
 ;; Line number
@@ -482,17 +482,18 @@ corresponding to the mode line clicked."
 
 ;;; Tabs and spaces settings
 (defun infer-indentation-style ()
-  ;; if our source file uses tabs, we use tabs, if spaces spaces, and if        
-  ;; neither, we use the current indent-tabs-mode                               
+  ;; if our source file uses tabs, we use tabs, if spaces spaces, and if
+  ;; neither, we use the current indent-tabs-mode
   (let ((space-count (how-many "^  " (point-min) (point-max)))
         (tab-count (how-many "^\t" (point-min) (point-max))))
     (if (> space-count tab-count) (setq indent-tabs-mode nil))
     (if (> tab-count space-count) (setq indent-tabs-mode t))))
 
-(defun my/c-mode-hook ()
+(defun infer-indent-hook ()
   (setq indent-tabs-mode nil)
   (infer-indentation-style))
-(add-hook 'c-mode-hook 'my/c-mode-hook)
+(add-hook 'c-mode-hook 'infer-indent-hook)
+(add-hook 'emacs-lisp-mode-hook 'infer-indent-hook)
 
 ;;; General indent settings
 ;;;========================
@@ -546,15 +547,15 @@ corresponding to the mode line clicked."
 
 (defun my/exit-term-kill-buffer ()
   (let* ((buff (current-buffer))
-	 (proc (get-buffer-process buff)))
+         (proc (get-buffer-process buff)))
     (set-process-sentinel
      proc
      `(lambda (process event)
-	(if (and (string= event "finished\n")
-		 (one-window-p))
-	    (kill-buffer ,buff)
-	  (progn (kill-buffer ,buff)
-		 (delete-window)))))))
+        (if (and (string= event "finished\n")
+                 (one-window-p))
+            (kill-buffer ,buff)
+          (progn (kill-buffer ,buff)
+                 (delete-window)))))))
 
 (add-hook 'term-exec-hook 'my/exit-term-kill-buffer)
 
@@ -786,16 +787,16 @@ corresponding to the mode line clicked."
     "Renames both current buffer and file it's visiting to NEW-NAME."
     (interactive "sNew name: ")
     (let ((name (buffer-name))
-	  (filename (buffer-file-name)))
+          (filename (buffer-file-name)))
       (if (not filename)
-	  (message "Buffer '%s' is not visiting a file!" name)
-	(if (get-buffer new-name)
-	    (message "A buffer named '%s' already exists!" new-name)
-	  (progn
-	    (rename-file name new-name 1)
-	    (rename-buffer new-name)
-	    (set-visited-file-name new-name)
-	    (set-buffer-modified-p nil))))))
+          (message "Buffer '%s' is not visiting a file!" name)
+        (if (get-buffer new-name)
+            (message "A buffer named '%s' already exists!" new-name)
+          (progn
+            (rename-file name new-name 1)
+            (rename-buffer new-name)
+            (set-visited-file-name new-name)
+            (set-buffer-modified-p nil))))))
 
   (defun my/semicolon-at-end-of-line ()
     (interactive)
@@ -809,13 +810,13 @@ corresponding to the mode line clicked."
     "Toggle between horizontal and vertical split with two windows."
     (interactive)
     (if (> (length (window-list)) 2)
-	(error "Can't toggle with more than 2 windows!")
+        (error "Can't toggle with more than 2 windows!")
       (let ((func (if (window-full-height-p)
                       #'split-window-vertically
                     #'split-window-horizontally)))
-	(delete-other-windows)
-	(funcall func)
-	(save-selected-window
+        (delete-other-windows)
+        (funcall func)
+        (save-selected-window
           (other-window 1)
           (switch-to-buffer (other-buffer)))))))
 
@@ -833,12 +834,12 @@ corresponding to the mode line clicked."
 
   ;; https://www.reddit.com/r/emacs/comments/70rjc9/which_modeline_package_integrates_well_with_evil/
   ;; (setq evil-normal-state-tag   (propertize " NORMAL " 'face '((:foreground "dark khaki")))
-  ;; 	evil-emacs-state-tag    (propertize " EMACS " 'face '((:foreground "turquoise")))
-  ;; 	evil-insert-state-tag   (propertize " INSERT " 'face '((:foreground "dark sea green")))
-  ;; 	evil-replace-state-tag  (propertize " REPLACE " 'face '((:foreground "dark orange")))
-  ;; 	evil-motion-state-tag   (propertize " MOTION " 'face '((:foreground "khaki")))
-  ;; 	evil-visual-state-tag   (propertize " VISUAL " 'face '((:foreground "light salmon")))
-  ;; 	evil-operator-state-tag (propertize " OPERATE " 'face '((:foreground "sandy brown"))))
+  ;;    evil-emacs-state-tag    (propertize " EMACS " 'face '((:foreground "turquoise")))
+  ;;    evil-insert-state-tag   (propertize " INSERT " 'face '((:foreground "dark sea green")))
+  ;;    evil-replace-state-tag  (propertize " REPLACE " 'face '((:foreground "dark orange")))
+  ;;    evil-motion-state-tag   (propertize " MOTION " 'face '((:foreground "khaki")))
+  ;;    evil-visual-state-tag   (propertize " VISUAL " 'face '((:foreground "light salmon")))
+  ;;    evil-operator-state-tag (propertize " OPERATE " 'face '((:foreground "sandy brown"))))
   (evil-mode 1))
 
 (use-package evil-collection
@@ -881,7 +882,7 @@ corresponding to the mode line clicked."
   :bind(("C-x C-f" . counsel-find-file))
   :config
   (setq counsel-grep-base-command
-	"rg -i -M 120 --no-heading --line-number --color never '%s' %s"))
+        "rg -i -M 120 --no-heading --line-number --color never '%s' %s"))
 
 (use-package swiper
   :general
@@ -897,7 +898,7 @@ corresponding to the mode line clicked."
                      (list (region-beginning) (region-end))
                    (list nil nil)))
     (if (and beg end)
-	(progn
+        (progn
           (deactivate-mark)
           (swiper (buffer-substring-no-properties beg end)))
       (swiper-thing-at-point))))
@@ -1015,29 +1016,29 @@ corresponding to the mode line clicked."
     (let* ((url (current-kill 0))
            (download-dir (expand-file-name default-directory))
            (project-dir (concat (file-name-as-directory download-dir)
-				(file-name-base url)))
+                                (file-name-base url)))
            (default-directory download-dir)
            (command (format "git clone %s" url))
            (buffer (generate-new-buffer (format "*%s*" command)))
            (proc))
       (when (file-exists-p project-dir)
-	(if (y-or-n-p (format "%s exists. delete?" (file-name-base url)))
+        (if (y-or-n-p (format "%s exists. delete?" (file-name-base url)))
             (delete-directory project-dir t)
           (user-error "Bailed")))
       (switch-to-buffer buffer)
       (setq proc (start-process-shell-command (nth 0 (split-string command)) buffer command))
       (with-current-buffer buffer
-	(setq default-directory download-dir)
-	(shell-command-save-pos-or-erase)
-	(require 'shell)
-	(shell-mode)
-	(view-mode +1))
+        (setq default-directory download-dir)
+        (shell-command-save-pos-or-erase)
+        (require 'shell)
+        (shell-mode)
+        (view-mode +1))
       (set-process-sentinel proc (lambda (process state)
                                    (let ((output (with-current-buffer (process-buffer process)
                                                    (buffer-string))))
                                      (kill-buffer (process-buffer process))
                                      (if (= (process-exit-status process) 0)
-					 (progn
+                                         (progn
                                            (message "finished: %s" command)
                                            (dired project-dir))
                                        (user-error (format "%s\n%s" command output))))))
@@ -1051,7 +1052,7 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
     (let ((default (file-name-as-directory (expand-file-name default-directory)))
           (home (expand-file-name "~/")))
       (when (string= default home)
-	(let ((gitdir (expand-file-name "~/.dotfiles/")))
+        (let ((gitdir (expand-file-name "~/.dotfiles/")))
           (push (format "GIT_WORK_TREE=%s" home) env)
           (push (format "GIT_DIR=%s" gitdir) env))))
     env)
@@ -1093,9 +1094,9 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
   :hook
   (prog-mode . smartparens-strict-mode)
   :bind (:map smartparens-strict-mode-map
-	      ("M-<up>" . sp-splice-sexp-killing-backward)
-	      ("M-<down>" . sp-splice-sexp-killing-forward)
-	      ("M-<delete>". sp-unwrap-sexp)))
+              ("M-<up>" . sp-splice-sexp-killing-backward)
+              ("M-<down>" . sp-splice-sexp-killing-forward)
+              ("M-<delete>". sp-unwrap-sexp)))
 
 (use-package evil-cleverparens
   :diminish
@@ -1128,12 +1129,12 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
     "nt" 'org-todo)
   :config
   (setq org-default-notes-file '("~/org/notes.org")
-	org-agenda-files '("~/org/agenda.org")
-	org-todo-keywords '((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELED(c)"))
-	org-ellipsis "  "
-	org-startup-indented t
-	org-log-into-drawer "LOGBOOK"
-	org-archive-location "~/org/archive.org::datetree/")
+        org-agenda-files '("~/org/agenda.org")
+        org-todo-keywords '((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELED(c)"))
+        org-ellipsis "  "
+        org-startup-indented t
+        org-log-into-drawer "LOGBOOK"
+        org-archive-location "~/org/archive.org::datetree/")
 
   ;; Org crypt
   ;; Now any text below a headline that has a :crypt: tag will be automatically be encrypted when the file is saved. If you want to use a different tag just customize the org-crypt-tag-matcher setting.
@@ -1180,7 +1181,7 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
   (defun my/buffer-visible-p (buffer)
     "Check if given BUFFER is visible or not.  BUFFER is a string representing the buffer name."
     (or (eq buffer (window-buffer (selected-window)))
-	(get-buffer-window buffer)))
+        (get-buffer-window buffer)))
 
   (defun my/display-buffer-in-side-window (buffer)
     "Just like `display-buffer-in-side-window' but only takes a BUFFER and rest of the parameters are for my taste."
@@ -1205,11 +1206,11 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
     (interactive)
     (let ((fname (file-name-nondirectory file-path)))
       (if (my/buffer-visible-p fname)
-	  (my/remove-window-with-buffer fname)
-	(my/display-buffer-in-side-window
-	 (save-window-excursion
-	   (find-file file-path)
-	   (current-buffer)))))))
+          (my/remove-window-with-buffer fname)
+        (my/display-buffer-in-side-window
+         (save-window-excursion
+           (find-file file-path)
+           (current-buffer)))))))
 
 ;; (use-package org-superstar
 ;;   :after org
@@ -1318,11 +1319,11 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
     "Kill buffer and window on shell process termination."
     (when (not (process-live-p process))
       (let ((buf (process-buffer process)))
-	(when (buffer-live-p buf)
-	  (with-current-buffer buf
+        (when (buffer-live-p buf)
+          (with-current-buffer buf
             (kill-buffer)
             (unless (one-window-p)
-	      (delete-window)))))))
+              (delete-window)))))))
   :hook
   (vterm-mode . (lambda () (set-process-sentinel (get-buffer-process (buffer-name) ) #'my/vterm-exit-kill-buffer-window))))
 
@@ -1341,7 +1342,7 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
     :ensure nil)
   (setq dired-dwim-target t)
   (setq dired-guess-shell-alist-user '(("\\.pdf\\'" "llpp")
-				       ("\\.mkv\\'"  "mpv")
+                                       ("\\.mkv\\'"  "mpv")
                                        ("\\.avi\\'"  "mpv")
                                        ("\\.mp4\\'"  "mpv")
                                        ("\\.m4v\\'"  "mpv")
@@ -1350,10 +1351,10 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
                                        ("\\.mpg\\'"  "mpv")
                                        ("\\.mpeg\\'" "mpv")
                                        ("\\.webm\\'" "mpv")
-				       ("\\.jpg\\'" "qview")
-				       ("\\.png\\'" "qview")
-				       ("\\.gif\\'" "qview")
-				       ("\\.jpeg\\'" "qview"))))
+                                       ("\\.jpg\\'" "qview")
+                                       ("\\.png\\'" "qview")
+                                       ("\\.gif\\'" "qview")
+                                       ("\\.jpeg\\'" "qview"))))
 
 (use-package aggressive-indent
   :defer t
