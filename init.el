@@ -113,6 +113,80 @@ Ignores `ARGS'."
 ;; highlight current line
 ;; (global-hl-line-mode 1)
 
+
+;;; Mode-line configurations
+;;;=========================
+;;; Use (add-to-list 'mode-line-format '(:eval (format " %s" buffer-file-coding-system)))
+;;; can set mode-line-format without override it
+;;; Or use this:
+;;; (setq-default mode-line-format (substitute
+;;; 'my-mode-line-coding-format
+;;; 'mode-line-mule-info
+;;; mode-line-format))
+;;; to substitute partial contents of mode-line
+
+;;; References:
+;;; https://github.com/jamesnvc/dotfiles/blob/master/emacs.d/modules/cogent-modeline.el
+;;; https://www.reddit.com/r/emacs/comments/1nihkt/how_to_display_full_charset_name_in_modeline_eg/
+;;; https://emacs-china.org/t/topic/655
+;;; https://emacs.stackexchange.com/questions/13652/how-to-customize-mode-line-format 
+
+(use-package nyan-mode
+  :init
+  (setq nyan-animate-nyancat t)
+  (setq nyan-wavy-trail t)
+  :config
+  (setq nyan-minimum-window-width 75)
+  (setq nyan-bar-length 25))
+
+(defun modeline--mode-line-fill (face reserve)
+  "Return empty space using FACE and leaving RESERVE space on the right."
+  (unless reserve
+    (setq reserve 20))
+  (when (and window-system (eq 'right (get-scroll-bar-mode)))
+    (setq reserve (- reserve 3)))
+  (propertize " "
+              'display `((space :align-to
+                                (- (+ right right-fringe right-margin) ,reserve)))
+              'face face))
+
+
+(setq-default mode-line-format
+              (list "%e"
+		    mode-line-front-space
+		    '(:eval evil-mode-line-tag)
+		    '(:eval
+                      (cond
+                       (buffer-read-only
+			(propertize "  "
+                                    'face '(:foreground "red" :weight 'bold)
+                                    'help-echo "buffer is read-only!!!"))
+                       ((buffer-modified-p)
+			(propertize "  "
+                                    'face '(:foreground "orange")
+                                    'help-echo "buffer modified."))))
+		    mode-line-frame-identification
+		    mode-line-buffer-identification
+		    " "
+		    '(:eval (list (nyan-create)))
+		    " "
+		    '(vc-mode vc-mode)
+		    "  "
+		    mode-line-modes
+		    mode-line-misc-info
+
+		    ;; 下面的 mode-line 内容居右显示
+		    (modeline--mode-line-fill 'mode-line 15)
+
+
+		    ;; Rime 指示标志
+		    '(:eval (rime-lighter))
+
+		    ;; coding system
+		    '(:eval (format " %s" buffer-file-coding-system))
+		    mode-line-end-spaces))
+
+
 ;; Line number
 (global-linum-mode 0)
 (global-display-line-numbers-mode 1)
@@ -523,7 +597,9 @@ Ignores `ARGS'."
   (setq evil-undo-system 'undo-fu)
   :config
   ;; Move evil-mode-line-tag to beginning of modeline
-  (setq evil-mode-line-format '(before . mode-line-front-space))
+  ;; (setq evil-mode-line-format '(before . mode-line-front-space))
+
+  ;; https://www.reddit.com/r/emacs/comments/70rjc9/which_modeline_package_integrates_well_with_evil/
   ;; (setq evil-normal-state-tag   (propertize " NORMAL " 'face '((:foreground "dark khaki")))
   ;; 	evil-emacs-state-tag    (propertize " EMACS " 'face '((:foreground "turquoise")))
   ;; 	evil-insert-state-tag   (propertize " INSERT " 'face '((:foreground "dark sea green")))
@@ -773,7 +849,6 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
           rime-predicate-after-alphabet-char-p
           rime-predicate-space-after-cc-p
           rime-predicate-prog-in-code-p))
-  (setq mode-line-mule-info '((:eval (rime-lighter))))
   :custom
   (default-input-method "rime"))
 
