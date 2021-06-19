@@ -147,8 +147,7 @@ Ignores `ARGS'."
     (setq reserve (- reserve 3)))
   (propertize " "
               'display `((space :align-to
-                                (- (+ right right-fringe right-margin) ,reserve)))
-              'face face))
+                                (- (+ right right-fringe right-margin) ,reserve)))))
 
 
 (setq-default mode-line-format
@@ -158,13 +157,16 @@ Ignores `ARGS'."
 		    '(:eval
                       (cond
                        (buffer-read-only
-			(propertize "  "
-                                    'face '(:foreground "red" :weight 'bold)
+			(propertize ""
+                                    'face '(:foreground "orange" :weight 'bold)
                                     'help-echo "buffer is read-only!!!"))
                        ((buffer-modified-p)
-			(propertize "  "
-                                    'face '(:foreground "orange")
-                                    'help-echo "buffer modified."))))
+			(propertize "⬤"
+                                    'face '(:foreground "#f36e71" :weight 'bold)
+                                    'help-echo "buffer modified."))
+		       (t
+			(propertize "⬤"
+                                    'face '(:foreground "#99bd6a")))))
 		    mode-line-frame-identification
 		    mode-line-buffer-identification
 		    " "
@@ -183,7 +185,8 @@ Ignores `ARGS'."
 		    '(:eval (rime-lighter))
 
 		    ;; coding system
-		    '(:eval (format " %s" buffer-file-coding-system))
+		    '(:eval (propertize (format " %s" buffer-file-coding-system)
+					'face '(:foreground "#7ea2bb")))
 		    mode-line-end-spaces))
 
 
@@ -597,6 +600,8 @@ Ignores `ARGS'."
   (setq evil-undo-system 'undo-fu)
   :config
   ;; Move evil-mode-line-tag to beginning of modeline
+  ;; If mode-line-format is not configured explicitly, following line can move
+  ;; evil-mode-line-tag to beginning of mode-line
   ;; (setq evil-mode-line-format '(before . mode-line-front-space))
 
   ;; https://www.reddit.com/r/emacs/comments/70rjc9/which_modeline_package_integrates_well_with_evil/
