@@ -126,6 +126,7 @@ Ignores `ARGS'."
 ;;; to substitute partial contents of mode-line
 
 ;;; References:
+;;; https://github.com/gexplorer/simple-modeline
 ;;; https://github.com/jamesnvc/dotfiles/blob/master/emacs.d/modules/cogent-modeline.el
 ;;; https://www.reddit.com/r/emacs/comments/1nihkt/how_to_display_full_charset_name_in_modeline_eg/
 ;;; https://emacs-china.org/t/topic/655
@@ -150,44 +151,255 @@ Ignores `ARGS'."
                                 (- (+ right right-fringe right-margin) ,reserve)))))
 
 
+
+;;; Following configurations adapted from simple-modeline
+;;; https://github.com/gexplorer/simple-modeline
+
+;;; Faces definitions
+(defface simple-modeline-space
+  '((t))
+  "Face for space used to alight the right segments in the mode-line.")
+
+(defface simple-modeline-main-mode
+  '((t :inherit (bold)
+       :foreground "#7ea2bb"))
+  "Face for main mode in the mode-line")
+
+(defface simple-modeline-unimportant
+  '((t (:inherit (shadow))))
+  "Face for less important mode-line elements.")
+
+(defface simple-modeline-status-modified
+  '((t (:inherit (font-lock-variable-name-face))))
+  "Face for the 'modified' indicator symbol in the mode-line.")
+
+(defface simple-modeline-status-info
+  '((t (:inherit (font-lock-string-face))))
+  "Face for generic status indicators in the mode-line.")
+
+(defface simple-modeline-status-success
+  '((t (:inherit (success))))
+  "Face used for success status indicators in the mode-line.")
+
+(defface simple-modeline-status-warning
+  '((t (:inherit (warning))))
+  "Face for warning status indicators in the mode-line.")
+
+(defface simple-modeline-status-error
+  '((t (:inherit (error))))
+  "Face for error status indicators in the mode-line.")
+
+;;; Some helper functions to format mode-line
+(defun simple-modeline--format (left-segments right-segments)
+  "Return a string of `window-width' length containing LEFT-SEGMENTS and RIGHT-SEGMENTS, aligned respectively."
+  (let* ((left (simple-modeline--format-segments left-segments))
+         (right (simple-modeline--format-segments right-segments))
+         (reserve (length right)))
+    (concat
+     left
+     (propertize " "
+                 'display `((space :align-to (- right ,reserve)))
+                 'face '(:inherit simple-modeline-space))
+     right)))
+
+(defun simple-modeline--format-segments (segments)
+  "Return a string from a list of SEGMENTS."
+  (format-mode-line (mapcar
+                     (lambda (segment)
+                       `(:eval (,segment)))
+                     segments)))
+
+(defun simple-modeline-make-mouse-map (mouse function)
+  "Return a keymap with single entry for mouse key MOUSE on the mode line.
+MOUSE is defined to run function FUNCTION with no args in the buffer
+corresponding to the mode line clicked."
+  (let ((map (make-sparse-keymap)))
+    (define-key map (vector 'mode-line mouse) function)
+    map))
+
+;;; Mode-line segments configurations
+(defvar simple-modeline-segment-encoding-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mode-line mouse-1]
+      (lambda (e)
+	(interactive "e")
+	(with-selected-window (posn-window (event-start e))
+	  (when (and enable-multibyte-characters
+		     buffer-file-coding-system)
+	    (describe-coding-system buffer-file-coding-system)))))
+    (define-key map [mode-line mouse-3]
+      (lambda (e)
+	(interactive "e")
+	(with-selected-window (posn-window (event-start e))
+	  (call-interactively #'set-buffer-file-coding-system))))
+    (purecopy map))
+  "Local keymap for the coding-system part of the simple-modeline.")
+
+(defun simple-modeline-segment-encoding ()
+  "Displays the encoding style of the buffer in the mode-line."
+  `(" "
+    ,(propertize
+      "%z"
+      'help-echo
+      (lambda (window)
+	(with-current-buffer (window-buffer window)
+          (if buffer-file-coding-system
+              (format "Buffer coding system (%s): %s\nmouse-1: Describe coding system\nmouse-3: Set coding system"
+                      (if enable-multibyte-characters "multi-byte" "unibyte")
+                      (symbol-name buffer-file-coding-system))
+            "Buffer coding system: none specified")))
+      'mouse-face 'mode-line-highlight
+      'local-map simple-modeline-segment-encoding-map)))
+
+(defun simple-modeline-segment-position ()
+  "Displays the current cursor position in the mode-line."
+  `((line-number-mode
+     ((column-number-mode
+       (column-number-indicator-zero-based
+	(8 " %l:%c")
+	(8 " %l:%C"))
+       (5 " L%l")))
+     ((column-number-mode
+       (column-number-indicator-zero-based
+	(5 " C%c")
+	(5 " C%C")))))
+    ,(if (region-active-p)
+         (propertize (format "+%s"
+                             (apply #'+ (mapcar
+					 (lambda (pos)
+                                           (- (cdr pos)
+                                              (car pos)))
+					 (region-bounds))))
+                     'font-lock-face 'font-lock-variable-name-face))))
+
+(defun simple-modeline-segment-eol ()
+  "Displays the EOL style of the current buffer in the mode-line."
+  (let* ((eol (coding-system-eol-type buffer-file-coding-system))
+         (mnemonic (pcase eol
+                     ('0 " LF")
+                     ('1 " CRLF")
+                     ('2 " CR")
+                     (_ "")))
+         (desc (pcase eol
+                 ('0 "Unix-style")
+                 ('1 "DOS-style")
+                 ('2 "Mac-style")
+                 (_ "Undecided"))))
+    (propertize
+     mnemonic
+     'help-echo (format "End-of-line style: %s\nmouse-1: Cycle" desc)
+     'local-map (purecopy
+                 (simple-modeline-make-mouse-map
+                  'mouse-1
+                  (lambda (event)
+                    (interactive "e")
+                    (with-selected-window (posn-window (event-start event))
+                      (let ((eol (coding-system-eol-type buffer-file-coding-system)))
+			(set-buffer-file-coding-system
+                         (cond ((eq eol 0) 'dos) ((eq eol 1) 'mac) (t 'unix))))))))
+     'mouse-face 'mode-line-highlight)))
+
+(defun simple-modeline-segment-misc-info ()
+  "Displays the current value of `mode-line-misc-info' in the mode-line."
+  (let ((misc-info (string-trim (format-mode-line mode-line-misc-info 'simple-modeline-unimportant))))
+    (unless (string= misc-info "")
+      (concat " " misc-info))))
+
+(defun simple-modeline-segment-minor-modes ()
+  "Displays the current minor modes in the mode-line."
+  (replace-regexp-in-string
+   "%" "%%%%"
+   (format-mode-line minor-mode-alist)
+   t t))
+
+(defun simple-modeline-segment-process ()
+  "Displays the current value of `mode-line-process' in the mode-line."
+  (when mode-line-process
+    (concat " " (string-trim (format-mode-line mode-line-process)))))
+
+(defun simple-modeline-segment-major-mode ()
+  "Displays the current major mode in the mode-line."
+  (propertize
+   (concat " "
+           (or (and (boundp 'delighted-modes)
+                    (cadr (assq major-mode delighted-modes)))
+               (format-mode-line mode-name)))
+   'face 'simple-modeline-main-mode))
+
+(defun simple-modeline-segment-modified ()
+  "Display different icons according to the buffer status"
+  (cond
+   (buffer-read-only
+    (propertize ""
+                'face '(:foreground "orange")
+                'help-echo "buffer is read-only!!!"))
+   ((buffer-modified-p)
+    (propertize "⬤"
+                'face '(:foreground "#f36e71")
+                'help-echo "buffer modified."))
+   (t
+    (propertize "⬤"
+                'face '(:foreground "#99bd6a")))))
+
+(defun simple-modeline-segment-nyan ()
+  "Display nyan cat in the mode-line"
+  (list " "
+	(nyan-create)
+	" "))
+
+(defun simple-modeline-segment-vc ()
+  "Displays color-coded version control information in the mode-line."
+  '(vc-mode vc-mode))
+
+;;; Add advice to show icon before vc-mode
+;;; https://emacs.stackexchange.com/questions/10955/customize-vc-mode-appearance-in-mode-line
+(advice-add #'vc-git-mode-line-string :filter-return #'my-replace-git-status)
+(defun my-replace-git-status (tstr)
+  (let* ((tstr (replace-regexp-in-string "Git" "" tstr))
+         (first-char (substring tstr 0 1))
+         (rest-chars (substring tstr 1)))
+    (cond
+     ((string= ":" first-char) ;;; Modified
+      (replace-regexp-in-string "^:" "⎇ " tstr))
+     ((string= "-" first-char) ;; No change
+      (replace-regexp-in-string "^-" "✔ " tstr))
+     (t tstr))))
+
+(defun simple-modeline-segment-buffer-name ()
+  "Displays the name of the current buffer in the mode-line."
+  (propertize " %b " 'face 'mode-line-buffer-id))
+
+(defun simple-modeline-rime-indicator ()
+  "Display rime indicator in the mode-line"
+  (rime-lighter))
+
+(defcustom simple-modeline-segments
+  '((simple-modeline-segment-modified
+     simple-modeline-segment-vc
+     simple-modeline-segment-buffer-name
+     simple-modeline-segment-nyan
+     simple-modeline-segment-position)
+    (simple-modeline-rime-indicator 
+     simple-modeline-segment-minor-modes
+     simple-modeline-segment-misc-info
+     simple-modeline-segment-process
+     simple-modeline-segment-major-mode
+     simple-modeline-segment-eol
+     simple-modeline-segment-encoding
+     ))
+  "Simple modeline segments."
+  :type '(list (repeat :tag "Left aligned" function)
+               (repeat :tag "Right aligned" function)))
+
 (setq-default mode-line-format
-              (list "%e"
-		    mode-line-front-space
-		    '(:eval evil-mode-line-tag)
-		    '(:eval
-                      (cond
-                       (buffer-read-only
-			(propertize ""
-                                    'face '(:foreground "orange" :weight 'bold)
-                                    'help-echo "buffer is read-only!!!"))
-                       ((buffer-modified-p)
-			(propertize "⬤"
-                                    'face '(:foreground "#f36e71" :weight 'bold)
-                                    'help-echo "buffer modified."))
-		       (t
-			(propertize "⬤"
-                                    'face '(:foreground "#99bd6a")))))
-		    mode-line-frame-identification
-		    mode-line-buffer-identification
-		    " "
-		    '(:eval (list (nyan-create)))
-		    " "
-		    '(vc-mode vc-mode)
-		    "  "
-		    mode-line-modes
-		    mode-line-misc-info
-
-		    ;; 下面的 mode-line 内容居右显示
-		    (modeline--mode-line-fill 'mode-line 15)
-
-
-		    ;; Rime 指示标志
-		    '(:eval (rime-lighter))
-
-		    ;; coding system
-		    '(:eval (propertize (format " %s" buffer-file-coding-system)
-					'face '(:foreground "#7ea2bb")))
-		    mode-line-end-spaces))
+	      (list
+	       mode-line-front-space
+	       '(:eval evil-mode-line-tag)
+	       '(:eval
+		 (simple-modeline--format
+		  (car simple-modeline-segments)
+		  (cadr simple-modeline-segments)))
+	       mode-line-end-spaces))
 
 
 ;; Line number
