@@ -416,6 +416,21 @@ corresponding to the mode line clicked."
 (add-hook 'term-mode-hook 'my/disable-line-numbers)
 (add-hook 'vterm-mode-hook 'my/disable-line-numbers)
 
+;;; Whitespace-mode settings
+(global-whitespace-mode)
+(diminish whitespace-mode)
+(setq whitespace-style
+      '(face
+        ;; show tab as » (see `whitespace-display-mappings')
+        tab-mark))
+
+;;; Show trailing whitespace
+(defun my/show-trailing-whitespace ()
+  (set-face-attribute 'trailing-whitespace nil
+                      :background (face-attribute 'font-lock-comment-face :foreground))
+  (setq show-trailing-whitespace 1))
+(add-hook 'prog-mode-hook 'my/show-trailing-whitespace)
+
 ;; Remember cursor position
 (save-place-mode 1)
 
