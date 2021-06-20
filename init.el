@@ -140,6 +140,9 @@ Ignores `ARGS'."
   (setq nyan-minimum-window-width 75)
   (setq nyan-bar-length 25))
 
+(use-package minions
+  :config (minions-mode 1))
+
 (defun modeline--mode-line-fill (face reserve)
   "Return empty space using FACE and leaving RESERVE space on the right."
   (unless reserve
@@ -312,6 +315,20 @@ corresponding to the mode line clicked."
    (format-mode-line minor-mode-alist)
    t t))
 
+(defun simple-modeline-segment-minions-mode ()
+  "Display minions mode to diminish other minor modes in the mode-line
+Adapted from https://github.com/seagle0128/doom-modeline/commit/5cf1857add945f72450c8fabf5dcb994f21a3f27.
+Thanks for doom-modeline!"
+  (concat
+   " "
+   (propertize minions-mode-line-lighter
+               'help-echo "Minions
+mouse-1: Display minor modes menu"
+               'mouse-face 'mode-line-highlight
+               'local-map (make-mode-line-mouse-map
+                           'mouse-1 #'minions-minor-modes-menu))
+   " "))
+
 (defun simple-modeline-segment-process ()
   "Displays the current value of `mode-line-process' in the mode-line."
   (when mode-line-process
@@ -380,12 +397,12 @@ corresponding to the mode line clicked."
      simple-modeline-segment-nyan
      simple-modeline-segment-position)
     (simple-modeline-rime-indicator
-     simple-modeline-segment-minor-modes
+     simple-modeline-segment-eol
+     simple-modeline-segment-encoding
+     simple-modeline-segment-minions-mode
      simple-modeline-segment-misc-info
      simple-modeline-segment-process
      simple-modeline-segment-major-mode
-     simple-modeline-segment-eol
-     simple-modeline-segment-encoding
      ))
   "Simple modeline segments."
   :type '(list (repeat :tag "Left aligned" function)
