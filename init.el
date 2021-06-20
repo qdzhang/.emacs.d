@@ -1324,7 +1324,7 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
     (mapc (apply-partially 'add-to-list 'prettify-symbols-alist)
           (cl-reduce 'append
                      (mapcar (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
-                             `(("#+begin_src" . ?𝛌) ; ➤ 🖝 ➟ ➤ ✎
+                             `(("#+begin_src" . ?𝛌) ; ➤ ➟ ➤ ✎
                                ("#+end_src"   . ?□) ; ⏹
                                ("#+header:" . ,my/ob-header-symbol)
                                ("#+begin_quote" . ?❝) ; » «
@@ -1332,6 +1332,18 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
     (turn-on-prettify-symbols-mode)
     (add-hook 'post-command-hook 'my/org-prettify-src t t))
   (add-hook 'org-mode-hook #'my/org-prettify-symbols))
+
+(use-package org-journal
+  :defer t
+  :general
+  (my/leader-keys
+    "nj" #'org-journal-new-entry)
+  :config
+  (setq org-journal-dir "~/org/journal/"
+        org-journal-date-prefix "#+TITLE: "
+        org-journal-time-prefix "* "
+        org-journal-date-format "%A, %Y-%m-%d"
+        org-journal-file-format "%Y-%m-%d.org"))
 
 
 ;; (use-package org-superstar
