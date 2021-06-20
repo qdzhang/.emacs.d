@@ -1148,7 +1148,9 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
   :defer t
   :ensure org-plus-contrib
   :pin org
-  :hook (org-mode . visual-line-mode)
+  :hook
+  (org-mode . visual-line-mode)
+  (org-mode . (lambda () (setq evil-auto-indent nil)))
   :general
   (my/leader-keys
     "n" '(:ignore t :which-key "notes")
@@ -1169,7 +1171,16 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
         org-ellipsis "  "
         org-startup-indented t
         org-log-into-drawer "LOGBOOK"
-        org-archive-location "~/org/archive.org::datetree/")
+        org-archive-location "~/org/archive.org::datetree/"
+        org-src-fontify-natively t
+
+        ;; edit in current window
+        org-src-window-setup 'current-window
+
+        ;; do not put two spaces on the left
+        org-src-preserve-indentation nil
+        org-src-tab-acts-natively t
+        org-edit-src-content-indentation 0)
 
   ;; Org crypt
   ;; Now any text below a headline that has a :crypt: tag will be automatically be encrypted when the file is saved. If you want to use a different tag just customize the org-crypt-tag-matcher setting.
@@ -1246,6 +1257,82 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
          (save-window-excursion
            (find-file file-path)
            (current-buffer)))))))
+
+;;; Change org-mode src blocks display style, make them more simple and elegant
+;;; https://emacs-china.org/t/org-source-code/9762/5
+(with-eval-after-load 'org
+  (defvar-local my/org-at-src-begin -1
+    "Variable that holds whether last position was a ")
+
+  (defvar my/ob-header-symbol ?☰
+    "Symbol used for babel headers")
+
+  (defun my/org-prettify-src--update ()
+    (let ((case-fold-search t)
+          (re "^[ \t]*#\\+begin_src[ \t]+[^ \f\t\n\r\v]+[ \t]*")
+          found)
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward re nil t)
+          (goto-char (match-end 0))
+          (let ((args (org-trim
+                       (buffer-substring-no-properties (point)
+                                                       (line-end-position)))))
+            (when (org-string-nw-p args)
+              (let ((new-cell (cons args my/ob-header-symbol)))
+                (cl-pushnew new-cell prettify-symbols-alist :test #'equal)
+                (cl-pushnew new-cell found :test #'equal)))))
+        (setq prettify-symbols-alist
+              (cl-set-difference prettify-symbols-alist
+                                 (cl-set-difference
+                                  (cl-remove-if-not
+                                   (lambda (elm)
+                                     (eq (cdr elm) my/ob-header-symbol))
+                                   prettify-symbols-alist)
+                                  found :test #'equal)))
+        ;; Clean up old font-lock-keywords.
+        (font-lock-remove-keywords nil prettify-symbols--keywords)
+        (setq prettify-symbols--keywords (prettify-symbols--make-keywords))
+        (font-lock-add-keywords nil prettify-symbols--keywords)
+        (while (re-search-forward re nil t)
+          (font-lock-flush (line-beginning-position) (line-end-position))))))
+
+  (defun my/org-prettify-src ()
+    "Hide src options via `prettify-symbols-mode'.
+
+  `prettify-symbols-mode' is used because it has uncollpasing. It's
+  may not be efficient."
+    (let* ((case-fold-search t)
+           (at-src-block (save-excursion
+                           (beginning-of-line)
+                           (looking-at "^[ \t]*#\\+begin_src[ \t]+[^ \f\t\n\r\v]+[ \t]*"))))
+      ;; Test if we moved out of a block.
+      (when (or (and my/org-at-src-begin
+                     (not at-src-block))
+                ;; File was just opened.
+                (eq my/org-at-src-begin -1))
+        (my/org-prettify-src--update))
+      ;; Remove composition if at line; doesn't work properly.
+      ;; (when at-src-block
+      ;;   (with-silent-modifications
+      ;;     (remove-text-properties (match-end 0)
+      ;;                             (1+ (line-end-position))
+      ;;                             '(composition))))
+      (setq my/org-at-src-begin at-src-block)))
+
+  (defun my/org-prettify-symbols ()
+    (mapc (apply-partially 'add-to-list 'prettify-symbols-alist)
+          (cl-reduce 'append
+                     (mapcar (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
+                             `(("#+begin_src" . ?𝛌) ; ➤ 🖝 ➟ ➤ ✎
+                               ("#+end_src"   . ?□) ; ⏹
+                               ("#+header:" . ,my/ob-header-symbol)
+                               ("#+begin_quote" . ?❝) ; » «
+                               ("#+end_quote" . ?❞)))))
+    (turn-on-prettify-symbols-mode)
+    (add-hook 'post-command-hook 'my/org-prettify-src t t))
+  (add-hook 'org-mode-hook #'my/org-prettify-symbols))
+
 
 ;; (use-package org-superstar
 ;;   :after org
