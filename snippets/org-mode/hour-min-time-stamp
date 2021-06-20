@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: hour-min-time-stamp
+# key: h-stamp
+# --
+`(format-time-string "[%Y-%m-%d %a %H:%M]" nil nil)` [/]
