@@ -3,3 +3,4 @@
 # key: stamp
 # --
 `(format-time-string "<%Y-%m-%d %a>" nil nil)` [/]
+- [ ] $1
