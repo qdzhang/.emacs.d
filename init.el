@@ -46,7 +46,8 @@ created."
   nil
   :font (font-spec :family "Sarasa Mono SC" :size 24))
  (set-fontset-font t 'han "LXGW WenKai")
- (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append))
+ (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
+ (set-fontset-font nil ?\xF126 (font-spec :family "Font Awesome 5 Free")))
 
 
 (require 'package)
@@ -370,6 +371,7 @@ mouse-1: Display minor modes menu"
 
 ;;; Add advice to show icon before vc-mode
 ;;; https://emacs.stackexchange.com/questions/10955/customize-vc-mode-appearance-in-mode-line
+;;; https://www.reddit.com/r/emacs/comments/5fjri7/how_to_use_git_logo_in_modeline_instead_of/
 (advice-add #'vc-git-mode-line-string :filter-return #'my-replace-git-status)
 (defun my-replace-git-status (tstr)
   (let* ((tstr (replace-regexp-in-string "Git" "" tstr))
@@ -377,7 +379,7 @@ mouse-1: Display minor modes menu"
          (rest-chars (substring tstr 1)))
     (cond
      ((string= ":" first-char) ;;; Modified
-      (replace-regexp-in-string "^:" "⎇ " tstr))
+      (replace-regexp-in-string "^:" (concat [#xf126] ":") tstr))
      ((string= "-" first-char) ;; No change
       (replace-regexp-in-string "^-" "✔ " tstr))
      (t tstr))))
@@ -392,7 +394,6 @@ mouse-1: Display minor modes menu"
 
 (defcustom simple-modeline-segments
   '((simple-modeline-segment-modified
-     simple-modeline-segment-vc
      simple-modeline-segment-buffer-name
      simple-modeline-segment-nyan
      simple-modeline-segment-position)
@@ -402,6 +403,7 @@ mouse-1: Display minor modes menu"
      simple-modeline-segment-minions-mode
      simple-modeline-segment-misc-info
      simple-modeline-segment-process
+     simple-modeline-segment-vc
      simple-modeline-segment-major-mode
      ))
   "Simple modeline segments."
