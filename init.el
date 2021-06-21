@@ -372,17 +372,17 @@ mouse-1: Display minor modes menu"
 ;;; Add advice to show icon before vc-mode
 ;;; https://emacs.stackexchange.com/questions/10955/customize-vc-mode-appearance-in-mode-line
 ;;; https://www.reddit.com/r/emacs/comments/5fjri7/how_to_use_git_logo_in_modeline_instead_of/
-(advice-add #'vc-git-mode-line-string :filter-return #'my-replace-git-status)
-(defun my-replace-git-status (tstr)
-  (let* ((tstr (replace-regexp-in-string "Git" "" tstr))
-         (first-char (substring tstr 0 1))
-         (rest-chars (substring tstr 1)))
-    (cond
-     ((string= ":" first-char) ;;; Modified
-      (replace-regexp-in-string "^:" (concat [#xf126] ":") tstr))
-     ((string= "-" first-char) ;; No change
-      (replace-regexp-in-string "^-" "✔ " tstr))
-     (t tstr))))
+;; (advice-add #'vc-git-mode-line-string :filter-return #'my-replace-git-status)
+;; (defun my-replace-git-status (tstr)
+;;   (let* ((tstr (replace-regexp-in-string "Git" "" tstr))
+;;          (first-char (substring tstr 0 1))
+;;          (rest-chars (substring tstr 1)))
+;;     (cond
+;;      ((string= ":" first-char) ;;; Modified
+;;       (replace-regexp-in-string "^:" (concat [#xf126] ":") tstr))
+;;      ((string= "-" first-char) ;; No change
+;;       (replace-regexp-in-string "^-" "✔:" tstr))
+;;      (t tstr))))
 
 (defun simple-modeline-segment-buffer-name ()
   "Displays the name of the current buffer in the mode-line."
