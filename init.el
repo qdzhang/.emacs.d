@@ -41,17 +41,16 @@ created."
        (push (lambda () ,@body) spacemacs--after-display-system-init-list))))
 
 (spacemacs|do-after-display-system-init
- (set-face-attribute
-  'default
-  nil
-  :font (font-spec :family "Sarasa Mono SC" :size 24))
+ (set-face-attribute 'default nil :font (font-spec :family "Sarasa Mono SC" :size 24))
  (set-fontset-font t 'han "LXGW WenKai")
  (set-fontset-font t 'kana "Sarasa Mono J")
  (set-fontset-font t 'hangul "Sarasa Mono K")
  (set-fontset-font t 'cjk-misc "Sarasa Mono SC")
  (set-fontset-font t 'bopomofo "Sarasa Mono SC")
- (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
- (set-fontset-font nil ?\xF126 (font-spec :family "Font Awesome 5 Free")))
+ ;; (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
+ ;; (set-fontset-font t 'symbol "Noto Sans Symbols" nil 'append)
+ ;; (set-fontset-font t 'symbol "Noto Sans Symbols2" nil 'append)
+ (set-fontset-font t 'unicode (font-spec :name "Symbola") nil 'append))
 
 
 (require 'package)
@@ -348,9 +347,15 @@ mouse-1: Display minor modes menu"
                (format-mode-line mode-name)))
    'face 'simple-modeline-main-mode))
 
+(buffer-local-value 'major-mode (other-buffer))
 (defun simple-modeline-segment-modified ()
   "Display different icons according to the buffer status"
   (cond
+   ((equal 'dired-mode
+           (buffer-local-value 'major-mode (current-buffer)))
+    (propertize "🖿"
+                'face '(:foreground "orange" :height 0.85)
+                'help-echo "Dired mode"))
    (buffer-read-only
     (propertize ""
                 'face '(:foreground "orange")
@@ -1429,9 +1434,9 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
   (defun eval-grab-output (string)
     (let ((res nil))
       (sly-eval-async `(slynk:eval-and-grab-output ,string)
-        (lambda (result)
-          (cl-destructuring-bind (output value) result
-            (setf res (car (read-from-string value))))))
+                      (lambda (result)
+                        (cl-destructuring-bind (output value) result
+                          (setf res (car (read-from-string value))))))
       (while (null res)
         (sleep-for 0.1))
       res))
