@@ -433,11 +433,19 @@ mouse-1: Display minor modes menu"
 (setq display-line-numbers-width-start t)
 ;; Disable line numbers for some modes
 (defun my/disable-line-numbers (&optional arg)
-    (display-line-numbers-mode -1))
-(add-hook 'shell-mode-hook 'my/disable-line-numbers)
-(add-hook 'eshell-mode-hook 'my/disable-line-numbers)
-(add-hook 'term-mode-hook 'my/disable-line-numbers)
-(add-hook 'vterm-mode-hook 'my/disable-line-numbers)
+  (display-line-numbers-mode -1))
+
+;;; Group hooks
+;;; https://emacs.stackexchange.com/questions/501/how-do-i-group-hooks
+;;; For the opposite case, group all functions to a mode-hook
+;;; https://emacs.stackexchange.com/questions/55949/mutilpe-add-hook-merge-to-one
+(setq my/disable-line-numbers-mode-hook
+      '(shell-mode-hook
+        eshell-mode-hook
+        term-mode-hook
+        vterm-mode-hook))
+(dolist (hook my/disable-line-numbers-mode-hook)
+  (add-hook hook 'my/disable-line-numbers))
 
 ;;; Whitespace-mode settings
 
