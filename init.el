@@ -46,6 +46,10 @@ created."
   nil
   :font (font-spec :family "Sarasa Mono SC" :size 24))
  (set-fontset-font t 'han "LXGW WenKai")
+ (set-fontset-font t 'kana "Sarasa Mono J")
+ (set-fontset-font t 'hangul "Sarasa Mono K")
+ (set-fontset-font t 'cjk-misc "Sarasa Mono SC")
+ (set-fontset-font t 'bopomofo "Sarasa Mono SC")
  (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
  (set-fontset-font nil ?\xF126 (font-spec :family "Font Awesome 5 Free")))
 
