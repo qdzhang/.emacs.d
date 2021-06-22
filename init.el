@@ -52,8 +52,7 @@ created."
  (set-fontset-font t 'symbol "Noto Color Emoji")
  ;; (set-fontset-font t 'symbol "Noto Sans Symbols" nil 'append)
  ;; (set-fontset-font t 'symbol "Noto Sans Symbols2" nil 'append)
- (set-fontset-font t 'symbol "Symbola" nil 'append)
- )
+ (set-fontset-font t 'symbol "Symbola" nil 'append))
 
 
 (require 'package)
@@ -796,6 +795,8 @@ mouse-1: Display minor modes menu"
     "fs" 'save-buffer
     "fr" 'counsel-recentf
     "fR" '(my/rename-file-and-buffer :wk "rename")
+    "fn" '(my/org-journal-next-day-file :wk "next file")
+    "fp" '(my/org-journal-previous-day-file :wk "previous file")
 
     "g" '(:ignore t :which-key "git")
     "gg" 'magit-status
@@ -838,6 +839,44 @@ mouse-1: Display minor modes menu"
     "w" '(:ignore t :which-key "window")
     "wt" '(my/window-split-toggle :wk "toggle split")
     "ww" 'other-window)
+
+  ;; Move to next/previous file
+  ;; Adapted from https://github.com/howardabrams/dot-files/blob/master/emacs-fixes.org#next-and-previous-file
+  (defun my/org-extract-filename-date-day-mon (string)
+    "Use parse-time-string to parse org-journal file name.
+parse-time-string return (SEC MIN HOUR DAY MON YEAR DOW DST TZ)
+DAY is 3rd of the list, and MON is 4th of the list.
+This function return a list contains two element:
+first is filename DAY, second is filename MONTH"
+    (let ((filename-date (parse-time-string string)))
+      (list (nth 3 filename-date)
+            (nth 4 filename-date))))
+
+  (defun my/org-journal-file-number-change (f)
+    "Receive a function and apply this function to org-journal file name
+Such as 1+ to increment the org file according to the date number"
+    (let* ((file-directory (file-name-directory (buffer-file-name)))
+           (filename-day (nth 0 (my/org-extract-filename-date-day-mon (buffer-name))))
+           (retain-parts-index (string-match (concat "-" (number-to-string filename-day)) (buffer-name)))
+           (retain-parts (substring (buffer-name) 0 retain-parts-index))
+           (new-day (number-to-string
+                     (funcall f filename-day))))
+      (concat file-directory
+              retain-parts
+              "-"
+              new-day
+              ".org")))
+
+  (defun my/org-journal-next-day-file ()
+    "Move to next journal file"
+    (interactive)
+    (find-file (my/org-journal-file-number-change '1+)))
+
+  (defun my/org-journal-previous-day-file ()
+    "Move to previous journal file"
+    (interactive)
+    (find-file (my/org-journal-file-number-change '1-)))
+
 
   ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
   (defun my/rename-file-and-buffer (new-name)
