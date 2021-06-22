@@ -1572,7 +1572,14 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
 (use-package wgrep
   :defer t
   :config
-  (setq wgrep-auto-save-buffer t))
+  (setq wgrep-auto-save-buffer t)
+  (eval-after-load 'grep
+    '(define-key grep-mode-map
+       (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode))
+
+  (eval-after-load 'wgrep
+    '(define-key grep-mode-map
+       (kbd "C-c C-c") 'wgrep-finish-edit)))
 
 
 ;;; Restore file-name-hander-alist
