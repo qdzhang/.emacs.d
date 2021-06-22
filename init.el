@@ -922,6 +922,7 @@ Such as 1+ to increment the org file according to the date number"
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
   (setq evil-undo-system 'undo-fu)
+  (setq evil-respect-visual-line-mode t)
   :config
   ;; Move evil-mode-line-tag to beginning of modeline
   ;; If mode-line-format is not configured explicitly, following line can move
