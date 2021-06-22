@@ -47,10 +47,13 @@ created."
  (set-fontset-font t 'hangul "Sarasa Mono K")
  (set-fontset-font t 'cjk-misc "Sarasa Mono SC")
  (set-fontset-font t 'bopomofo "Sarasa Mono SC")
- ;; (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
+
+ ;; Color emoji: 😄, 🤦, 🏴󠁧󠁢󠁳󠁣󠁴󠁿
+ (set-fontset-font t 'symbol "Noto Color Emoji")
  ;; (set-fontset-font t 'symbol "Noto Sans Symbols" nil 'append)
  ;; (set-fontset-font t 'symbol "Noto Sans Symbols2" nil 'append)
- (set-fontset-font t 'unicode (font-spec :name "Symbola") nil 'append))
+ (set-fontset-font t 'symbol "Symbola" nil 'append)
+ )
 
 
 (require 'package)
