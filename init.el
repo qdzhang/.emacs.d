@@ -1004,6 +1004,11 @@ Such as 1+ to increment the org file according to the date number"
 ;;; Things at point can be pre-filled as search keywords
 ;;; Use M-p and M-n to traverse the search history
 ;;; https://github.com/with-emacs/mcfly
+;;;
+;;; And also, ivy has a built-in function:
+;;; Using M-n in ivy will insert thing-at-point into
+;;; the minibuffer
+;;; https://github.com/abo-abo/swiper/issues/1875#issuecomment-460689608
 ;;;====================================================
 
 (defvar mcfly-commands
@@ -1226,7 +1231,11 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
     "np" 'org-toggle-inline-images
     "nt" 'org-todo)
   :config
-  (setq org-default-notes-file '("~/org/notes.org")
+  ;; Fix CJK word wrap
+  ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=29364
+  (setq word-wrap-by-category t)
+
+  (setq org-default-notes-file "~/org/notes.org"
         org-agenda-files '("~/org/agenda.org")
         org-todo-keywords '((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELED(c)"))
         org-ellipsis "  "
@@ -1242,6 +1251,26 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
         org-src-preserve-indentation nil
         org-src-tab-acts-natively t
         org-edit-src-content-indentation 0)
+
+  ;; Org-capture templates
+  ;; https://www.zmonster.me/2018/02/28/org-mode-capture.html
+  (setq org-capture-templates nil)
+  (add-to-list 'org-capture-templates '("t" "Tasks"))
+  (add-to-list 'org-capture-templates
+                '("tr" "Book Reading Task" entry
+                  (file+olp "~/org/task.org" "Reading" "Book")
+                  "* TODO %^{书名}\n%u\n%a\n" :clock-in t :clock-resume t))
+  (add-to-list 'org-capture-templates
+                '("tw" "Work Task" entry
+                  (file+headline "~/org/task.org" "Work")
+                  "* TODO %^{任务名}\n%u\n%a\n" :clock-in t :clock-resume t))
+  (add-to-list 'org-capture-templates
+                '("j" "Journal" entry (file+datetree "~/org/journal.org")
+                  "* %U - %^{heading}\n  %?"))
+  (add-to-list 'org-capture-templates
+                '("i" "Inbox" entry (file "~/org/inbox.org")
+                  "* %U - %^{heading} %^g\n %?\n"))
+
 
   ;; Org crypt
   ;; Now any text below a headline that has a :crypt: tag will be automatically be encrypted when the file is saved. If you want to use a different tag just customize the org-crypt-tag-matcher setting.
