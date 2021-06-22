@@ -1437,12 +1437,12 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
         org-journal-file-format "%Y-%m-%d.org"))
 
 
-;; (use-package org-superstar
-;;   :after org
-;;   :hook
-;;   (org-mode . org-superstar-mode)
-;;   :config
-;;   (setq org-superstar-headline-bullets-list '("◉" "○" "❖" "◈" "✿" "✚" "▶")))
+(use-package org-superstar
+  :after org
+  :hook
+  (org-mode . org-superstar-mode)
+  :config
+  (setq org-superstar-headline-bullets-list '("⬤" "◉" "○" "✸" "◆" "▲" "▶")))
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
