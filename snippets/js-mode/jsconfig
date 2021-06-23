@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: jsconfig
+# key: js
+# --
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "allowSyntheticDefaultImports": true,
+    "noEmit": true,
+    "checkJs": false,
+    "jsx": "react",
+    "lib": [ "dom", "es2017" ]
+  },
+  "exclude": [
+    "build",
+    "node_modules",
+    "assets/dependencies"
+  ]
+}

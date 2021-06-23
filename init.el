@@ -1650,6 +1650,38 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
     '(define-key grep-mode-map
        (kbd "C-c C-c") 'wgrep-finish-edit)))
 
+(use-package web-mode
+  :ensure t
+  :mode
+  ("\\.ejs\\'" "\\.mjs\\'" "\\.hbs\\'" "\\.html\\'" "\\.php\\'" "\\.[jt]sx?\\'")
+  :config
+  (setq web-mode-content-types-alist '(("jsx" . "\\.[jt]sx?\\'")
+                                       ("jsx" . "\\.mjs\\'")))
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+  (setq web-mode-script-padding 2)
+  (setq web-mode-block-padding 2)
+  (setq web-mode-style-padding 2))
+(setq web-mode-enable-auto-pairing t)
+(setq web-mode-enable-auto-closing t)
+(setq web-mode-enable-current-element-highlight t)
+
+(use-package tide
+  :hook
+  (web-mode . my/setup-tide-mode)
+  (before-save-hook . tide-format-before-save)
+  :config
+  (defun my/setup-tide-mode ()
+    "Use hl-identifier-mode only on js or ts buffers."
+    (when (and (stringp buffer-file-name)
+               (string-match "\\.[tj]sx?\\'" buffer-file-name))
+      (tide-setup)
+      (flycheck-mode +1)
+      (setq flycheck-check-syntax-automatically '(save mode-enabled))
+      (eldoc-mode +1)
+      (tide-hl-identifier-mode +1))))
+
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
