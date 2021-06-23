@@ -1394,7 +1394,28 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
         (my/display-buffer-in-side-window
          (save-window-excursion
            (find-file file-path)
-           (current-buffer)))))))
+           (current-buffer))))))
+
+
+  ;; Replace org checkbox to unicode symbol and add strike through line
+  ;; https://jft.home.blog/2019/07/17/use-unicode-symbol-to-display-org-mode-checkboxes/
+  ;; https://www.reddit.com/r/emacs/comments/brt0sk/prettifysymbolsmode_is_so_cool/
+  (add-hook 'org-mode-hook (lambda ()
+                             "Beautify Org Checkbox Symbol"
+                             (push '("[ ]" .  "☐") prettify-symbols-alist)
+                             (push '("[X]" . "☑" ) prettify-symbols-alist)
+                             (push '("[-]" . "❍" ) prettify-symbols-alist)
+                             (prettify-symbols-mode)))
+  (defface org-checkbox-done-text
+    '((t :inherit (font-lock-comment-face)
+         :strike-through t))
+    "Face for the text part of a checked org-mode checkbox.")
+
+  (font-lock-add-keywords
+   'org-mode
+   `(("^[ \t]*\\(?:[-+*]\\|[0-9]+[).]\\)[ \t]+\\(\\(?:\\[@\\(?:start:\\)?[0-9]+\\][ \t]*\\)?\\[\\(?:X\\|\\([0-9]+\\)/\\2\\)\\][^\n]*\n\\)"
+      1 'org-checkbox-done-text prepend))
+   'append))
 
 ;;; Change org-mode src blocks display style, make them more simple and elegant
 ;;; https://emacs-china.org/t/org-source-code/9762/5
