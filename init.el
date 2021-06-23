@@ -1011,7 +1011,8 @@ Such as 1+ to increment the org file according to the date number"
   :init (ivy-mode 1)
   :bind (("C-s" . swiper)
          :map ivy-minibuffer-map
-         ("TAB" . ivy-partial)
+         ;; ("TAB" . ivy-partial)
+         ("TAB" . my/ivy-done)
          ("C-l" . ivy-alt-done)
          ("C-j" . ivy-next-line)
          ("C-k" . ivy-previous-line)
@@ -1024,7 +1025,24 @@ Such as 1+ to increment the org file according to the date number"
          ("C-d" . ivy-reverse-i-search-kill))
   :config
   (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "(%d/%d) "))
+  (setq ivy-count-format "(%d/%d) ")
+  (setq ivy-use-selectable-prompt t)
+
+
+  ;; Ivy complete hack
+  ;; Make ivy complete more "intelligent" Use TAB to complete the selected item,
+  ;; if the selected item is a directory, expand it.
+  ;; Copied from https://honmaple.me/articles/2018/06/%E8%87%AA%E5%AE%9A%E4%B9%89helm%E5%BC%8F%E7%9A%84ivy.html
+  (defun my/ivy-done ()
+    (interactive)
+    (let ((dir ivy--directory))
+      (ivy-partial-or-done)
+      (when (string= dir ivy--directory)
+        (ivy-insert-current)
+        (when (and (eq (ivy-state-collection ivy-last) #'read-file-name-internal)
+                   (setq dir (ivy-expand-file-if-directory (ivy-state-current ivy-last))))
+          (ivy--cd dir)
+          (setq this-command 'ivy-cd))))))
 
 (use-package counsel
   :bind(("C-x C-f" . counsel-find-file))
