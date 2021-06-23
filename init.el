@@ -779,6 +779,7 @@ mouse-1: Display minor modes menu"
     "c;" '(my/semicolon-at-end-of-line :which-key "semicolon(end)")
     "cc" 'capitalize-word
     "cd" 'downcase-word
+    "cg" '(my/sp-comment-with-three-semicolon :wk "sp-comment-3-semicolon")
     "cu" 'upcase-word
 
     "e" '(:ignore t :which-key "eval")
@@ -852,6 +853,13 @@ mouse-1: Display minor modes menu"
     (my/smarter-move-beginning-of-line 1)
     (sp-comment)
     (insert "; "))
+
+  (defun my/sp-comment-with-three-semicolon ()
+    "Indent sexp with all parentheses balanced, and use three semicolon to express comment"
+    (interactive)
+    (my/smarter-move-beginning-of-line 1)
+    (sp-comment)
+    (insert ";; "))
 
   ;; Smart beginning of the line
   ;; https://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
