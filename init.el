@@ -403,20 +403,24 @@ mouse-1: Display minor modes menu"
   "Display rime indicator in the mode-line"
   (rime-lighter))
 
+(defun simple-modeline-narrowed-status ()
+  (when (buffer-narrowed-p)
+    (propertize " Narrowed " 'face 'simple-modeline-status-warning)))
+
 (defcustom simple-modeline-segments
   '((simple-modeline-segment-modified
      simple-modeline-segment-buffer-name
      simple-modeline-segment-nyan
      simple-modeline-segment-position)
     (simple-modeline-rime-indicator
+     simple-modeline-narrowed-status
      simple-modeline-segment-eol
      simple-modeline-segment-encoding
      simple-modeline-segment-minions-mode
      simple-modeline-segment-misc-info
      simple-modeline-segment-process
      simple-modeline-segment-vc
-     simple-modeline-segment-major-mode
-     ))
+     simple-modeline-segment-major-mode))
   "Simple modeline segments."
   :type '(list (repeat :tag "Left aligned" function)
                (repeat :tag "Right aligned" function)))
