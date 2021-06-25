@@ -119,6 +119,11 @@ Ignores `ARGS'."
 
 ;; highlight current line
 ;; (global-hl-line-mode 1)
+(add-hook 'prog-mode-hook #'hl-line-mode)
+(add-hook 'vterm-mode-hook (lambda () (hl-line-mode -1)))
+
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
+(setq display-fill-column-indicator-column 80)
 
 
 ;;; Mode-line configurations
@@ -1361,7 +1366,7 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
   (add-to-list 'org-capture-templates
                '("s" "New snippet" entry
                  (file+headline "~/org/snippets.org" "Code snippets")
-                 "* %^{代码片段描述} %^g\n:PROPERTIES:\n:time: %U\n:origin: %^{代码来源}\n:describes: %?\n:END:\n\n#+begin_src\n \n#+end_src\n"))
+                 "* %^{代码片段描述} %^g\n:PROPERTIES:\n:time: %U\n:origin: %^{代码来源}\n:describes: %?\n:END:\n\n#+begin_src\n \n#+end_src\n" :empty-lines 1))
 
 
 
