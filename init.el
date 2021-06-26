@@ -1773,6 +1773,111 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
       (eldoc-mode +1)
       (tide-hl-identifier-mode +1))))
 
+(use-package flycheck
+  :defer t
+  :hook
+  (eglot--managed-mode . sanityinc/eglot-prefer-flycheck)
+  (go-mode . flycheck-mode)
+  :config
+  ;; Use eglot with flycheck
+  ;; https://gist.github.com/purcell/ca33abbea9a98bb0f8a04d790a0cadcd
+  (defvar-local flycheck-eglot-current-errors nil)
+
+  (defun flycheck-eglot-report-fn (diags &rest _)
+    (setq flycheck-eglot-current-errors
+          (mapcar (lambda (diag)
+                    (save-excursion
+                      (goto-char (flymake--diag-beg diag))
+                      (flycheck-error-new-at (line-number-at-pos)
+                                             (1+ (- (point) (line-beginning-position)))
+                                             (pcase (flymake--diag-type diag)
+                                               ('eglot-error 'error)
+                                               ('eglot-warning 'warning)
+                                               ('eglot-note 'info)
+                                               (_ (error "Unknown diag type, %S" diag)))
+                                             (flymake--diag-text diag)
+                                             :checker 'eglot)))
+                  diags))
+    (flycheck-buffer))
+
+  (defun flycheck-eglot--start (checker callback)
+    (funcall callback 'finished flycheck-eglot-current-errors))
+
+  (defun flycheck-eglot--available-p ()
+    (bound-and-true-p eglot--managed-mode))
+
+  (flycheck-define-generic-checker 'eglot
+    "Report `eglot' diagnostics using `flycheck'."
+    :start #'flycheck-eglot--start
+    :predicate #'flycheck-eglot--available-p
+    :modes '(prog-mode text-mode))
+
+  (push 'eglot flycheck-checkers)
+
+  (defun sanityinc/eglot-prefer-flycheck ()
+    (when eglot--managed-mode
+      (flycheck-add-mode 'eglot major-mode)
+      (flycheck-select-checker 'eglot)
+      (flycheck-mode)
+      (flymake-mode -1)
+      (setq eglot--current-flymake-report-fn 'flycheck-eglot-report-fn))))
+
+(require 'project)
+
+(defun project-find-go-module (dir)
+  (when-let ((root (locate-dominating-file dir "go.mod")))
+    (cons 'go-module root)))
+
+(cl-defmethod project-root ((project (head go-module)))
+  (cdr project))
+
+(add-hook 'project-find-functions #'project-find-go-module)
+
+
+(use-package go-mode
+  :defer t
+  :init
+  (setq go-fontify-function-calls nil)
+  :hook
+  (go-mode . eglot-ensure)
+  (before-save . gofmt-before-save)
+  ;; (before-save . eglot-format-buffer)
+  :general
+  (my/leader-keys
+    :keymaps 'go-mode-map
+    "hg" 'my/godoc-package
+    "hd" 'godoc)
+  (general-def go-mode-map
+    "{" 'my/go-electric-brace)
+  :config
+  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+
+  ;; https://lupan.pl/dotemacs/
+  (defun my/go-electric-brace ()
+    "Insert an opening brace may be with the closing one.
+If there is a space before the brace also adds new line with
+properly indented closing brace and moves cursor to another line
+inserted between the braces between the braces."
+    (interactive)
+    (insert "{")
+    (when (looking-back " {")
+      (newline)
+      (indent-according-to-mode)
+      (save-excursion
+        (newline)
+        (insert "}")
+        (indent-according-to-mode))))
+
+  (defun my/godoc-package ()
+    "Display godoc for given package (with completion)."
+    (interactive)
+    (godoc (ivy-read "Package: " (go-packages) :require-match t))))
+
+(setq-default eglot-workspace-configuration
+              '((:gopls .
+                        ((staticcheck . t)
+                         (matcher . "CaseSensitive")))))
+
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
