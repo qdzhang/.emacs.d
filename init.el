@@ -410,8 +410,13 @@ mouse-1: Display minor modes menu"
   (rime-lighter))
 
 (defun simple-modeline-narrowed-status ()
+  "Display an indicator to show whether buffer is narrowed"
   (when (buffer-narrowed-p)
     (propertize " Narrowed " 'face 'simple-modeline-status-warning)))
+
+(defun simple-modeline-flycheck-status ()
+  "Displya flycheck status in the modeline"
+  (flycheck-mode-line-status-text))
 
 (defcustom simple-modeline-segments
   '((simple-modeline-segment-modified
@@ -426,7 +431,8 @@ mouse-1: Display minor modes menu"
      simple-modeline-segment-misc-info
      simple-modeline-segment-process
      simple-modeline-segment-vc
-     simple-modeline-segment-major-mode))
+     simple-modeline-segment-major-mode
+     simple-modeline-flycheck-status))
   "Simple modeline segments."
   :type '(list (repeat :tag "Left aligned" function)
                (repeat :tag "Right aligned" function)))
