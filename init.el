@@ -123,7 +123,7 @@ Ignores `ARGS'."
 (add-hook 'vterm-mode-hook (lambda () (hl-line-mode -1)))
 
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
-(setq display-fill-column-indicator-column 80)
+(setq-default display-fill-column-indicator-column 80)
 
 
 ;;; Mode-line configurations
@@ -1741,10 +1741,10 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
   (setq web-mode-code-indent-offset 2)
   (setq web-mode-script-padding 2)
   (setq web-mode-block-padding 2)
-  (setq web-mode-style-padding 2))
-(setq web-mode-enable-auto-pairing t)
-(setq web-mode-enable-auto-closing t)
-(setq web-mode-enable-current-element-highlight t)
+  (setq web-mode-style-padding 2)
+  (setq web-mode-enable-auto-pairing t)
+  (setq web-mode-enable-auto-closing t)
+  (setq web-mode-enable-current-element-highlight t))
 
 (use-package tide
   :hook
