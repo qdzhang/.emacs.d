@@ -39,7 +39,7 @@
   "super-save mode's keymap.")
 
 (defcustom super-save-triggers
-  '(switch-to-buffer other-window windmove-up windmove-down windmove-left windmove-right next-buffer previous-buffer evil-window-next evil-window-left evil-window-down evil-window-up evil-window-right)
+  '(switch-to-buffer other-window windmove-up windmove-down windmove-left windmove-right next-buffer previous-buffer evil-window-next evil-window-left evil-window-down evil-window-up evil-window-right evil-quit)
   "A list of commands which would trigger `super-save-command'."
   :group 'super-save
   :type '(repeat symbol)
