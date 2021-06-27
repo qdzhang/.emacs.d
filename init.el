@@ -1311,7 +1311,12 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
   :bind (:map smartparens-strict-mode-map
               ("M-<up>" . sp-splice-sexp-killing-backward)
               ("M-<down>" . sp-splice-sexp-killing-forward)
-              ("M-<delete>". sp-unwrap-sexp)))
+              ("M-<delete>". sp-unwrap-sexp))
+  :config
+  ;; Some config to replace the function `my/go-electric-brace'
+  ;; https://emacs.stackexchange.com/questions/12368/make-ending-curly-brace-of-block-go-down-an-extra-newline-in-golang
+  ;; https://github.com/Fuco1/smartparens/wiki/Permissions#pre-and-post-action-hooks
+  (sp-pair "{" nil :post-handlers '(("||\n[i]" "RET"))))
 
 (use-package evil-cleverparens
   :diminish
@@ -1853,8 +1858,9 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
     :keymaps 'go-mode-map
     "hg" 'my/godoc-package
     "hd" 'godoc)
-  (general-def go-mode-map
-    "{" 'my/go-electric-brace)
+  ;; Use smartparens post-handler to replace this function
+  ;; (general-def go-mode-map
+  ;;   "{" 'my/go-electric-brace)
   :config
   (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 
