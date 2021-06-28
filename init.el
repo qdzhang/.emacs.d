@@ -1327,7 +1327,7 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
   :bind
   ("C-<f12>" . terminal-here-launch)
   :config
-  (setq terminal-here-linux-terminal-command '("termite")))
+  (setq terminal-here-linux-terminal-command 'urxvt))
 
 (use-package org
   :defer t
