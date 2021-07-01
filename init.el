@@ -552,6 +552,26 @@ mouse-1: Display minor modes menu"
         (make-directory dir t)))))
 
 
+;;; Some useful functions
+;;;======================
+
+;;; Increment number
+;;; https://www.emacswiki.org/emacs/IncrementNumber
+(defun my/increment-number-at-point ()
+  (interactive)
+  (skip-chars-backward "0-9")
+  (or (looking-at "[0-9]+")
+      (error "No number at point"))
+  (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
+
+(defun my/decrement-number-at-point ()
+  (interactive)
+  (skip-chars-backward "0-9")
+  (or (looking-at "[0-9]+")
+      (error "No number at point"))
+  (replace-match (number-to-string (1- (string-to-number (match-string 0))))))
+
+
 ;;;===================
 ;;; Auto save settings
 ;;;===================
