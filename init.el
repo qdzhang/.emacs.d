@@ -1719,6 +1719,7 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
   (my/leader-keys
     "d" '(:ignore t :which-key "dired")
     "dp" 'image-dired
+    "dw" 'wdired-change-to-wdired-mode
 
     "fd" '(dired :wk "directory"))
   :hook
