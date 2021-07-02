@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: ignore-execute-files
+# key: ex
+# --
+# Ignore executable files
+*
+!*/
+!*.*
