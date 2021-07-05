@@ -1227,7 +1227,10 @@ Such as 1+ to increment the org file according to the date number"
   (my/leader-keys
     "gl" 'magit-log-buffer-file
     "gc" '(my/git-clone-clipboard-url :wk "clone-clipboard")
-    "gd" '(my/magit-dotfiles-status :wk "dotfiles"))
+    "gd" '(my/magit-dotfiles-status :wk "dotfiles")
+    "ga" '(my/magit-add-current-file-to-dotfiles :wk "dotfiles add")
+
+    "ev" '(my/run-in-vterm :wk "run-in-vterm"))
 
   :config
   (setq magit-diff-refine-hunk 'all)
@@ -1298,7 +1301,54 @@ https://github.com/magit/magit/issues/460 (@cpitclaudel)."
   (defun my/magit-dotfiles-status ()
     "Show magit status in home directory containing dotfiles"
     (interactive)
-    (magit-status "~/")))
+    (magit-status "~/"))
+
+  ;; Run a shell command in vterm
+  ;; This is used to add a untracked file to dotfiles respository
+  ;; https://www.reddit.com/r/emacs/comments/ft84xy/run_shell_command_in_new_vterm/
+  (defun vterm--run-in-vterm-kill (process event)
+    "A process sentinel. Kills PROCESS's buffer if it is live."
+    (let ((b (process-buffer process)))
+      (and (buffer-live-p b)
+           (kill-buffer b)
+           (evil-normal-state))))
+
+  (defun my/run-in-vterm (command)
+    "Execute string COMMAND in a new vterm.
+
+Interactively, prompt for COMMAND with the current buffer's file
+name supplied. When called from Dired, supply the name of the
+file at point.
+
+Like `async-shell-command`, but run in a vterm for full terminal features.
+
+The new vterm buffer is named in the form `*foo bar.baz*`, the
+command and its arguments in earmuffs.
+
+When the command terminates, the shell remains open, but when the
+shell exits, the buffer is killed."
+    (interactive
+     (list
+      (let* ((f (cond (buffer-file-name)
+                      ((eq major-mode 'dired-mode)
+                       (dired-get-filename nil t))))
+             (filename (concat " " (shell-quote-argument (and f (file-relative-name f))))))
+        (read-shell-command "Terminal command: "
+                            (cons filename 0)
+                            (cons 'shell-command-history 1)
+                            (list filename)))))
+    (with-current-buffer (vterm (concat "*" command "*"))
+      (set-process-sentinel vterm--process #'vterm--run-in-vterm-kill)
+      (vterm-send-string command)
+      (vterm-send-return)))
+
+  (defun my/magit-add-current-file-to-dotfiles ()
+    (interactive)
+    (let* ((command "dotfiles add ")
+           (filename (buffer-file-name))
+           (full-command (concat command filename)))
+      (my/run-in-vterm full-command)
+      (evil-collection-vterm-insert-line))))
 
 (use-package undo-fu
   :config
