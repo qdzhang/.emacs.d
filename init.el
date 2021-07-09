@@ -1386,7 +1386,16 @@ shell exits, the buffer is killed."
   ;; Some config to replace the function `my/go-electric-brace'
   ;; https://emacs.stackexchange.com/questions/12368/make-ending-curly-brace-of-block-go-down-an-extra-newline-in-golang
   ;; https://github.com/Fuco1/smartparens/wiki/Permissions#pre-and-post-action-hooks
-  (sp-pair "{" nil :post-handlers '(("||\n[i]" "RET"))))
+  (sp-pair "{" nil :post-handlers '(("||\n[i]" "RET")))
+
+  ;; Enable smartparens-strict-mode in the minibuffer, during eval-expression
+  ;; https://emacsredux.com/blog/2013/04/18/evaluate-emacs-lisp-in-the-minibuffer/
+  (defun my/conditionally-enable-smartparens-mode ()
+    "Enable `smartparens-mode' in the minibuffer, during `eval-expression'."
+    (if (eq this-command 'eval-expression)
+        (smartparens-strict-mode 1)))
+
+  (add-hook 'minibuffer-setup-hook 'my/conditionally-enable-smartparens-mode))
 
 (use-package evil-cleverparens
   :diminish
