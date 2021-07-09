@@ -1388,6 +1388,11 @@ shell exits, the buffer is killed."
   ;; https://github.com/Fuco1/smartparens/wiki/Permissions#pre-and-post-action-hooks
   (sp-pair "{" nil :post-handlers '(("||\n[i]" "RET")))
 
+  ;; Remove quote ' in emacs-lisp-mode
+  (sp-local-pair 'emacs-lisp-mode "'" nil :actions :rem)
+  ;; Remove < auto pair in web-mode
+  (sp-local-pair 'web-mode "<" nil :actions :rem)
+
   ;; Enable smartparens-strict-mode in the minibuffer, during eval-expression
   ;; https://emacsredux.com/blog/2013/04/18/evaluate-emacs-lisp-in-the-minibuffer/
   (defun my/conditionally-enable-smartparens-mode ()
