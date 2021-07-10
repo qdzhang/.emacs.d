@@ -1366,6 +1366,31 @@ shell exits, the buffer is killed."
           rime-predicate-after-alphabet-char-p
           rime-predicate-space-after-cc-p
           rime-predicate-prog-in-code-p))
+
+  ;; Change cursor color when input method is opening
+  ;; Adapted from https://emacs-china.org/t/topic/17717
+  (defvar input-method-cursor-color "Orange"
+    "Default cursor color if using an input method.")
+
+  (defun get-frame-cursor-color ()
+    "Get the cursor-color of current frame."
+    (interactive)
+    (frame-parameter nil 'cursor-color))
+
+  (defvar default-cursor-color (get-frame-cursor-color)
+    "Default text cursor color.")
+
+  (defun change-cursor-color-on-input-method ()
+    "Set cursor color depending on whether an input method is used or not."
+    (interactive)
+    (set-cursor-color (if (and (rime--should-enable-p)
+                               (not (rime--should-inline-ascii-p))
+                               current-input-method)
+                          input-method-cursor-color
+                        default-cursor-color)))
+
+  (add-hook 'post-command-hook 'change-cursor-color-on-input-method)
+
   :custom
   (default-input-method "rime"))
 
