@@ -431,8 +431,7 @@ mouse-1: Display minor modes menu"
      simple-modeline-segment-misc-info
      simple-modeline-segment-process
      simple-modeline-segment-vc
-     simple-modeline-segment-major-mode
-     simple-modeline-flycheck-status))
+     simple-modeline-segment-major-mode))
   "Simple modeline segments."
   :type '(list (repeat :tag "Left aligned" function)
                (repeat :tag "Right aligned" function)))
