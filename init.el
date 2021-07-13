@@ -352,7 +352,8 @@ mouse-1: Display minor modes menu"
    (concat " "
            (or (and (boundp 'delighted-modes)
                     (cadr (assq major-mode delighted-modes)))
-               (format-mode-line mode-name)))
+               (format-mode-line mode-name))
+           " ")
    'face 'simple-modeline-main-mode))
 
 (buffer-local-value 'major-mode (other-buffer))
