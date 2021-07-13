@@ -1383,11 +1383,15 @@ shell exits, the buffer is killed."
   (defvar default-cursor-color (get-frame-cursor-color)
     "Default text cursor color.")
 
+  (defun my/rime-disable-p ()
+    "Determine whether rime is disabled, following `rime-disable-predicates'"
+    (and (rime--should-enable-p)
+         (not (rime--should-inline-ascii-p))))
+
   (defun change-cursor-color-on-input-method ()
     "Set cursor color depending on whether an input method is used or not."
     (interactive)
-    (set-cursor-color (if (and (rime--should-enable-p)
-                               (not (rime--should-inline-ascii-p))
+    (set-cursor-color (if (and (my/rime-disable-p)
                                current-input-method)
                           input-method-cursor-color
                         default-cursor-color)))
