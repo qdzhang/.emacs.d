@@ -1090,6 +1090,7 @@ Such as 1+ to increment the org file according to the date number"
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) ")
   (setq ivy-use-selectable-prompt t)
+  (setq ivy-wrap t)
 
 
   ;; Ivy complete hack
@@ -1879,7 +1880,8 @@ shell exits, the buffer is killed."
   (setq web-mode-enable-current-element-highlight t)
 
   ;; Remove < auto pair in web-mode
-  (sp-local-pair 'web-mode "<" nil :actions :rem))
+  (eval-after-load smartparens-strict-mode
+    (sp-local-pair 'web-mode "<" nil :actions :rem)))
 
 (use-package tide
   :hook
