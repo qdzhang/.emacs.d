@@ -1364,11 +1364,15 @@ shell exits, the buffer is killed."
 (global-undo-fu-session-mode)
 
 (use-package rime
+  :bind
+  (:map rime-mode-map
+        ("M-j" . 'rime-force-enable))
   :config
   (setq rime-disable-predicates
         '(rime-predicate-evil-mode-p
           rime-predicate-after-alphabet-char-p
           rime-predicate-space-after-cc-p
+          rime-predicate-org-in-src-block-p
           rime-predicate-prog-in-code-p))
 
   ;; Change cursor color when input method is opening
