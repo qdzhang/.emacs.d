@@ -1606,7 +1606,28 @@ shell exits, the buffer is killed."
    'org-mode
    `(("^[ \t]*\\(?:[-+*]\\|[0-9]+[).]\\)[ \t]+\\(\\(?:\\[@\\(?:start:\\)?[0-9]+\\][ \t]*\\)?\\[\\(?:X\\|\\([0-9]+\\)/\\2\\)\\][^\n]*\n\\)"
       1 'org-checkbox-done-text prepend))
-   'append))
+   'append)
+
+  ;; Use `:hidden' keyword to hide an individual org src block
+  ;; https://emacs.stackexchange.com/questions/44914/choose-individual-startup-visibility-of-org-modes-source-blocks/44923#44923
+  (defun individual-visibility-source-blocks ()
+    "Fold some blocks in the current buffer."
+    (interactive)
+    (org-show-block-all)
+    (org-block-map
+     (lambda ()
+       (let ((case-fold-search t))
+         (when (and
+                (save-excursion
+                  (beginning-of-line 1)
+                  (looking-at org-block-regexp))
+                (cl-assoc
+                 ':hidden
+                 (cl-third
+                  (org-babel-get-src-block-info))))
+           (org-hide-block-toggle))))))
+
+  (add-hook 'org-mode-hook 'individual-visibility-source-blocks))
 
 ;;; Change org-mode src blocks display style, make them more simple and elegant
 ;;; https://emacs-china.org/t/org-source-code/9762/5
@@ -1614,7 +1635,7 @@ shell exits, the buffer is killed."
   (defvar-local my/org-at-src-begin -1
     "Variable that holds whether last position was a ")
 
-  (defvar my/ob-header-symbol ?☰
+  (defvar my/ob-header-symbol ?…
     "Symbol used for babel headers")
 
   (defun my/org-prettify-src--update ()
@@ -1674,7 +1695,7 @@ shell exits, the buffer is killed."
     (mapc (apply-partially 'add-to-list 'prettify-symbols-alist)
           (cl-reduce 'append
                      (mapcar (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
-                             `(("#+begin_src" . ?𝛌) ; ➤ ➟ ➤ ✎
+                             `(("#+begin_src" . ?＄) ; ➤ ➟ ➤ ✎  〜
                                ("#+end_src"   . ?□) ; ⏹
                                ("#+header:" . ,my/ob-header-symbol)
                                ("#+begin_quote" . ?❝) ; » «
