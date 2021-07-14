@@ -1838,7 +1838,7 @@ shell exits, the buffer is killed."
   (my/leader-keys
     "d" '(:ignore t :which-key "dired")
     "dp" 'image-dired
-    "dw" 'wdired-change-to-wdired-mode
+    "dw" '(wdired-change-to-wdired-mode :wk "wdired")
 
     "fd" '(dired :wk "directory"))
   :hook
