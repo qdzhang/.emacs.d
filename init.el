@@ -1198,6 +1198,98 @@ Such as 1+ to increment the org file according to the date number"
         (save-excursion
           (insert (propertize sym 'face 'shadow)))))))
 
+(use-package avy
+  :after evil
+  :config
+
+  ;;========================================
+  ;; Replace evil f/F/t/T motions with avy
+  ;; Adapted from https://github.com/louy2/evil-avy
+  ;;========================================
+  (defun avy-forward-char-in-line (char &optional back)
+    "Jump forward to the currently visible CHAR in the current line.
+If BACK is t, jump backward."
+    (interactive (list (read-char "char: " t)))
+
+    (let ((avy-all-windows nil))
+      (avy-with avy-goto-char
+        (avy--process
+         (save-restriction
+           (if (null back)
+               (narrow-to-region (point)
+                                 (line-end-position))
+             (narrow-to-region (line-beginning-position)
+                               (point)))
+           (avy--regex-candidates (regexp-quote (string char))))
+         (avy--style-fn avy-style)))))
+
+  (evil-define-motion evil-avy-find-char (count char)
+    "Use avy to move forward to char in line."
+    :jump t
+    :type inclusive
+    (interactive "<c><C>")
+    (if (null count) (avy-forward-char-in-line char)
+      (evil-find-char count char)))
+
+  (evil-define-motion evil-avy-find-char-to (count char)
+    "Use avy to move till char in line"
+    :jump t
+    :type inclusive
+    (interactive "<c><C>")
+    (if (null count)
+        (progn
+          (avy-forward-char-in-line char)
+          (backward-char))
+      (evil-find-char-to count char)))
+
+  (evil-define-motion evil-avy-find-char-backward (count char)
+    "Use avy to move backward to char in line."
+    :jump t
+    :type exclusive
+    (interactive "<c><C>")
+    (if (null count)
+        (avy-forward-char-in-line char t)
+      (evil-find-char-backward count char)))
+
+  (evil-define-motion evil-avy-find-char-to-backward (count char)
+    "Use avy to move backward till char in line."
+    :jump t
+    :type exclusive
+    (interactive "<c><C>")
+    (if (null count)
+        (progn
+          (avy-forward-char-in-line char t)
+          (forward-char))
+      (evil-find-char-to-backward count char)))
+
+  ;; Replace motions
+
+  (evil-define-key 'normal 'global
+    "f" 'evil-avy-find-char
+    "F" 'evil-avy-find-char-backward
+    "t" 'evil-avy-find-char-to
+    "T" 'evil-avy-find-char-to-backward
+    "s" 'evil-avy-goto-char-2)
+
+  (evil-define-key 'operator 'global
+    "f" 'evil-avy-find-char
+    "F" 'evil-avy-find-char-backward
+    "t" 'evil-avy-find-char-to
+    "T" 'evil-avy-find-char-to-backward)
+
+  (evil-define-key 'visual 'global
+    "f" 'evil-avy-find-char
+    "F" 'evil-avy-find-char-backward
+    "t" 'evil-avy-find-char-to
+    "T" 'evil-avy-find-char-to-backward)
+
+  (evil-define-key 'motion 'global
+    "f" 'evil-avy-find-char
+    "F" 'evil-avy-find-char-backward
+    "t" 'evil-avy-find-char-to
+    "T" 'evil-avy-find-char-to-backward))
+
+
 (use-package company
   :diminish
   :init
@@ -1439,7 +1531,10 @@ shell exits, the buffer is killed."
 (use-package evil-cleverparens
   :diminish
   :hook
-  (smartparens-strict-mode . evil-cleverparens-mode))
+  (smartparens-strict-mode . evil-cleverparens-mode)
+  :bind
+  (:map  evil-cleverparens-mode-map
+         ("<normal-state> s" . nil)))
 
 (use-package terminal-here
   :bind
