@@ -829,7 +829,7 @@ mouse-1: Display minor modes menu"
     :global-prefix "SPC m")
 
   (my/leader-keys
-    "SPC" '(execute-extended-command :which-key "execute command")
+    "SPC" '(counsel-M-x :which-key "execute command")
     "TAB" 'evil-indent-line
     ";" '(my/sp-comment-with-two-semicolon :wk "sp-comment")
 
@@ -861,7 +861,7 @@ mouse-1: Display minor modes menu"
 
     "f" '(:ignore t :which-key "file")
     "fD" '((lambda () (interactive) (delete-file (buffer-file-name))) :wk "delete")
-    "ff" 'find-file
+    "ff" 'counsel-find-file
     "fs" 'save-buffer
     "fr" 'counsel-recentf
     "fR" '(my/rename-file-and-buffer :wk "rename")
@@ -899,6 +899,7 @@ mouse-1: Display minor modes menu"
     "sf" 'counsel-fzf
     "sg" 'counsel-grep-or-swiper
     "si" '(counsel-imenu :wk "imenu")
+    "sm" '(counsel-evil-marks :wk "marks")
     "sr" 'counsel-rg
     "st" '(counsel-load-theme :wk "themes")
     "sy" 'ivy-yasnippet
