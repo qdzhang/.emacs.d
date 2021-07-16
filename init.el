@@ -1111,10 +1111,18 @@ Such as 1+ to increment the org file according to the date number"
           (setq this-command 'ivy-cd))))))
 
 (use-package counsel
-  :bind(("C-x C-f" . counsel-find-file))
+  :bind
+  (("C-x C-f" . counsel-find-file)
+   :map counsel-find-file-map
+   ("C-~" . my/counsel-goto-local-home))
   :config
   (setq counsel-grep-base-command
-        "rg -i -M 120 --no-heading --line-number --color never '%s' %s"))
+        "rg -i -M 120 --no-heading --line-number --color never '%s' %s")
+
+  (defun my/counsel-goto-local-home ()
+    "Go to the $HOME of the local machine."
+    (interactive)
+    (ivy--cd "~/")))
 
 (use-package swiper
   :general
