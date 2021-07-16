@@ -1207,6 +1207,10 @@ Such as 1+ to increment the org file according to the date number"
         (save-excursion
           (insert (propertize sym 'face 'shadow)))))))
 
+(use-package amx
+  :defer t
+  :after ivy)
+
 (use-package avy
   :after evil
   :config
@@ -1298,6 +1302,8 @@ If BACK is t, jump backward."
     "t" 'evil-avy-find-char-to
     "T" 'evil-avy-find-char-to-backward))
 
+(use-package ivy-avy
+  :after (ivy avy))
 
 (use-package company
   :diminish
