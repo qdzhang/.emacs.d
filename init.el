@@ -466,7 +466,8 @@ mouse-1: Display minor modes menu"
       '(shell-mode-hook
         eshell-mode-hook
         term-mode-hook
-        vterm-mode-hook))
+        vterm-mode-hook
+        org-mode-hook))
 (dolist (hook my/disable-line-numbers-mode-hook)
   (add-hook hook 'my/disable-line-numbers))
 
