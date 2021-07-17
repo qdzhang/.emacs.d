@@ -879,6 +879,7 @@ Start `ielm' in a split window if it's not already running."
     "er" 'sly-eval-region
 
     "f" '(:ignore t :which-key "file")
+    "fd" '(dired :wk "directory")
     "fD" '((lambda () (interactive) (delete-file (buffer-file-name))) :wk "delete")
     "ff" 'counsel-find-file
     "fs" 'save-buffer
@@ -1978,8 +1979,9 @@ shell exits, the buffer is killed."
     "d" '(:ignore t :which-key "dired")
     "dp" 'image-dired
     "dw" '(wdired-change-to-wdired-mode :wk "wdired")
-
-    "fd" '(dired :wk "directory"))
+    "ds" 'xah-dired-sort
+    "dz" '(my/dired-get-size :wk "marked-files-size")
+    "d /" '(my/dired-filter :wk "narrow"))
   :hook
   (dired-mode . dired-hide-details-mode)
   :config
@@ -1999,7 +2001,43 @@ shell exits, the buffer is killed."
                                        ("\\.jpg\\'" "qview")
                                        ("\\.png\\'" "qview")
                                        ("\\.gif\\'" "qview")
-                                       ("\\.jpeg\\'" "qview"))))
+                                       ("\\.jpeg\\'" "qview")))
+  (setq dired-listing-switches "-alFh")
+
+  (defun my/dired-filter ()
+    "Dired show filtered files"
+    (interactive)
+    (call-interactively #'dired-mark-files-regexp)
+    (progn (dired-toggle-marks)
+           (dired-do-kill-lines)))
+
+  (defun xah-dired-sort ()
+    "Sort dired dir listing in different ways.
+Prompt for a choice.
+URL `http://ergoemacs.org/emacs/dired_sort.html'
+Version 2018-12-23"
+    (interactive)
+    (let ($sort-by $arg)
+      (setq $sort-by (ido-completing-read "Sort by:" '( "date" "size" "name" )))
+      (cond
+       ((equal $sort-by "name") (setq $arg "-Al "))
+       ((equal $sort-by "date") (setq $arg "-Al -t"))
+       ((equal $sort-by "size") (setq $arg "-Al -S"))
+       ;; ((equal $sort-by "dir") (setq $arg "-Al --group-directories-first"))
+       (t (error "logic error 09535" )))
+      (dired-sort-other $arg )))
+
+  ;; https://oremacs.com/2015/01/12/dired-file-size/
+  (defun my/dired-get-size ()
+    (interactive)
+    (let ((files (dired-get-marked-files)))
+      (with-temp-buffer
+        (apply 'call-process "/usr/bin/du" nil t nil "-sch" files)
+        (message
+         "Size of all marked files: %s"
+         (progn
+           (re-search-backward "\\(^[ 0-9.,]+[A-Za-z]+\\).*total$")
+           (match-string 1)))))))
 
 (use-package aggressive-indent
   :defer t
