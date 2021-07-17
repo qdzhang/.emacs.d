@@ -1145,6 +1145,9 @@ Repeated invocations toggle between the two most recently open buffers."
   (("C-x C-f" . counsel-find-file)
    :map counsel-find-file-map
    ("C-~" . my/counsel-goto-local-home))
+  :general
+  (my/leader-keys
+    "fR" '(my/counsel-recent-directory :wk "recent-dir"))
   :config
   (setq counsel-grep-base-command
         "rg -i -M 120 --no-heading --line-number --color never '%s' %s")
@@ -1152,7 +1155,40 @@ Repeated invocations toggle between the two most recently open buffers."
   (defun my/counsel-goto-local-home ()
     "Go to the $HOME of the local machine."
     (interactive)
-    (ivy--cd "~/")))
+    (ivy--cd "~/"))
+
+  ;; http://blog.binchen.org/posts/use-ivy-to-open-recent-directories.html
+  ;; https://emacs-china.org/t/topic/5948/3?u=et2010
+  (defvar counsel-recent-dir--selected "~/")
+
+  (defvar counsel-recent-dir--map (let ((map (make-sparse-keymap)))
+                                    (define-key map  (kbd "TAB") 'counsel-recent-dir--find-file)
+                                    (define-key map  [(tab)] 'counsel-recent-dir--find-file)
+                                    map))
+
+  (defun counsel-recent-dir--find-file()
+    (interactive)
+    (ivy-exit-with-action
+     (lambda(c)
+       (setq counsel-recent-dir--selected c)
+       (run-at-time 0.05 nil (lambda()
+                               (let ((default-directory counsel-recent-dir--selected))
+                                 ;; (find-file counsel-recent-dir--selected)
+                                 (counsel-find-file)))))))
+
+  (defun my/counsel-recent-directory ()
+    "Open recent directory with dired"
+    (interactive)
+    (unless recentf-mode (recentf-mode 1))
+    (let ((collection
+           (delete-dups
+            (append (mapcar 'file-name-directory recentf-list)
+                    ;; fasd history
+                    (if (executable-find "fasd")
+                        (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
+      (ivy-read "directories:" collection
+                :keymap counsel-recent-dir--map
+                :action (lambda (x) (dired x))))))
 
 (use-package swiper
   :general
