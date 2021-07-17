@@ -841,7 +841,7 @@ mouse-1: Display minor modes menu"
     "bd" 'kill-current-buffer
     "bb" 'switch-to-buffer
     "bk" 'kill-current-buffer
-    "bl" '(evil-switch-to-windows-last-buffer :wk "last buffer")
+    "bl" '(my/switch-to-previous-buffer :wk "last buffer")
 
     "c" '(:ignore t :which-key "change text")
     "c;" '(my/semicolon-at-end-of-line :which-key "semicolon(end)")
@@ -1030,7 +1030,16 @@ Such as 1+ to increment the org file according to the date number"
         (funcall func)
         (save-selected-window
           (other-window 1)
-          (switch-to-buffer (other-buffer)))))))
+          (switch-to-buffer (other-buffer))))))
+
+  ;; Same function to `evil-switch-to-windows-last-buffer'
+  ;; If you dont't using evil, use this function
+  ;; https://emacsredux.com/blog/2013/04/28/switch-to-previous-buffer/
+  (defun my/switch-to-previous-buffer ()
+    "Switch to previously open buffer.
+Repeated invocations toggle between the two most recently open buffers."
+    (interactive)
+    (switch-to-buffer (other-buffer (current-buffer) 1))))
 
 (use-package evil
   :ensure t
