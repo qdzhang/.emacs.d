@@ -627,22 +627,40 @@ mouse-1: Display minor modes menu"
 
 ;; Term and ansi-term settings
 ;;===========================
+
+;;; A general function to create a new split window and switch to it
+;;; https://emacsredux.com/blog/2013/04/29/start-command-or-switch-to-its-buffer/
+(defun my/start-or-switch-to-split (function buffer-name)
+  "Invoke FUNCTION if there is no buffer with BUFFER-NAME.
+Otherwise switch to the buffer named BUFFER-NAME.  Don't clobber
+the current buffer."
+  (if (not (get-buffer buffer-name))
+      (progn
+        (split-window-sensibly (selected-window))
+        (other-window 1)
+        (funcall function))
+    (switch-to-buffer-other-window buffer-name)))
+
 ;; Open ansi-term in a split window
 (defun my/open-term-in-split-window ()
-  "Start a terminal emulator in a new window."
+  "Start `ansi-term' in a new split window."
   (interactive)
-  (split-window-sensibly)
-  (other-window 1)
-  (ansi-term (executable-find "bash")))
-
+  (my/start-or-switch-to-split (lambda ()
+                                 (ansi-term (executable-find "bash")))
+                               "*ansi-term*"))
 
 ;; Open vterm in a split window
 (defun my/open-vterm-in-split-window ()
-  "Start vterm in a new split window."
+  "Start `vterm' in a new split window."
   (interactive)
-  (split-window-sensibly)
-  (other-window 1)
-  (vterm))
+  (my/start-or-switch-to-split 'vterm "*vterm*"))
+
+(defun my/open-ielm-in-split-window ()
+  "Switch to default `ielm' buffer.
+Start `ielm' in a split window if it's not already running."
+  (interactive)
+  (my/start-or-switch-to-split 'ielm "*ielm*"))
+
 
 (defun my/ansi-term-bash ()
   "Start a ternimal emulator using bash without confirming"
@@ -888,6 +906,7 @@ mouse-1: Display minor modes menu"
     "o" '(:ignore t :which-key "open")
     "od" '(dired-jump :wk "dired")
     "oe" 'eshell
+    "oi" '(my/open-ielm-in-split-window :wk "ielm")
     "ot" '(my/open-vterm-in-split-window :wk "split-term")
     "oT" 'vterm
     ;; "oT" '(my/ansi-term-bash :wk "term")
