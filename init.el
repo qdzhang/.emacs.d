@@ -1147,7 +1147,8 @@ Repeated invocations toggle between the two most recently open buffers."
    ("C-~" . my/counsel-goto-local-home))
   :general
   (my/leader-keys
-    "fR" '(my/counsel-recent-directory :wk "recent-dir"))
+    "fR" '(my/counsel-recent-directory :wk "recent-dir")
+    "bj" '(my/counsel-all-opened-dired-buffer :wk "jump-dired"))
   :config
   (setq counsel-grep-base-command
         "rg -i -M 120 --no-heading --line-number --color never '%s' %s")
@@ -1188,7 +1189,29 @@ Repeated invocations toggle between the two most recently open buffers."
                         (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
       (ivy-read "directories:" collection
                 :keymap counsel-recent-dir--map
-                :action (lambda (x) (dired x))))))
+                :action (lambda (x) (dired x)))))
+
+  ;; Jump between directories
+  (defun my/determine-buffer-mode (buffer-or-string)
+    "Returns the major mode associated with a buffer."
+    (with-current-buffer buffer-or-string
+      major-mode))
+
+  (defun my/buffer-dired-mode-p (buffer)
+    "Determine whether a buffer's major mode is dired-mode"
+    (equal (my/determine-buffer-mode buffer)
+           'dired-mode))
+
+  (defun my/counsel-all-opened-dired-buffer ()
+    "All opened directory can jumpt between theme"
+    (interactive)
+    (let ((all-buffers (buffer-list))
+          (my--dir-collection '()))
+      (dolist (buffer all-buffers)
+        (if (my/buffer-dired-mode-p buffer)
+            (setq my--dir-collection (cons buffer my--dir-collection))))
+      (ivy-read "Jump to dired:" (mapcar #'buffer-name my--dir-collection)
+                :action (lambda (x) (switch-to-buffer x))))))
 
 (use-package swiper
   :general
