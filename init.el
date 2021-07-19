@@ -1,7 +1,5 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
-(load "server")
-(unless (server-running-p) (server-start))
 
 ;; Setting after display system init list
 ;; If you start an emacsclient, this macro is helpful to set font faces
@@ -108,6 +106,10 @@ Ignores `ARGS'."
 (setq use-package-compute-statistics t)
 
 (use-package diminish)
+
+(use-package server
+  :ensure nil
+  :hook (after-init . server-mode))
 
 
 ;; Global key bindings
