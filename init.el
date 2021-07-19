@@ -1202,6 +1202,7 @@ Repeated invocations toggle between the two most recently open buffers."
   :config
   (setq counsel-grep-base-command
         "rg -i -M 120 --no-heading --line-number --color never '%s' %s")
+  (setq counsel-git-cmd "rg --files")
 
   (defun my/counsel-goto-local-home ()
     "Go to the $HOME of the local machine."
@@ -1261,7 +1262,66 @@ Repeated invocations toggle between the two most recently open buffers."
         (if (my/buffer-dired-mode-p buffer)
             (setq my--dir-collection (cons buffer my--dir-collection))))
       (ivy-read "Jump to dired:" (mapcar #'buffer-name my--dir-collection)
-                :action (lambda (x) (switch-to-buffer x))))))
+                :action (lambda (x) (switch-to-buffer x)))))
+
+
+  ;; Add ivy actions to counsel-fzf and counsel-rg
+  ;; to make theme work seamlessly
+  ;; https://gitlab.com/protesilaos/dotfiles/-/blob/v2.1.0-void/emacs/.emacs.d/emacs-init.org#h:87b37547-5941-4f20-baf6-4d00cde1151a
+  (defun prot/counsel-fzf-rg-files (&optional input dir)
+    "Run `fzf' in tandem with `ripgrep' to find files in the
+present directory.  If invoked from inside a version-controlled
+repository, then the corresponding root is used instead."
+    (interactive)
+    (let* ((process-environment
+            (cons (concat "FZF_DEFAULT_COMMAND=rg -Sn --color never --files --no-follow --hidden -g \"!{node_modules/**,.git/**}\"")
+                  process-environment))
+           (vc (vc-root-dir)))
+      (if dir
+          (counsel-fzf input dir)
+        (if (eq vc nil)
+            (counsel-fzf input default-directory)
+          (counsel-fzf input vc)))))
+
+  (defun prot/counsel-fzf-dir (arg)
+    "Specify root directory for `counsel-fzf'."
+    (prot/counsel-fzf-rg-files ivy-text
+                               (read-directory-name
+                                (concat (car (split-string counsel-fzf-cmd))
+                                        " in directory: "))))
+
+  (defun prot/counsel-rg-dir (arg)
+    "Specify root directory for `counsel-rg'."
+    (let ((current-prefix-arg '(4)))
+      (counsel-rg ivy-text nil "")))
+
+  (defun prot/counsel-fzf-ace-window (arg)
+    "Use `ace-window' on `prot/counsel-fzf-rg-files' candidate."
+    (ace-window t)
+    (let ((default-directory (if (eq (vc-root-dir) nil)
+                                 counsel--fzf-dir
+                               (vc-root-dir))))
+      (if (> (length (aw-window-list)) 1)
+          (find-file arg)
+        (find-file-other-window arg))
+      (balance-windows (current-buffer))))
+
+  ;; Pass functions as appropriate Ivy actions (accessed via M-o)
+  (ivy-add-actions
+   'counsel-fzf
+   '(("r" prot/counsel-fzf-dir "change root directory")
+     ("g" prot/counsel-rg-dir "use ripgrep in root directory")
+     ("a" prot/counsel-fzf-ace-window "ace-window switch")))
+
+  (ivy-add-actions
+   'counsel-rg
+   '(("r" prot/counsel-rg-dir "change root directory")
+     ("z" prot/counsel-fzf-dir "find file with fzf in root directory")))
+
+  (ivy-add-actions
+   'counsel-find-file
+   '(("g" prot/counsel-rg-dir "use ripgrep in root directory")
+     ("z" prot/counsel-fzf-dir "find file with fzf in root directory"))))
 
 (use-package swiper
   :general
