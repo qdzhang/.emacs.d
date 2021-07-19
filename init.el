@@ -1,5 +1,7 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
+(load "server")
+(unless (server-running-p) (server-start))
 
 ;; Setting after display system init list
 ;; If you start an emacsclient, this macro is helpful to set font faces
@@ -419,6 +421,17 @@ mouse-1: Display minor modes menu"
   "Displya flycheck status in the modeline"
   (flycheck-mode-line-status-text))
 
+(defun simple-modeline-client-status ()
+  "Determine whether current frame is a server/client frame"
+  '(""
+    (:propertize
+     (""
+      (:eval
+       (if
+           (frame-parameter nil 'client)
+           "@" "")))
+     help-echo "emacsclient frame")))
+
 (defcustom simple-modeline-segments
   '((simple-modeline-segment-modified
      simple-modeline-segment-buffer-name
@@ -426,6 +439,7 @@ mouse-1: Display minor modes menu"
      simple-modeline-segment-position)
     (simple-modeline-rime-indicator
      simple-modeline-narrowed-status
+     simple-modeline-client-status
      simple-modeline-segment-eol
      simple-modeline-segment-encoding
      simple-modeline-segment-minions-mode
@@ -437,15 +451,16 @@ mouse-1: Display minor modes menu"
   :type '(list (repeat :tag "Left aligned" function)
                (repeat :tag "Right aligned" function)))
 
-(setq-default mode-line-format
-              (list
-               mode-line-front-space
-               '(:eval evil-mode-line-tag)
-               '(:eval
-                 (simple-modeline--format
-                  (car simple-modeline-segments)
-                  (cadr simple-modeline-segments)))
-               mode-line-end-spaces))
+(when (not (string= "emacstty" (daemonp)))
+  (setq-default mode-line-format
+                (list
+                 mode-line-front-space
+                 '(:eval evil-mode-line-tag)
+                 '(:eval
+                   (simple-modeline--format
+                    (car simple-modeline-segments)
+                    (cadr simple-modeline-segments)))
+                 mode-line-end-spaces)))
 
 
 ;; Line number
@@ -772,25 +787,26 @@ Start `ielm' in a split window if it's not already running."
 ;; (load-theme 'tango t)
 ;; (load-theme 'tsdh-light t)
 
-(if (display-graphic-p)
-    (use-package doom-themes
-      :config
-      ;; Global settings (defaults)
-      (setq doom-themes-enable-bold t ; if nil, bold is universally disabled
-            doom-themes-enable-italic t
-            doom-themes-padded-modeline 5) ; if nil, italics is universally disabled
-      (load-theme 'doom-one-light t)
+(cond ((string= "emacstty" (daemonp))
+       (load-theme 'tango-dark))
+      (t
+       (use-package doom-themes
+         :config
+         ;; Global settings (defaults)
+         (setq doom-themes-enable-bold t ; if nil, bold is universally disabled
+               doom-themes-enable-italic t
+               doom-themes-padded-modeline 5) ; if nil, italics is universally disabled
+         (load-theme 'doom-one-light t)
 
-      ;; Enable flashing mode-line on errors
-      ;; (doom-themes-visual-bell-config)
-      ;; Enable custom neotree theme (all-the-icons must be installed!)
-      ;; (doom-themes-neotree-config)
-      ;; or for treemacs users
-      ;; (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
-      ;; (doom-themes-treemacs-config)
-      ;; Corrects (and improves) org-mode's native fontification.
-      (doom-themes-org-config))
-  (load-theme 'tango-dark))
+         ;; Enable flashing mode-line on errors
+         ;; (doom-themes-visual-bell-config)
+         ;; Enable custom neotree theme (all-the-icons must be installed!)
+         ;; (doom-themes-neotree-config)
+         ;; or for treemacs users
+         ;; (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+         ;; (doom-themes-treemacs-config)
+         ;; Corrects (and improves) org-mode's native fontification.
+         (doom-themes-org-config))))
 
 ;; (use-package acme-theme
 ;;   :config
