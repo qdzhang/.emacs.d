@@ -876,7 +876,7 @@ Start `ielm' in a split window if it's not already running."
              (pop-to-buffer "*scratch*"))
            :wk "scratch")
     "bd" 'kill-current-buffer
-    "bb" 'switch-to-buffer
+    "bb" 'counsel-switch-buffer
     "bk" 'kill-current-buffer
     "bl" '(my/switch-to-previous-buffer :wk "last buffer")
 
@@ -906,12 +906,16 @@ Start `ielm' in a split window if it's not already running."
     "fn" '(my/org-journal-next-day-file :wk "next file")
     "fp" '(my/org-journal-previous-day-file :wk "previous file")
 
+    ;; TODO: This can use nested keystroke to invoke more commands in groups
+    ;; Learn the `map!' macro of doom emacs
     "g" '(:ignore t :which-key "git")
     "gg" 'magit-status
+    "gs" 'counsel-git-grep
+    "gL" 'counsel-git-log
 
     "h" '(:ignore t :which-key "describe")
     "he" 'view-echo-area-messages
-    "hf" 'describe-function
+    "hf" '(counsel-describe-function :wk "describe-function")
     "hF" 'describe-face
     "hi" 'info
     "hl" 'view-lossage
@@ -921,7 +925,7 @@ Start `ielm' in a split window if it's not already running."
     "hK" 'describe-keymap
     "hs" 'use-package-report
     "hp" 'describe-package
-    "hv" 'describe-variable
+    "hv" '(counsel-describe-variable :wk "describe-variable")
 
     "o" '(:ignore t :which-key "open")
     "od" '(dired-jump :wk "dired")
@@ -1957,6 +1961,8 @@ shell exits, the buffer is killed."
   :after evil
   :init
   (setq evil-lookup-func #'helpful-at-point)
+  (setq counsel-describe-function-function #'helpful-callable)
+  (setq counsel-describe-variable-function #'helpful-variable)
   :bind
   ([remap describe-function] . helpful-callable)
   ([remap describe-command] . helpful-command)
