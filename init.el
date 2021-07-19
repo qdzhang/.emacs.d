@@ -948,11 +948,7 @@ Start `ielm' in a split window if it's not already running."
     "sy" 'ivy-yasnippet
 
     "t" '(:ignore t :which-key "toggle")
-    "ts" 'sly
-
-    "w" '(:ignore t :which-key "window")
-    "wt" '(my/window-split-toggle :wk "toggle split")
-    "ww" 'other-window)
+    "ts" 'sly)
 
   ;; Comment sexps and keep parentheses balanced
   ;; Keybinding is SPC+;
@@ -1162,7 +1158,39 @@ Repeated invocations toggle between the two most recently open buffers."
           (ivy--cd dir)
           (setq this-command 'ivy-cd))))))
 
+(use-package ace-window
+  :general
+  (my/leader-keys
+    "w" 'ace-window)
+  :custom
+  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  (aw-scope 'frame)
+  (aw-dispatch-always t)
+  (aw-dispatch-alist
+   '((?m aw-swap-window "Swap Windows")
+     (?M aw-move-window "Move Window")
+     (?c aw-copy-window "Copy Window")
+     (?j aw-switch-buffer-in-window "Select Buffer")
+     (?n aw-flip-window)
+     (?u aw-switch-buffer-other-window "Switch Buffer Other Window")
+     (?c aw-split-window-fair "Split Fair Window")
+     (?v aw-split-window-vert "Split Vert Window")
+     (?b aw-split-window-horz "Split Horz Window")
+     (?o delete-other-windows "Delete Other Windows")
+     (?x ace-delete-window "Delete Window")
+     (?? aw-show-dispatch-help)))
+  (aw-minibuffer-flag t)
+  (aw-ignore-current nil)
+  (aw-display-mode-overlay t)
+  (aw-background nil)
+  :config
+  (ace-window-display-mode -1)
+  (custom-set-faces
+   '(aw-leading-char-face
+     ((t (:height 3.0))))))
+
 (use-package counsel
+  :after (ivy ace-window)
   :bind
   (("C-x C-f" . counsel-find-file)
    :map counsel-find-file-map
