@@ -1185,12 +1185,43 @@ Repeated invocations toggle between the two most recently open buffers."
   (aw-background nil)
   :config
   (ace-window-display-mode -1)
-  (custom-set-faces
-   '(aw-leading-char-face
-     ((t (:height 3.0))))))
+
+  ;; Make aw-show-dispatch-help show in tabulate
+  ;; https://github.com/abo-abo/ace-window/issues/172
+  (defun aw-show-dispatch-help ()
+    "Display action shortucts in echo area."
+    (interactive)
+    (let* ((action-strings
+            (cl-map 'list
+                    (lambda (action)
+                      (cl-destructuring-bind (key fn &optional description) action
+                        (format "%s: %s"
+                                (propertize
+                                 (char-to-string key)
+                                 'face 'aw-key-face)
+                                (or description fn))))
+                    aw-dispatch-alist))
+           ;; Ensure first col is longer for odd #, pad second col with blank element
+           ;; so cl-map combining lines doesn't stop early
+           (rows (ceiling (/ (length action-strings) 2.0)))
+           (as1 (cl-subseq action-strings 0 rows))
+           (as2 (append (cl-subseq action-strings rows) '(nil)))
+           (max-first-col-width (apply 'max (cl-map 'list 'string-width as1))))
+      (message (mapconcat 'identity
+                          (cl-map 'list
+                                  (lambda (a1 a2)
+                                    (concat
+                                     (truncate-string-to-width a1 max-first-col-width nil ?\s)
+                                     "  " a2))
+                                  as1 as2)
+                          "\n")))
+    ;; Prevent this from replacing any help display
+    ;; in the minibuffer.
+    (let (aw-minibuffer-flag)
+      (mapc #'delete-overlay aw-overlays-back)
+      (call-interactively 'ace-window))))
 
 (use-package counsel
-  :after (ivy ace-window)
   :bind
   (("C-x C-f" . counsel-find-file)
    :map counsel-find-file-map
