@@ -737,8 +737,8 @@ Start `ielm' in a split window if it's not already running."
          :config
          ;; Global settings (defaults)
          (setq doom-themes-enable-bold t ; if nil, bold is universally disabled
-               doom-themes-enable-italic t
-               doom-themes-padded-modeline 5) ; if nil, italics is universally disabled
+               doom-themes-enable-italic t ; if nil, italics is universally disabled
+               doom-themes-padded-modeline 5)
          (load-theme 'doom-one-light t)
 
          ;; Enable flashing mode-line on errors
