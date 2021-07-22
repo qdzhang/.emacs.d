@@ -880,7 +880,14 @@ Start `ielm' in a split window if it's not already running."
     "sb" '(counsel-bookmark :wk "bookmarks")
     "sB" 'swiper-all
     "sd" '(counsel-bookmarked-directory :wk "bookmarks(dir)")
-    "sf" 'counsel-fzf
+    "sf" '((lambda ()
+             (interactive)
+             (let ((home-dir (expand-file-name "~/")))
+               (if (equal home-dir (expand-file-name default-directory))
+                   (progn (message "Current directory is HOME directory. Choose a directory first!")
+                          (sit-for 0.5)
+                          (counsel-find-file))
+                 (counsel-fzf)))) :wk "counsel-fzf")
     "sg" 'counsel-grep-or-swiper
     "si" '(counsel-imenu :wk "imenu")
     "sm" '(counsel-evil-marks :wk "marks")
