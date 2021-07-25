@@ -431,7 +431,7 @@ mouse-1: Display minor modes menu"
       (:eval
        (if
            (frame-parameter nil 'client)
-           "@" "")))
+           "@ " "")))
      help-echo "emacsclient frame")))
 
 (defcustom simple-modeline-segments
@@ -439,9 +439,9 @@ mouse-1: Display minor modes menu"
      simple-modeline-segment-buffer-name
      simple-modeline-segment-nyan
      simple-modeline-segment-position)
-    (simple-modeline-rime-indicator
+    (simple-modeline-client-status
+     simple-modeline-rime-indicator
      simple-modeline-narrowed-status
-     simple-modeline-client-status
      simple-modeline-segment-eol
      simple-modeline-segment-encoding
      simple-modeline-segment-minions-mode
