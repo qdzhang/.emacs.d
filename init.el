@@ -1050,13 +1050,13 @@ Repeated invocations toggle between the two most recently open buffers."
   ;;    evil-visual-state-tag   (propertize " VISUAL " 'face '((:foreground "light salmon")))
   ;;    evil-operator-state-tag (propertize " OPERATE " 'face '((:foreground "sandy brown"))))
 
-  (setq evil-normal-state-tag   (propertize " [N] " 'face 'bold)
-        evil-emacs-state-tag    (propertize " [E] " 'face 'bold)
-        evil-insert-state-tag   (propertize " [I] " 'face 'bold)
-        evil-replace-state-tag  (propertize " [R] " 'face 'bold)
-        evil-motion-state-tag   (propertize " [M] " 'face 'bold)
-        evil-visual-state-tag   (propertize " [V] " 'face 'bold)
-        evil-operator-state-tag (propertize " [O] " 'face 'bold))
+  (setq evil-normal-state-tag   (propertize " N  " 'face 'bold)
+        evil-emacs-state-tag    (propertize " E  " 'face 'bold)
+        evil-insert-state-tag   (propertize " I  " 'face 'bold)
+        evil-replace-state-tag  (propertize " R  " 'face 'bold)
+        evil-motion-state-tag   (propertize " M  " 'face 'bold)
+        evil-visual-state-tag   (propertize " V  " 'face 'bold)
+        evil-operator-state-tag (propertize " O  " 'face 'bold))
   (evil-mode 1))
 
 (use-package evil-collection
