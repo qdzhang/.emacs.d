@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: Markdown frontmatter
-# key: meta
+# key: frontmatter
 # --
 ---
 title: "$1"
