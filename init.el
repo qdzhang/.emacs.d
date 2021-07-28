@@ -722,6 +722,8 @@ Start `ielm' in a split window if it's not already running."
 (require 'gitconfig-mode)
 (require 'gitignore-mode)
 
+(require 'imenu-list)
+
 
 ;;; Packages managed by use-package
 ;;;================================
@@ -896,7 +898,8 @@ Start `ielm' in a split window if it's not already running."
     "sy" 'ivy-yasnippet
 
     "t" '(:ignore t :which-key "toggle")
-    "ts" 'sly)
+    "ts" 'sly
+    "ti" '(imenu-list-smart-toggle :wk "imenu-list"))
 
   ;; Comment sexps and keep parentheses balanced
   ;; Keybinding is SPC+;
