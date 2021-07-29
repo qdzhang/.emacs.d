@@ -870,6 +870,9 @@ Start `ielm' in a split window if it's not already running."
     "hp" 'describe-package
     "hv" '(counsel-describe-variable :wk "describe-variable")
 
+    "m" '(:ignore t :which-key "bookmark")
+    "mm" 'bookmark-set
+
     "o" '(:ignore t :which-key "open")
     "od" '(dired-jump :wk "dired")
     "oe" 'eshell
@@ -2384,6 +2387,9 @@ inserted between the braces between the braces."
               '((:gopls .
                         ((staticcheck . t)
                          (matcher . "CaseSensitive")))))
+
+(use-package lua-mode
+  :defer t)
 
 
 ;;; Restore file-name-hander-alist
