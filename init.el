@@ -2028,7 +2028,15 @@ shell exits, the buffer is killed."
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-command "multimarkdown"))
+  :init (setq markdown-command "multimarkdown")
+  :hook
+  (markdown-mode . my-markdown-mode-hook)
+  :config
+  (add-to-list 'auto-mode-alist '("presentation.html" . markdown-mode))
+  (setq word-wrap-by-category t)
+  (defun my-markdown-mode-hook ()
+    (visual-line-mode 1)
+    (toggle-word-wrap)))
 
 (use-package expand-region
   :bind
