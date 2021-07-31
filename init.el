@@ -2149,10 +2149,13 @@ shell exits, the buffer is killed."
   :general
   (my/leader-keys
     "d" '(:ignore t :which-key "dired")
-    "dp" 'image-dired
-    "dw" '(wdired-change-to-wdired-mode :wk "wdired")
+    "dc" '(tda/rsync :wk "async-rsync")
+    "di" 'image-dired
+    "dp" '(tda/zip :wk "async-zip")
+    "du" '(tda/unzip :wk "async-unzip")
     "ds" 'xah-dired-sort
-    "dz" '(my/dired-get-size :wk "marked-files-size")
+    "dw" '(wdired-change-to-wdired-mode :wk "wdired")
+    "dz" '(tda/get-files-size :wk "async-files-size")
     "d /" '(my/dired-filter :wk "narrow"))
   :hook
   (dired-mode . dired-hide-details-mode)
@@ -2180,6 +2183,12 @@ shell exits, the buffer is killed."
   :config
   (use-package dired-x
     :ensure nil)
+
+  ;; Dired async
+  ;; https://vxlabs.com/2018/03/30/asynchronous-rsync-with-emacs-dired-and-tramp/
+  ;; https://oremacs.com/2016/02/24/dired-rsync/
+  (require 'tmtxt-async-tasks)
+  (require 'tmtxt-dired-async)
 
   (defun my/dired-filter ()
     "Dired show filtered files"
