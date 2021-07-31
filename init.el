@@ -724,6 +724,8 @@ Start `ielm' in a split window if it's not already running."
 
 (require 'imenu-list)
 
+(require 'tmtxt-async-tasks)
+
 
 ;;; Packages managed by use-package
 ;;;================================
@@ -2187,7 +2189,6 @@ shell exits, the buffer is killed."
   ;; Dired async
   ;; https://vxlabs.com/2018/03/30/asynchronous-rsync-with-emacs-dired-and-tramp/
   ;; https://oremacs.com/2016/02/24/dired-rsync/
-  (require 'tmtxt-async-tasks)
   (require 'tmtxt-dired-async)
 
   (defun my/dired-filter ()
