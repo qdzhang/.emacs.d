@@ -2186,6 +2186,10 @@ shell exits, the buffer is killed."
   (use-package dired-x
     :ensure nil)
 
+  ;; Avoid popup `Async Shell Command' window when using `dired-do-async-shell-command'
+  ;; https://emacs.stackexchange.com/questions/5553/async-shell-process-buffer-always-clobbers-window-arrangement
+  (add-to-list 'display-buffer-alist (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))
+
   ;; Dired async
   ;; https://vxlabs.com/2018/03/30/asynchronous-rsync-with-emacs-dired-and-tramp/
   ;; https://oremacs.com/2016/02/24/dired-rsync/
