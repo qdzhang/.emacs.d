@@ -123,8 +123,8 @@ Ignores `ARGS'."
 
 ;; highlight current line
 ;; (global-hl-line-mode 1)
-(add-hook 'prog-mode-hook #'hl-line-mode)
-(add-hook 'vterm-mode-hook (lambda () (hl-line-mode -1)))
+;; (add-hook 'prog-mode-hook #'hl-line-mode)
+;; (add-hook 'vterm-mode-hook (lambda () (hl-line-mode -1)))
 
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 (setq-default display-fill-column-indicator-column 80)
@@ -2404,6 +2404,55 @@ inserted between the braces between the braces."
 
 (use-package lua-mode
   :defer t)
+
+;; Takes a color string like #ffe0e0 and returns a light
+;; or dark foreground color to make sure text is readable.
+(defun fg-from-bg (bg)
+  (let* ((avg (/ (+ (string-to-number (substring bg 1 3) 16)
+                    (string-to-number (substring bg 3 5) 16)
+                    (string-to-number (substring bg 5 7) 16)
+                    ) 3)))
+    (if (> avg 128) "#000000" "#ffffff")))
+
+;; Improved from http://ergoemacs.org/emacs/emacs_CSS_colors.html
+;; * Avoid mixing up #abc and #abcabc regexps
+;; * Make sure dark background have light foregrounds and vice versa
+(defun xah-syntax-color-hex ()
+  "Syntax color text of the form 「#ff1100」 and 「#abc」 in current buffer.
+URL `https://github.com/mariusk/emacs-color'
+Version 2016-08-09"
+  (interactive)
+  (font-lock-add-keywords
+   nil
+   '(
+     ("#[ABCDEFabcdef[:digit:]]\\{6\\}"
+      (0 (progn (let* ((bgstr (match-string-no-properties 0))
+                       (fgstr (fg-from-bg bgstr)))
+                  (put-text-property
+                   (match-beginning 0)
+                   (match-end 0)
+                   'face (list :background bgstr :foreground fgstr))))))
+     ("#[ABCDEFabcdef[:digit:]]\\{3\\}[^ABCDEFabcdef[:digit:]]"
+      (0 (progn (let* (
+                       (ms (match-string-no-properties 0))
+                       (r (substring ms 1 2))
+                       (g (substring ms 2 3))
+                       (b (substring ms 3 4))
+                       (bgstr (concat "#" r r g g b b))
+                       (fgstr (fg-from-bg bgstr)))
+                  (put-text-property
+                   (match-beginning 0)
+                   (- (match-end 0) 1)
+                   'face (list :background bgstr :foreground fgstr)
+                   )))))
+     ))
+  (font-lock-fontify-buffer))
+
+(setq my/syntax-color-hex
+      '(prog-mode-hook
+        org-mode-hook))
+(dolist (hook my/syntax-color-hex)
+  (add-hook hook 'xah-syntax-color-hex))
 
 
 ;;; Restore file-name-hander-alist
