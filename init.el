@@ -726,6 +726,21 @@ Start `ielm' in a split window if it's not already running."
 
 (require 'tmtxt-async-tasks)
 
+;; Themes path
+
+(add-subdirs-to-load-path "~/.emacs.d/themes/")
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+
+;; purp theme
+;; dark theme
+;; (load-theme 'purp t)
+;; light theme
+;; (load-theme 'purp-light t)
+;; blurb theme
+;; (load-theme 'blurb t)
+
+;; (load-theme 'minimal-light t)
+
 
 ;;; Packages managed by use-package
 ;;;================================
