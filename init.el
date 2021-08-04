@@ -2463,11 +2463,20 @@ Version 2016-08-09"
      ))
   (font-lock-fontify-buffer))
 
-(setq my/syntax-color-hex
-      '(prog-mode-hook
-        org-mode-hook))
-(dolist (hook my/syntax-color-hex)
-  (add-hook hook 'xah-syntax-color-hex))
+;; Following hook is an anternative for `rainbow-mode'
+;; Use one of theme
+;; (setq my/syntax-color-hex
+;;       '(prog-mode-hook
+;;         org-mode-hook))
+;; (dolist (hook my/syntax-color-hex)
+;;   (add-hook hook 'xah-syntax-color-hex))
+
+(use-package rainbow-mode
+  :hook
+  ((prog-mode helpful-mode org-mode conf-mode) . rainbow-mode)
+  :config
+  (add-to-list 'rainbow-html-colors-major-mode-list 'emacs-lisp-mode)
+  (add-to-list 'rainbow-html-colors-major-mode-list 'conf-mode))
 
 
 ;;; Restore file-name-hander-alist
