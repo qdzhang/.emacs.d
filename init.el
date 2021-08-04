@@ -726,6 +726,9 @@ Start `ielm' in a split window if it's not already running."
 
 (require 'tmtxt-async-tasks)
 
+;; Depends on fringer-helper
+(require 'origami)
+
 ;; Themes path
 
 (add-subdirs-to-load-path "~/.emacs.d/themes/")

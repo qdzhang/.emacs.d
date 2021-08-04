@@ -1,3 +1,6 @@
 [submodule "site-lisp/git-modes"]
 	path = site-lisp/git-modes
 	url = git@github.com:magit/git-modes.git
+[submodule "site-lisp/origami.el"]
+	path = site-lisp/origami.el
+	url = git@github.com:elp-revive/origami.el.git
