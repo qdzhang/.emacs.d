@@ -726,8 +726,32 @@ Start `ielm' in a split window if it's not already running."
 
 (require 'tmtxt-async-tasks)
 
+(require 'hl-todo)
+(global-hl-todo-mode 1)
+(which-key-add-key-based-replacements "C-c t" "hl-todo")
+(define-key hl-todo-mode-map (kbd "C-c t p") 'hl-todo-previous)
+(define-key hl-todo-mode-map (kbd "C-c t n") 'hl-todo-next)
+(define-key hl-todo-mode-map (kbd "C-c t o") 'hl-todo-occur)
+(define-key hl-todo-mode-map (kbd "C-c t i") 'hl-todo-insert)
+
+
+;; Origami is used as evil folding backend
+
+;; Alternative:
+;; - `hs-minor-mode', can be used in conjunction with [hideshowvis](https://www.emacswiki.org/emacs/hideshowvis.el)
+;; - `outline-mode', can be used in conjunction with [backline](https://github.com/tarsius/backline)
+;;                   and some config examples: https://www.reddit.com/r/emacs/comments/e2u5n9/code_folding_with_outlineminormode/
+
 ;; Depends on fringer-helper
+;; Maybe should load after evil
 (require 'origami)
+(global-origami-mode 1)
+;; Some config can be used for reference
+;; TODO: adapt some config examples
+;; https://www.reddit.com/r/emacs/comments/6fmpwb/evil_and_builtin_folding/
+;; https://www.reddit.com/r/emacs/comments/5ei7wa/awesome_vimlike_folding_for_evilmode_with_markers/
+
+
 
 ;; Themes path
 
