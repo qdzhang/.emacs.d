@@ -1108,7 +1108,10 @@ Repeated invocations toggle between the two most recently open buffers."
         evil-motion-state-tag   (propertize " M  " 'face 'bold)
         evil-visual-state-tag   (propertize " V  " 'face 'bold)
         evil-operator-state-tag (propertize " O  " 'face 'bold))
-  (evil-mode 1))
+  (evil-mode 1)
+
+  ;; Add XML attributes text object
+  (require 'exato))
 
 (use-package evil-collection
   :after evil
@@ -2505,6 +2508,11 @@ Version 2016-08-09"
   :config
   (add-to-list 'rainbow-html-colors-major-mode-list 'emacs-lisp-mode)
   (add-to-list 'rainbow-html-colors-major-mode-list 'conf-mode))
+
+(use-package auto-rename-tag
+  :defer t
+  :hook
+  (web-mode . auto-rename-tag-mode))
 
 
 ;;; Restore file-name-hander-alist
