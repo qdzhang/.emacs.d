@@ -751,6 +751,7 @@ Start `ielm' in a split window if it's not already running."
 ;; https://www.reddit.com/r/emacs/comments/6fmpwb/evil_and_builtin_folding/
 ;; https://www.reddit.com/r/emacs/comments/5ei7wa/awesome_vimlike_folding_for_evilmode_with_markers/
 
+(require 'idle-highlight-mode)
 
 
 ;; Themes path
