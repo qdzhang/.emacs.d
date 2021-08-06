@@ -208,6 +208,10 @@ Ignores `ARGS'."
   '((t (:inherit (error))))
   "Face for error status indicators in the mode-line.")
 
+(defface simple-modeline-panel
+  '((t (:inherit mode-line-highlight)))
+  "Face for 'X out of Y' segments, such as `anzu', `evil-substitute' and`iedit', etc.")
+
 ;;; Some helper functions to format mode-line
 (defun simple-modeline--format (left-segments right-segments)
   "Return a string of `window-width' length containing LEFT-SEGMENTS and RIGHT-SEGMENTS, aligned respectively."
@@ -460,11 +464,28 @@ Source: https://git.io/vQKzv"
            "@ " "")))
      help-echo "emacsclient frame")))
 
+(defun simple-modeline-evil-substitute ()
+  "Show number of matches for evil-ex substitutions and highlights in real time."
+  (when (and (bound-and-true-p evil-local-mode)
+             (or (assq 'evil-ex-substitute evil-ex-active-highlights-alist)
+                 (assq 'evil-ex-global-match evil-ex-active-highlights-alist)
+                 (assq 'evil-ex-buffer-match evil-ex-active-highlights-alist)))
+    (propertize
+     (let ((range (if evil-ex-range
+                      (cons (car evil-ex-range) (cadr evil-ex-range))
+                    (cons (line-beginning-position) (line-end-position))))
+           (pattern (car-safe (evil-delimited-arguments evil-ex-argument 2))))
+       (if pattern
+           (format " %s matches " (how-many pattern (car range) (cdr range)))
+         " - "))
+     'face 'simple-modeline-panel)))
+
 (defcustom simple-modeline-segments
   '((simple-modeline-segment-modified
      simple-modeline-segment-buffer-name
      simple-modeline-segment-nyan
-     simple-modeline-segment-position)
+     simple-modeline-segment-position
+     simple-modeline-evil-substitute)
     (simple-modeline-client-status
      simple-modeline-rime-indicator
      simple-modeline-narrowed-status
