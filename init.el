@@ -1575,7 +1575,7 @@ If BACK is t, jump backward."
 (use-package company
   :diminish
   :init
-  (setq company-idle-delay 0)
+  (setq company-idle-delay 0.2)
   :hook
   (after-init . global-company-mode))
 
@@ -1584,7 +1584,8 @@ If BACK is t, jump backward."
   :hook
   ((prog-mode org-mode markdown-mode text-mode snippet-mode gitignore-mode) . yas-minor-mode)
   :config
-  (yas-reload-all))
+  (yas-reload-all)
+  (which-key-add-key-based-replacements "C-c &" "yasnippet"))
 
 (use-package yasnippet-snippets
   :after yasnippet
@@ -2584,6 +2585,7 @@ Version 2016-08-09"
 ;;   (add-hook hook 'xah-syntax-color-hex))
 
 (use-package rainbow-mode
+  :defer t
   :hook
   ((prog-mode helpful-mode org-mode conf-mode) . rainbow-mode)
   :config
