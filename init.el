@@ -419,9 +419,35 @@ mouse-1: Display minor modes menu"
   (when (buffer-narrowed-p)
     (propertize " Narrowed " 'face 'simple-modeline-status-warning)))
 
+(defun simple-modeline--flycheck-lighter (state)
+  "Return flycheck information for the given error type STATE.
+
+Source: https://git.io/vQKzv"
+  (let* ((counts (flycheck-count-errors flycheck-current-errors))
+         (errorp (flycheck-has-current-errors-p state))
+         (err (or (cdr (assq state counts)) "?"))
+         (running (eq 'running flycheck-last-status-change)))
+    (if (or errorp running) (format "•%s" err))))
+
+;; Flycheck mode line style
+;; https://www.reddit.com/r/emacs/comments/701pzr/flycheck_error_tally_in_custom_mode_line/
 (defun simple-modeline-flycheck-status ()
   "Displya flycheck status in the modeline"
-  (flycheck-mode-line-status-text))
+  '(:eval
+    (when (and (bound-and-true-p flycheck-mode)
+               (or flycheck-current-errors
+                   (eq 'running flycheck-last-status-change)))
+      (concat
+       " "
+       (cl-loop for state in '((error . "#FB4933")
+                               (warning . "#FABD2F")
+                               (info . "#83A598"))
+                as lighter = (simple-modeline--flycheck-lighter (car state))
+                when lighter
+                concat (propertize
+                        lighter
+                        'face `(:foreground ,(cdr state))))
+       " "))))
 
 (defun simple-modeline-client-status ()
   "Determine whether current frame is a server/client frame"
@@ -448,7 +474,8 @@ mouse-1: Display minor modes menu"
      simple-modeline-segment-misc-info
      simple-modeline-segment-process
      simple-modeline-segment-vc
-     simple-modeline-segment-major-mode))
+     simple-modeline-segment-major-mode
+     simple-modeline-flycheck-status))
   "Simple modeline segments."
   :type '(list (repeat :tag "Left aligned" function)
                (repeat :tag "Right aligned" function)))
@@ -2346,8 +2373,35 @@ Version 2018-12-23"
   :defer t
   :hook
   (eglot--managed-mode . sanityinc/eglot-prefer-flycheck)
-  (go-mode . flycheck-mode)
+  (prog-mode . global-flycheck-mode)
+  :init
+  (setq flycheck-global-modes '(not text-mode outline-mode fundamental-mode lisp-interaction-mode
+                                    org-mode diff-mode shell-mode eshell-mode term-mode vterm-mode)
+        flycheck-emacs-lisp-load-path 'inherit
+        flycheck-display-errors-delay 0.25
+        flycheck-highlighting-mode 'symbols
+        flycheck-indication-mode (if (display-graphic-p) 'left-fringe 'left-margin)
+        ;; Only check while saving and opening files
+        flycheck-check-syntax-automatically '(save mode-enabled))
+  (setq-default flycheck-disabled-checkers '(emacs-lisp emacs-lisp-checkdoc))
   :config
+  (which-key-add-key-based-replacements "C-c !" "flycheck")
+  ;; Prettify indication styles
+  (when (fboundp 'define-fringe-bitmap)
+    (define-fringe-bitmap 'flycheck-fringe-bitmap-arrow
+      [16 48 112 240 112 48 16] nil nil 'center))
+
+  ;; Rerunning checks on every newline is a mote excessive.
+  (delq 'new-line flycheck-check-syntax-automatically)
+  ;; And don't recheck on idle as often
+  (setq flycheck-idle-change-delay 1.0)
+
+  ;; For the above functionality, check syntax in a buffer that you switched to
+  ;; only briefly. This allows "refreshing" the syntax check state for several
+  ;; buffers quickly after e.g. changing a config file.
+  (setq flycheck-buffer-switch-check-intermediate-buffers t)
+
+
   ;; Use eglot with flycheck
   ;; https://gist.github.com/purcell/ca33abbea9a98bb0f8a04d790a0cadcd
   (defvar-local flycheck-eglot-current-errors nil)
@@ -2389,8 +2443,35 @@ Version 2018-12-23"
       (flycheck-select-checker 'eglot)
       (flycheck-mode)
       (flymake-mode -1)
-      (setq eglot--current-flymake-report-fn 'flycheck-eglot-report-fn))))
+      (setq eglot--current-flymake-report-fn 'flycheck-eglot-report-fn)))
 
+
+  (defun spacemacs/enable-flycheck (mode)
+    "Use flycheck in MODE by default, if `syntax-checking-enable-by-default' is
+true."
+    (when (and (listp flycheck-global-modes)
+               (not (eq 'not (car flycheck-global-modes))))
+      (add-to-list 'flycheck-global-modes mode)))
+
+  ;; toggle flycheck window
+  (defun spacemacs/toggle-flycheck-error-list ()
+    "Toggle flycheck's error list window.
+If the error list is visible, hide it.  Otherwise, show it."
+    (interactive)
+    (-if-let (window (flycheck-get-error-list-window))
+        (quit-window nil window)
+      (flycheck-list-errors)))
+
+  (defun spacemacs/goto-flycheck-error-list ()
+    "Open and go to the error list buffer."
+    (interactive)
+    (if (flycheck-get-error-list-window)
+        (switch-to-buffer flycheck-error-list-buffer)
+      (progn
+        (flycheck-list-errors)
+        (switch-to-buffer-other-window flycheck-error-list-buffer)))))
+
+;; TODO config built-in project or projectile
 (require 'project)
 
 (defun project-find-go-module (dir)
