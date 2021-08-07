@@ -800,6 +800,7 @@ Start `ielm' in a split window if it's not already running."
 ;; https://www.reddit.com/r/emacs/comments/5ei7wa/awesome_vimlike_folding_for_evilmode_with_markers/
 
 (require 'idle-highlight-mode)
+;; TODO see highlight-overlay
 
 
 ;; Themes path
@@ -1942,7 +1943,7 @@ shell exits, the buffer is killed."
   ;; Open daily plan org file in new split buffer
   ;; https://isamert.net/2021/01/25/how-i-do-keep-my-days-organized-with-org-mode-and-emacs.html#fnr.2
   (defun my/toggle-side-bullet-org-buffer ()
-    "Toggle `daily.org` in a side buffer for quick note taking.  The buffer is opened in side window so it can't be accidentaly removed."
+    "Toggle `daily.org` in a side buffer for quick note taking.  The buffer is opened in side window so it can't be accidentally removed."
     (interactive)
     (my/toggle-side-buffer-with-file "~/org/daily.org"))
 
@@ -1976,7 +1977,7 @@ shell exits, the buffer is killed."
           (window-list (selected-frame))))
 
   (defun my/toggle-side-buffer-with-file (file-path)
-    "Toggle FILE-PATH in a side buffer. The buffer is opened in side window so it can't be accidentaly removed."
+    "Toggle FILE-PATH in a side buffer. The buffer is opened in side window so it can't be accidentally removed."
     (interactive)
     (let ((fname (file-name-nondirectory file-path)))
       (if (my/buffer-visible-p fname)
