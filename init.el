@@ -2357,13 +2357,26 @@ Version 2018-12-23"
     '(define-key grep-mode-map
        (kbd "C-c C-c") 'wgrep-finish-edit)))
 
+(use-package add-node-modules-path
+  :defer t
+  :config
+  (dolist (mode '(web-mode typescript-mode js-mode js2-mode))
+    (add-hook (derived-mode-hook-name mode) 'add-node-modules-path)))
+
+(use-package dumb-jump
+  :init
+  (setq dumb-jump-prefer-searcher 'rg)
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
+
 (use-package web-mode
   :ensure t
   :mode
-  ("\\.ejs\\'" "\\.mjs\\'" "\\.hbs\\'" "\\.html\\'" "\\.php\\'" "\\.[jt]sx?\\'")
+  ("\\.ejs\\'" "\\.mjs\\'" "\\.hbs\\'" "\\.html\\'" "\\.php\\'" "\\.[jt]sx?\\'" "\\.vue\\'")
   :config
   (setq web-mode-content-types-alist '(("jsx" . "\\.[jt]sx?\\'")
                                        ("jsx" . "\\.mjs\\'")))
+  (add-to-list 'web-mode-content-types '("html" . "\\.vue\\'"))
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-css-indent-offset 2)
   (setq web-mode-code-indent-offset 2)
@@ -2648,6 +2661,14 @@ Version 2016-08-09"
   :defer t
   :hook
   (web-mode . auto-rename-tag-mode))
+
+(use-package link-hint
+  :defer t
+  :bind
+  ("C-c l o" . link-hint-open-link)
+  ("C-c l c" . link-hint-copy-link)
+  :init
+  (which-key-add-key-based-replacements "C-c l" "link-hint"))
 
 
 ;;; Restore file-name-hander-alist
