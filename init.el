@@ -1135,6 +1135,7 @@ Repeated invocations toggle between the two most recently open buffers."
   (setq evil-want-keybinding nil)
   (setq evil-undo-system 'undo-fu)
   (setq evil-respect-visual-line-mode t)
+  (setq isearch-lazy-count t)
   :config
   ;; Move evil-mode-line-tag to beginning of modeline
   ;; If mode-line-format is not configured explicitly, following line can move
@@ -2398,7 +2399,8 @@ Version 2018-12-23"
   (prog-mode . global-flycheck-mode)
   :init
   (setq flycheck-global-modes '(not text-mode outline-mode fundamental-mode lisp-interaction-mode
-                                    org-mode diff-mode shell-mode eshell-mode term-mode vterm-mode)
+                                    org-mode diff-mode shell-mode eshell-mode term-mode vterm-mode
+                                    emacs-lisp-mode)
         flycheck-emacs-lisp-load-path 'inherit
         flycheck-display-errors-delay 0.25
         flycheck-highlighting-mode 'symbols
