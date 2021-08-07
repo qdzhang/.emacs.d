@@ -1216,7 +1216,54 @@ Repeated invocations toggle between the two most recently open buffers."
         (when (and (eq (ivy-state-collection ivy-last) #'read-file-name-internal)
                    (setq dir (ivy-expand-file-if-directory (ivy-state-current ivy-last))))
           (ivy--cd dir)
-          (setq this-command 'ivy-cd))))))
+          (setq this-command 'ivy-cd)))))
+
+
+  ;; Add filter functions for `ivy-occur'
+  ;; https://emacs-china.org/t/ivy-occur/12083
+  ;; Use `/' to filter, `C-/' undo
+  ;; =======================================
+  (defvar ivy-occur-filter-prefix ">>> ")
+
+;;;###autoload
+  (defun ivy-occur/filter-lines ()
+    (interactive)
+    (unless (string-prefix-p "ivy-occur" (symbol-name major-mode))
+      (user-error "Current buffer is not in ivy-occur mode"))
+
+    (let ((inhibit-read-only t)
+          (regexp (read-regexp "Regexp(! for flush)"))
+          (start (save-excursion
+                   (goto-char (point-min))
+                   (re-search-forward "[0-9]+ candidates:"))))
+      (if (string-prefix-p "!" regexp)
+          (flush-lines (substring regexp 1) start (point-max))
+        (keep-lines regexp start (point-max)))
+      (save-excursion
+        (goto-char (point-min))
+        (let ((item (propertize (format "[%s]" regexp) 'face 'ivy-current-match)))
+          (if (looking-at ivy-occur-filter-prefix)
+              (progn
+                (goto-char (line-end-position))
+                (insert item))
+            (insert ivy-occur-filter-prefix item "\n"))))))
+
+;;;###autoload
+  (defun ivy-occur/undo ()
+    (interactive)
+    (let ((inhibit-read-only t))
+      (if (save-excursion
+            (goto-char (point-min))
+            (looking-at ivy-occur-filter-prefix))
+          (undo)
+        (user-error "Filter stack is empty"))))
+
+  (defun ivy|occur-mode-setup ()
+    (local-set-key "/" #'ivy-occur/filter-lines)
+    (local-set-key (kbd "C-/") #'ivy-occur/undo))
+
+  (add-hook 'ivy-occur-mode-hook 'ivy|occur-mode-setup)
+  (add-hook 'ivy-occur-grep-mode-hook 'ivy|occur-mode-setup))
 
 (use-package ace-window
   :general
@@ -1412,7 +1459,25 @@ repository, then the corresponding root is used instead."
   (ivy-add-actions
    'counsel-find-file
    '(("g" prot/counsel-rg-dir "use ripgrep in root directory")
-     ("z" prot/counsel-fzf-dir "find file with fzf in root directory"))))
+     ("z" prot/counsel-fzf-dir "find file with fzf in root directory")))
+
+
+  ;; Use `lv-message' to show the actual commands behind `counsel-rg', `counsel-fzf',
+  ;; or some other command
+  ;; https://emacs-china.org/t/counsel/13918/1
+  ;;
+  ;; FIXME when using `counsel-describe-function' at the point of a function,
+  ;; sometimes the `lv-message' will appear accidentally
+  (require 'lv)
+  (defun counsel-before-counsel--async-command (cmd &rest _)
+    (unless (stringp cmd)
+      (setq cmd (string-join cmd " ")))
+    (lv-message "Command: (@%s) %s"
+                (propertize default-directory 'face font-lock-constant-face)
+                (propertize cmd 'face font-lock-doc-face)))
+
+  (advice-add 'counsel--async-command :before
+              #'counsel-before-counsel--async-command))
 
 (use-package swiper
   :general
