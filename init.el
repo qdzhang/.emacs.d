@@ -2376,7 +2376,14 @@ Version 2018-12-23"
 
   ;; Remove < auto pair in web-mode
   (eval-after-load smartparens-strict-mode
-    (sp-local-pair 'web-mode "<" nil :actions :rem)))
+    (sp-local-pair 'web-mode "<" nil :actions :rem))
+
+  (which-key-add-key-based-replacements
+    "C-c C-a" "web-mode attribute"
+    "C-c C-b" "web-mode block"
+    "C-c C-d" "web-mode dom"
+    "C-c C-e" "web-mode element"
+    "C-c C-t" "web-mode tag"))
 
 (use-package tide
   :hook
