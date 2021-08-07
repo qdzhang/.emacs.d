@@ -2431,8 +2431,8 @@ Version 2018-12-23"
 (use-package dumb-jump
   :init
   (setq dumb-jump-prefer-searcher 'rg)
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-  (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
+  :custom
+  (dumb-jump-selector 'ivy))
 
 (use-package web-mode
   :ensure t
