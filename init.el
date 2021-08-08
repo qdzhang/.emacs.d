@@ -128,6 +128,22 @@ Ignores `ARGS'."
 
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 (setq-default display-fill-column-indicator-column 80)
+(setq-default fill-column 80)
+
+;; Fix CJK word wrap
+;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=29364
+(setq-default word-wrap-by-category t)
+
+;;;  Set unfill function
+(defun my/unfill-paragraph (&optional region)
+  "Takes a multi-line paragraph and makes it into a single line of text."
+  (interactive (progn (barf-if-buffer-read-only) '(t)))
+  (let ((fill-column (point-max))
+        ;; This would override `fill-column' if it's an integer.
+        (emacs-lisp-docstring-fill-column t))
+    (fill-paragraph nil region)))
+
+(define-key global-map "\M-Q" 'my/unfill-paragraph)
 
 
 ;;; Mode-line configurations
@@ -1913,13 +1929,16 @@ shell exits, the buffer is killed."
   :config
   (setq terminal-here-linux-terminal-command 'urxvt))
 
+(use-package visual-fill-column
+  :hook
+  (visual-line-mode . visual-fill-column-mode))
+
 (use-package org
   :defer t
   :ensure org-plus-contrib
   :pin org
   :hook
-  (org-mode . visual-line-mode)
-  (org-mode . (lambda () (setq evil-auto-indent nil)))
+  (org-mode . my-org-mode-hook)
   :general
   (my/leader-keys
     "n" '(:ignore t :which-key "notes")
@@ -1934,9 +1953,10 @@ shell exits, the buffer is killed."
     "np" 'org-toggle-inline-images
     "nt" 'org-todo)
   :config
-  ;; Fix CJK word wrap
-  ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=29364
-  (setq word-wrap-by-category t)
+  (defun my-org-mode-hook ()
+    (visual-line-mode 1)
+    (setq evil-auto-indent nil)
+    (setq word-wrap-by-category t))
 
   (setq org-default-notes-file "~/org/notes.org"
         org-agenda-files '("~/org/agenda.org")
@@ -2200,10 +2220,9 @@ shell exits, the buffer is killed."
   (markdown-mode . my-markdown-mode-hook)
   :config
   (add-to-list 'auto-mode-alist '("presentation.html" . markdown-mode))
-  (setq word-wrap-by-category t)
   (defun my-markdown-mode-hook ()
     (visual-line-mode 1)
-    (toggle-word-wrap)))
+    (setq word-wrap-by-category t)))
 
 (use-package expand-region
   :bind
