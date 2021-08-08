@@ -982,6 +982,8 @@ Start `ielm' in a split window if it's not already running."
 
     "m" '(:ignore t :which-key "bookmark")
     "mm" 'bookmark-set
+    "me" '(counsel-evil-marks :wk "evil-marks")
+    "mr" '(counsel-mark-ring :wk "mark-ring")
 
     "o" '(:ignore t :which-key "open")
     "od" '(dired-jump :wk "dired")
@@ -1005,7 +1007,6 @@ Start `ielm' in a split window if it's not already running."
                  (counsel-fzf)))) :wk "counsel-fzf")
     "sg" 'counsel-grep-or-swiper
     "si" '(counsel-imenu :wk "imenu")
-    "sm" '(counsel-evil-marks :wk "marks")
     "sr" 'counsel-rg
     "st" '(counsel-load-theme :wk "themes")
     "sy" 'ivy-yasnippet
@@ -1217,6 +1218,14 @@ Repeated invocations toggle between the two most recently open buffers."
   (setq ivy-count-format "(%d/%d) ")
   (setq ivy-use-selectable-prompt t)
   (setq ivy-wrap t)
+
+  ;; Ensure a jump point is registered before jumping to new locations with ivy
+  (defun +ivy--record-position-maybe-fn ()
+    (with-ivy-window
+      (push-mark (point-marker))))
+
+  (push '(t . +ivy--record-position-maybe-fn)
+         ivy-hooks-alist)
 
 
   ;; Ivy complete hack
