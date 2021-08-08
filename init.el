@@ -1178,7 +1178,31 @@ Repeated invocations toggle between the two most recently open buffers."
   (evil-mode 1)
 
   ;; Add XML attributes text object
-  (require 'exato))
+  (require 'exato)
+
+  ;;==================================================
+  ;; Evil text objects
+  ;; https://github.com/karthink/.emacs.d/blob/master/lisp/setup=evil.el
+  ;;==================================================
+
+  (evil-define-text-object +evil:whole-buffer-txtobj (count &optional _beg _end type)
+    "Text object to select the whole buffer."
+    (evil-range (point-min) (point-max) type))
+
+  (evil-define-text-object +evil:defun-txtobj (count &optional _beg _end type)
+    "Text object to select the top-level Lisp form or function definition at
+point."
+    (cl-destructuring-bind (beg . end)
+        (bounds-of-thing-at-point 'defun)
+      (evil-range beg end type)))
+
+  (general-def
+    :keymaps 'evil-inner-text-objects-map
+    "f" #'+evil:defun-txtobj
+    "g" #'+evil:whole-buffer-txtobj
+    :keymaps 'evil-outer-text-objects-map
+    "f" #'+evil:defun-txtobj
+    "g" #'+evil:whole-buffer-txtobj))
 
 (use-package evil-collection
   :after evil
