@@ -2392,6 +2392,14 @@ Version 2018-12-23"
            (re-search-backward "\\(^[ 0-9.,]+[A-Za-z]+\\).*total$")
            (match-string 1)))))))
 
+(use-package dired-subtree
+  :after dired
+  :general
+  (dired-mode-map
+   :states 'normal
+   "<tab>" 'dired-subtree-toggle
+   "<C-tab>" 'dired-subtree-cycle))
+
 (use-package aggressive-indent
   :defer t
   :hook
@@ -2734,6 +2742,10 @@ Version 2016-08-09"
   ("C-c l c" . link-hint-copy-link)
   :init
   (which-key-add-key-based-replacements "C-c l" "link-hint"))
+
+(use-package so-long
+  :ensure nil
+  :config (global-so-long-mode 1))
 
 
 ;;; Restore file-name-hander-alist
