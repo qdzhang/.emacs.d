@@ -175,6 +175,20 @@ Ignores `ARGS'."
 (use-package minions
   :config (minions-mode 1))
 
+(use-package editorconfig
+  :ensure t
+  :diminish
+  :config
+  (editorconfig-mode 1))
+
+(use-package indent-info
+  :init
+  (global-indent-info-mode 1)
+  :custom
+  (indent-info-sync-from-editorconfig t)
+  (indent-info-space-format "S[%s]")
+  (indent-info-tab-format "T[%s]"))
+
 (defun modeline--mode-line-fill (face reserve)
   "Return empty space using FACE and leaving RESERVE space on the right."
   (unless reserve
@@ -394,6 +408,10 @@ mouse-1: Display minor modes menu"
                            'mouse-1 #'minions-minor-modes-menu))
    " "))
 
+(defun simple-modeline-segment-indent-info ()
+  "Display `indent-info-mode' text in the modeline"
+  (indent-info--mode-line-format))
+
 (defun simple-modeline-segment-process ()
   "Displays the current value of `mode-line-process' in the mode-line."
   (when mode-line-process
@@ -550,6 +568,7 @@ Source: https://git.io/vQKzv"
     (simple-modeline-client-status
      simple-modeline-rime-indicator
      simple-modeline-narrowed-status
+     simple-modeline-segment-indent-info
      simple-modeline-segment-eol
      simple-modeline-segment-encoding
      simple-modeline-segment-minions-mode
