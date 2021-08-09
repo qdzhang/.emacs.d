@@ -1068,11 +1068,14 @@ Start `ielm' in a split window if it's not already running."
     "hv" '(counsel-describe-variable :wk "describe-variable")
 
     "m" '(:ignore t :which-key "bookmark")
+    "mb" '(counsel-bookmark :wk "bookmarks")
+    "md" '(counsel-bookmarked-directory :wk "bookmarks(dir)")
     "mm" 'bookmark-set
     "me" '(counsel-evil-marks :wk "evil-marks")
     "mr" '(counsel-mark-ring :wk "mark-ring")
 
     "o" '(:ignore t :which-key "open")
+    "ob" '(my/browse-current-file :wk "open-in-browser")
     "od" '(dired-jump :wk "dired")
     "oe" 'eshell
     "oi" '(my/open-ielm-in-split-window :wk "ielm")
@@ -1081,9 +1084,7 @@ Start `ielm' in a split window if it's not already running."
     ;; "oT" '(my/ansi-term-bash :wk "term")
 
     "s" '(:ignore t :which-key "search")
-    "sb" '(counsel-bookmark :wk "bookmarks")
     "sB" 'swiper-all
-    "sd" '(counsel-bookmarked-directory :wk "bookmarks(dir)")
     "sf" '((lambda ()
              (interactive)
              (let ((home-dir (expand-file-name "~/")))
