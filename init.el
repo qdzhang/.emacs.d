@@ -186,8 +186,12 @@ Ignores `ARGS'."
   (global-indent-info-mode 1)
   :custom
   (indent-info-sync-from-editorconfig t)
-  (indent-info-space-format "S[%s]")
-  (indent-info-tab-format "T[%s]"))
+  (indent-info-space-format "SPC[%s]")
+  (indent-info-tab-format "TAB[%s]"))
+
+(use-package shrink-path
+  :ensure t
+  :demand t)
 
 (defun modeline--mode-line-fill (face reserve)
   "Return empty space using FACE and leaving RESERVE space on the right."
@@ -270,6 +274,9 @@ Ignores `ARGS'."
   '((t (:inherit simple-modeline-status-error bold)))
   "Face for the replace state tag in evil state indicator.")
 
+(defface simple-modeline-project-path-face
+  '((t (:inherit (mode-line-emphasis bold))))
+  "Face for the project path")
 
 ;;; Some helper functions to format mode-line
 (defun simple-modeline--format (left-segments right-segments)
@@ -492,6 +499,23 @@ mouse-1: Display minor modes menu"
   "Displays the name of the current buffer in the mode-line."
   (propertize " %b " 'face 'mode-line-buffer-id))
 
+(defun simple-modeline-segment-pretty-buffer-and-path ()
+  "Displpay the buffer file path in shrunken way"
+  (concat " "
+          (propertize
+           (abbreviate-file-name
+            (if buffer-file-truename
+                (let* ((cur-dir (file-name-directory (buffer-file-name)))
+                       (one-up-dir (-as-> cur-dir it (or (f-parent it) "")))
+                       (shrunk (shrink-path-file-mixed one-up-dir cur-dir (buffer-file-name))))
+                  (concat (car shrunk)
+                          (propertize
+                           (mapconcat #'identity (butlast (cdr shrunk)) "/")
+                           'face 'simple-modeline-project-path-face)
+                          (propertize (car (last shrunk)) 'face 'mode-line-buffer-id)))
+              (buffer-name))))
+          " "))
+
 (defun simple-modeline-rime-indicator ()
   "Display rime indicator in the mode-line"
   (rime-lighter))
@@ -561,7 +585,7 @@ Source: https://git.io/vQKzv"
 (defcustom simple-modeline-segments
   '((simple-modeline-segment-evil-indicator
      simple-modeline-segment-modified
-     simple-modeline-segment-buffer-name
+     simple-modeline-segment-pretty-buffer-and-path
      simple-modeline-segment-nyan
      simple-modeline-segment-position
      simple-modeline-evil-substitute)
