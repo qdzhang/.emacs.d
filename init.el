@@ -1231,7 +1231,21 @@ Such as 1+ to increment the org file according to the date number"
     "Switch to previously open buffer.
 Repeated invocations toggle between the two most recently open buffers."
     (interactive)
-    (switch-to-buffer (other-buffer (current-buffer) 1))))
+    (switch-to-buffer (other-buffer (current-buffer) 1)))
+
+
+  ;; Browse current HTML file
+  ;; https://github.com/purcell/emacs.d/blob/master/lisp/init-utils.el#L78
+
+  (defun my/browse-current-file ()
+    "Open the current file as a URL using `browse-url'."
+    (interactive)
+    (let ((file-name (buffer-file-name)))
+      (if (and (fboundp 'tramp-tramp-file-p)
+               (tramp-tramp-file-p file-name))
+          (error "Cannot open tramp file")
+        (setq browse-url-browser-function 'browse-url-firefox)
+        (browse-url (concat "file://" file-name))))))
 
 (use-package evil
   :ensure t
@@ -2435,6 +2449,7 @@ shell exits, the buffer is killed."
   :general
   (my/leader-keys
     "d" '(:ignore t :which-key "dired")
+    "db" '(my/browse-marked-file :wk "open-in-browser")
     "dc" '(tda/rsync :wk "async-rsync")
     "di" 'image-dired
     "dp" '(tda/zip :wk "async-zip")
@@ -2512,7 +2527,23 @@ Version 2018-12-23"
          "Size of all marked files: %s"
          (progn
            (re-search-backward "\\(^[ 0-9.,]+[A-Za-z]+\\).*total$")
-           (match-string 1)))))))
+           (match-string 1))))))
+
+  (defun my/browse-marked-file ()
+    "Open the marked file in dired as a URL using `browse-url'."
+    (interactive)
+    (let ((marked-files (dired-get-marked-files nil)))
+      (dolist (file-name marked-files)
+        (if (and (fboundp 'tramp-tramp-file-p)
+                 (tramp-tramp-file-p file-name))
+            (error "Cannot open tramp file")
+          (browse-url (concat "file://" file-name))))))
+
+  (defun my/dired-find-all-marked-files (&optional arg)
+    "Open each of the marked files, or the file under the point, or when prefix arg, the next N files "
+    (interactive "P")
+    (let* ((fn-list (dired-get-marked-files nil arg)))
+      (mapc 'find-file fn-list))))
 
 (use-package dired-subtree
   :after dired
