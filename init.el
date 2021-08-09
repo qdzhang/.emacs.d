@@ -2702,16 +2702,61 @@ If the error list is visible, hide it.  Otherwise, show it."
         (switch-to-buffer-other-window flycheck-error-list-buffer)))))
 
 ;; TODO config built-in project or projectile
-(require 'project)
+(use-package project
+  :ensure nil
+  :hook
+  (project-find-functions . my/project-find-go-module)
+  (project-find-functions . my/project-try-local)
+  :general
+  (my/leader-keys
+    "p" '(:ignore t :which-key "project")
+    "p!" 'project-shell-command
+    "p&" 'project-async-shell-command
+    "pb" 'project-switch-to-buffer
+    "pd" 'project-dired
+    "pf" 'project-find-file
+    "pg" 'project-find-regexp
+    "pk" 'project-kill-buffers
+    "pp" 'project-switch-project)
+  :config
 
-(defun project-find-go-module (dir)
-  (when-let ((root (locate-dominating-file dir "go.mod")))
-    (cons 'go-module root)))
+  ;; Declare directories with "go.mod" as a project
+  (cl-defmethod project-root ((project (head go-module)))
+    (cdr project))
 
-(cl-defmethod project-root ((project (head go-module)))
-  (cdr project))
+  (defun my/project-find-go-module (dir)
+    (when-let ((root (locate-dominating-file dir "go.mod")))
+      (cons 'go-module root)))
 
-(add-hook 'project-find-functions #'project-find-go-module)
+  ;; Some other extending of project.el
+  ;; https://www.manueluberti.eu//emacs/2020/11/14/extending-project/
+
+  ;; Declare directories with ".project" as a project
+  (cl-defmethod project-root ((project (head local)))
+    (cdr project))
+
+  (defun my/project-try-local (dir)
+    "Determine if DIR is a non-Git project.
+DIR must include a .project file to be considered a project."
+    (let ((root (locate-dominating-file dir ".project")))
+      (and root (cons 'local root))))
+
+  (defun my--project-files-in-directory (dir)
+    "Use `fd' to list files in DIR."
+    (let* ((default-directory dir)
+           (localdir (file-local-name (expand-file-name dir)))
+           (command (format "fd -t f -0 . %s" localdir)))
+      (project--remote-file-names
+       (sort (split-string (shell-command-to-string command) "\0" t)
+             #'string<))))
+
+  (cl-defmethod project-files ((project (head local)) &optional dirs)
+    "Override `project-files' to use `fd' in local projects."
+    (mapcan #'my--project-files-in-directory
+            (or dirs (list (project-root project)))))
+
+  ;; Add the command `project-switch-to-buffer' when using `project-switch-project'
+  (add-to-list 'project-switch-commands '(?b "Switch buffer" project-switch-to-buffer)))
 
 
 (use-package go-mode
