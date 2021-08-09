@@ -1304,7 +1304,86 @@ point."
     "g" #'+evil:whole-buffer-txtobj
     :keymaps 'evil-outer-text-objects-map
     "f" #'+evil:defun-txtobj
-    "g" #'+evil:whole-buffer-txtobj))
+    "g" #'+evil:whole-buffer-txtobj)
+
+
+  ;; Config `evil-shift-width' depending on `evil-indent-variable-alist'
+  ;; https://github.com/tshu-w/.emacs.d/blob/05c1d6240a4ab76dccc316ff5bab40729fb39476/lisp/core-keybinds.el#L258
+  (progn
+    ;; Thanks to `editorconfig-emacs' for many of these
+    (defvar evil-indent-variable-alist
+      ;; Note that derived modes must come before their sources
+      '(((awk-mode c-mode c++-mode java-mode
+                   idl-mode java-mode objc-mode pike-mode) . c-basic-offset)
+        (groovy-mode . groovy-indent-offset)
+        (python-mode . python-indent-offset)
+        (cmake-mode . cmake-tab-width)
+        (coffee-mode . coffee-tab-width)
+        (cperl-mode . cperl-indent-level)
+        (css-mode . css-indent-offset)
+        (elixir-mode . elixir-smie-indent-basic)
+        ((emacs-lisp-mode lisp-mode) . lisp-indent-offset)
+        (enh-ruby-mode . enh-ruby-indent-level)
+        (erlang-mode . erlang-indent-level)
+        (js2-mode . js2-basic-offset)
+        (js3-mode . js3-indent-level)
+        ((js-mode json-mode) . js-indent-level)
+        (latex-mode . (LaTeX-indent-level tex-indent-basic))
+        (livescript-mode . livescript-tab-width)
+        (mustache-mode . mustache-basic-offset)
+        (nxml-mode . nxml-child-indent)
+        (perl-mode . perl-indent-level)
+        (puppet-mode . puppet-indent-level)
+        (ruby-mode . ruby-indent-level)
+        (rust-mode . rust-indent-offset)
+        (scala-mode . scala-indent:step)
+        (sgml-mode . sgml-basic-offset)
+        (sh-mode . sh-basic-offset)
+        (typescript-mode . typescript-indent-level)
+        (web-mode . web-mode-markup-indent-offset)
+        (yaml-mode . yaml-indent-offset))
+      "An alist where each key is either a symbol corresponding
+  to a major mode, a list of such symbols, or the symbol t,
+  acting as default. The values are either integers, symbols
+  or lists of these.")
+
+    (defun set-evil-shift-width ()
+      "Set the value of `evil-shift-width' based on the indentation settings of the
+  current major mode."
+      (let ((shift-width
+             (catch 'break
+               (dolist (test evil-indent-variable-alist)
+                 (let ((mode (car test))
+                       (val (cdr test)))
+                   (when (or (and (symbolp mode) (derived-mode-p mode))
+                             (and (listp mode) (apply 'derived-mode-p mode))
+                             (eq 't mode))
+                     (when (not (listp val))
+                       (setq val (list val)))
+                     (dolist (v val)
+                       (cond
+                        ((integerp v) (throw 'break v))
+                        ((and (symbolp v) (boundp v))
+                         (throw 'break (symbol-value v))))))))
+               (throw 'break (default-value 'evil-shift-width)))))
+        (when (and (integerp shift-width)
+                   (< 0 shift-width))
+          (setq-local evil-shift-width shift-width))))
+
+    ;; after major mode has changed, reset evil-shift-width
+    (add-hook 'after-change-major-mode-hook #'set-evil-shift-width 'append))
+
+  ;; This will keep eldoc active when you are in a method and you go in insert mode.
+  (with-eval-after-load 'eldoc
+    (eldoc-add-command #'evil-insert)
+    (eldoc-add-command #'evil-insert-line)
+    (eldoc-add-command #'evil-append)
+    (eldoc-add-command #'evil-append-line)
+    (eldoc-add-command #'evil-force-normal-state)
+    (eldoc-add-command #'evil-cp-insert)
+    (eldoc-add-command #'evil-cp-insert-at-end-of-form)
+    (eldoc-add-command #'evil-cp-insert-at-beginning-of-form)
+    (eldoc-add-command #'evil-cp-append)))
 
 (use-package evil-collection
   :after evil
