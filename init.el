@@ -1571,25 +1571,7 @@ repository, then the corresponding root is used instead."
   (ivy-add-actions
    'counsel-find-file
    '(("g" prot/counsel-rg-dir "use ripgrep in root directory")
-     ("z" prot/counsel-fzf-dir "find file with fzf in root directory")))
-
-
-  ;; Use `lv-message' to show the actual commands behind `counsel-rg', `counsel-fzf',
-  ;; or some other command
-  ;; https://emacs-china.org/t/counsel/13918/1
-  ;;
-  ;; FIXME when using `counsel-describe-function' at the point of a function,
-  ;; sometimes the `lv-message' will appear accidentally
-  (require 'lv)
-  (defun counsel-before-counsel--async-command (cmd &rest _)
-    (unless (stringp cmd)
-      (setq cmd (string-join cmd " ")))
-    (lv-message "Command: (@%s) %s"
-                (propertize default-directory 'face font-lock-constant-face)
-                (propertize cmd 'face font-lock-doc-face)))
-
-  (advice-add 'counsel--async-command :before
-              #'counsel-before-counsel--async-command))
+     ("z" prot/counsel-fzf-dir "find file with fzf in root directory"))))
 
 (use-package swiper
   :general
@@ -2520,12 +2502,6 @@ Version 2018-12-23"
   :hook
   (emacs-lisp-mode . aggressive-indent-mode)
   (lisp-mode . aggressive-indent-mode))
-
-(use-package editorconfig
-  :ensure t
-  :diminish
-  :config
-  (editorconfig-mode 1))
 
 (use-package racket-mode
   :defer t
