@@ -2109,7 +2109,27 @@ shell exits, the buffer is killed."
     (if (eq this-command 'eval-expression)
         (smartparens-strict-mode 1)))
 
-  (add-hook 'minibuffer-setup-hook 'my/conditionally-enable-smartparens-mode))
+  (add-hook 'minibuffer-setup-hook 'my/conditionally-enable-smartparens-mode)
+
+  ;; https://github.com/JimMoen/Emacs-Config/blob/6d2055d3f30210819a7bf42b041f49bb71143e24/etc/ad-editing.el#L148
+  (defmacro def-pairs (pairs)
+    "Define functions for pairing. PAIRS is an alist of (NAME . STRING)
+conses, where NAME is the function name that will be created and
+STRING is a single-character string that marks the opening character.
+  (def-pairs ((paren . \"(\")
+              (bracket . \"[\"))
+defines the functions WRAP-WITH-PAREN and WRAP-WITH-BRACKET,
+respectively."
+    `(progn
+       ,@(cl-loop for (key . val) in pairs
+                  collect
+                  `(defun ,(read (concat
+                                  "my/sp-wrap-with-"
+                                  (prin1-to-string key)
+                                  "s"))
+                       (&optional arg)
+                     (interactive "p")
+                     (sp-wrap-with-pair ,val))))))
 
 (use-package evil-cleverparens
   :diminish
