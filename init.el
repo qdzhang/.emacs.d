@@ -228,6 +228,35 @@ Ignores `ARGS'."
   '((t (:inherit mode-line-highlight)))
   "Face for 'X out of Y' segments, such as `anzu', `evil-substitute' and`iedit', etc.")
 
+(defface simple-modeline-evil-emacs-state
+  '((t (:inherit (font-lock-builtin-face bold))))
+  "Face for the Emacs state tag in evil state indicator.")
+
+(defface simple-modeline-evil-insert-state
+  '((t (:inherit (font-lock-keyword-face bold))))
+  "Face for the insert state tag in evil state indicator.")
+
+(defface simple-modeline-evil-motion-state
+  '((t :inherit (font-lock-doc-face bold) :slant normal))
+  "Face for the motion state tag in evil state indicator.")
+
+(defface simple-modeline-evil-normal-state
+  '((t (:inherit bold)))
+  "Face for the normal state tag in evil state indicator.")
+
+(defface simple-modeline-evil-operator-state
+  '((t (:inherit simple-modeline-status-success bold)))
+  "Face for the operator state tag in evil state indicator.")
+
+(defface simple-modeline-evil-visual-state
+  '((t (:inherit simple-modeline-status-warning bold)))
+  "Face for the visual state tag in evil state indicator.")
+
+(defface simple-modeline-evil-replace-state
+  '((t (:inherit simple-modeline-status-error bold)))
+  "Face for the replace state tag in evil state indicator.")
+
+
 ;;; Some helper functions to format mode-line
 (defun simple-modeline--format (left-segments right-segments)
   "Return a string of `window-width' length containing LEFT-SEGMENTS and RIGHT-SEGMENTS, aligned respectively."
@@ -407,6 +436,21 @@ mouse-1: Display minor modes menu"
         (nyan-create)
         " "))
 
+(defun simple-modeline-segment-evil-indicator ()
+  "Display evil tags indicator"
+
+  (when (bound-and-true-p evil-local-mode)
+    (let ((tag (evil-state-property evil-state :tag t)))
+      (concat (propertize (s-trim-right tag) 'face
+                          (cond ((eq tag evil-normal-state-tag) 'simple-modeline-evil-normal-state)
+                                ((eq tag evil-emacs-state-tag) 'simple-modeline-evil-emacs-state)
+                                ((eq tag evil-replace-state-tag) 'simple-modeline-evil-replace-state)
+                                ((eq tag evil-insert-state-tag) 'simple-modeline-evil-insert-state)
+                                ((eq tag evil-motion-state-tag) 'simple-modeline-evil-motion-state)
+                                ((eq tag evil-visual-state-tag) 'simple-modeline-evil-visual-state)
+                                ((eq tag evil-operator-state-tag) 'simple-modeline-evil-operator-state)))
+              " "))))
+
 (defun simple-modeline-segment-vc ()
   "Displays color-coded version control information in the mode-line."
   '(vc-mode vc-mode))
@@ -497,7 +541,8 @@ Source: https://git.io/vQKzv"
      'face 'simple-modeline-panel)))
 
 (defcustom simple-modeline-segments
-  '((simple-modeline-segment-modified
+  '((simple-modeline-segment-evil-indicator
+     simple-modeline-segment-modified
      simple-modeline-segment-buffer-name
      simple-modeline-segment-nyan
      simple-modeline-segment-position
@@ -521,7 +566,6 @@ Source: https://git.io/vQKzv"
   (setq-default mode-line-format
                 (list
                  mode-line-front-space
-                 '(:eval evil-mode-line-tag)
                  '(:eval
                    (simple-modeline--format
                     (car simple-modeline-segments)
