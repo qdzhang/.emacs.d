@@ -2887,9 +2887,6 @@ If the error list is visible, hide it.  Otherwise, show it."
 ;; DONE config built-in project or projectile
 (use-package project
   :ensure nil
-  :hook
-  (project-find-functions . my/project-find-go-module)
-  (project-find-functions . my/project-try-local)
   :general
   (my/leader-keys
     "p" '(:ignore t :which-key "project")
@@ -2902,6 +2899,9 @@ If the error list is visible, hide it.  Otherwise, show it."
     "pk" 'project-kill-buffers
     "pp" 'project-switch-project)
   :config
+
+  ;; More example about add a new file to specify project root
+  ;; https://www.reddit.com/r/emacs/comments/lfbyq5/specifying_projectroot_in_projectel/
 
   ;; Declare directories with "go.mod" as a project
   (cl-defmethod project-root ((project (head go-module)))
@@ -2923,6 +2923,10 @@ If the error list is visible, hide it.  Otherwise, show it."
 DIR must include a .project file to be considered a project."
     (let ((root (locate-dominating-file dir ".project")))
       (and root (cons 'local root))))
+
+  (add-hook 'project-find-functions #'my/project-find-go-module)
+  (add-hook 'project-find-functions #'my/project-try-local)
+
 
   (defun my--project-files-in-directory (dir)
     "Use `fd' to list files in DIR."
