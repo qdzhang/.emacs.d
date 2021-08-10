@@ -546,7 +546,7 @@ Source: https://git.io/vQKzv"
       (concat
        " "
        (cl-loop for state in '((error . "#FB4933")
-                               (warning . "#FABD2F")
+                               (warning . "#FF8E00")
                                (info . "#83A598"))
                 as lighter = (simple-modeline--flycheck-lighter (car state))
                 when lighter
@@ -967,6 +967,10 @@ Start `ielm' in a split window if it's not already running."
   (modus-themes-load-themes)
   :config
   (modus-themes-load-operandi))
+
+;; (use-package apropospriate-theme
+;;   :config
+;;   (load-theme 'apropospriate-light t))
 
 ;; (use-package solarized-theme
 ;;   :init
