@@ -2677,9 +2677,8 @@ Version 2018-12-23"
        (kbd "C-c C-c") 'wgrep-finish-edit)))
 
 (use-package add-node-modules-path
-  :defer t
   :config
-  (dolist (mode '(web-mode typescript-mode js-mode js2-mode))
+  (dolist (mode '(web-mode typescript-mode js-mode js2-mode css-mode))
     (add-hook (derived-mode-hook-name mode) 'add-node-modules-path)))
 
 (use-package dumb-jump
@@ -2720,7 +2719,6 @@ Version 2018-12-23"
 (use-package tide
   :hook
   (web-mode . my/setup-tide-mode)
-  (before-save-hook . tide-format-before-save)
   :config
   (defun my/setup-tide-mode ()
     "Use hl-identifier-mode only on js or ts buffers."
@@ -2854,9 +2852,35 @@ If the error list is visible, hide it.  Otherwise, show it."
         (switch-to-buffer flycheck-error-list-buffer)
       (progn
         (flycheck-list-errors)
-        (switch-to-buffer-other-window flycheck-error-list-buffer)))))
+        (switch-to-buffer-other-window flycheck-error-list-buffer))))
 
-;; TODO config built-in project or projectile
+  ;; disable json-jsonlist checking for json files
+  (setq-default flycheck-disabled-checkers (append flycheck-disabled-checkers '(json-jsonlist)))
+  ;; disable jshint since we prefer eslint checking
+  (setq-default flycheck-disabled-checkers (append flycheck-disabled-checkers '(javascript-jshint)))
+  ;; use eslint with web-mode for jsx files
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
+
+  ;; If find gloabl `eslint_d', use it
+  ;; npm install -g eslint_d
+  ;; (when (executable-find "eslint_d")
+  ;;   (setq flycheck-javascript-eslint-executable "eslint_d"))
+
+  ;; Use json-jq for json files
+  (define-derived-mode my-json-mode web-mode "MyJSON"
+    "My custom JSON mode")
+  (add-to-list 'auto-mode-alist '("\\.json\\'" . my-json-mode))
+
+  (flycheck-add-mode 'json-jq 'my-json-mode)
+
+  (flycheck-add-mode 'css-stylelint 'css-mode)
+  (setq flycheck-stylelintrc ".stylelintrc.json"))
+
+(use-package prettier
+  :hook
+  ((web-mode css-mode my-json-mode) . prettier-mode))
+
+;; DONE config built-in project or projectile
 (use-package project
   :ensure nil
   :hook
