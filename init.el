@@ -452,8 +452,7 @@ mouse-1: Display minor modes menu"
                 'face '(:foreground "#f36e71")
                 'help-echo "buffer modified."))
    (t
-    (propertize "⬤"
-                'face '(:foreground "#99bd6a")))))
+    (propertize "◯"))))
 
 (defun simple-modeline-segment-nyan ()
   "Display nyan cat in the mode-line"
@@ -964,6 +963,8 @@ Start `ielm' in a split window if it's not already running."
 
 (use-package modus-themes
   :init
+  (setq modus-themes-no-mixed-fonts t
+        modus-themes-org-blocks 'gray-background)
   (modus-themes-load-themes)
   :config
   (modus-themes-load-operandi))
