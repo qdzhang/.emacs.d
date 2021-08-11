@@ -287,7 +287,7 @@ Ignores `ARGS'."
     (concat
      left
      (propertize " "
-                 'display `((space :align-to (- right ,reserve)))
+                 'display `((space :align-to (- (+ right right-fringe right-margin) ,reserve)))
                  'face '(:inherit simple-modeline-space))
      right)))
 
