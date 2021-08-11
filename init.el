@@ -1435,7 +1435,7 @@ point."
       (push-mark (point-marker))))
 
   (push '(t . +ivy--record-position-maybe-fn)
-         ivy-hooks-alist)
+        ivy-hooks-alist)
 
 
   ;; Ivy complete hack
@@ -2881,9 +2881,17 @@ If the error list is visible, hide it.  Otherwise, show it."
   (flycheck-add-mode 'css-stylelint 'css-mode)
   (setq flycheck-stylelintrc ".stylelintrc.json"))
 
-(use-package prettier
+(use-package flycheck-inline
+  :after flycheck
   :hook
-  ((web-mode css-mode my-json-mode) . prettier-mode))
+  (global-flycheck-mode . flycheck-inline-mode))
+
+(use-package prettier
+  ;; :hook
+  ;; ((web-mode css-mode my-json-mode) . prettier-mode)
+  :general
+  (my/leader-keys
+    "bp" '(prettier-prettify :wk "prettier-buffer")))
 
 ;; DONE config built-in project or projectile
 (use-package project
