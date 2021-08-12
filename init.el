@@ -3090,6 +3090,8 @@ Version 2016-08-09"
   :ensure nil
   :config (global-so-long-mode 1))
 
+(use-package abn-funcs-benchmark
+  :ensure nil)
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
