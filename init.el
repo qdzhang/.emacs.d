@@ -1880,7 +1880,7 @@ If BACK is t, jump backward."
 (use-package company
   :diminish
   :init
-  (setq company-idle-delay 0.2)
+  (setq company-idle-delay 0.1)
   :hook
   (after-init . global-company-mode))
 
@@ -2651,6 +2651,8 @@ Version 2018-12-23"
 
 (use-package dired-subtree
   :after dired
+  :custom
+  (dired-subtree-use-backgrounds nil)
   :general
   (dired-mode-map
    :states 'normal
