@@ -2727,20 +2727,23 @@ Version 2018-12-23"
   :hook
   (web-mode . my/setup-tide-mode)
   :config
+  (setq tide-completion-ignore-case t
+        tide-server-max-response-length (* 1024 1024))
+
   (defun my/setup-tide-mode ()
     "Use hl-identifier-mode only on js or ts buffers."
     (when (and (stringp buffer-file-name)
                (string-match "\\.[tj]sx?\\'" buffer-file-name))
+      ;; (setq gc-cons-threshold 100000000)
       (tide-setup)
-      (flycheck-mode +1)
-      (setq flycheck-check-syntax-automatically '(save mode-enabled))
       (eldoc-mode +1)
       (tide-hl-identifier-mode +1))))
 
 (use-package flycheck
   :defer t
-  :hook
-  (prog-mode . global-flycheck-mode)
+  :general
+  (my/leader-keys
+    "of" 'flycheck-mode)
   :init
   (setq flycheck-global-modes '(not text-mode outline-mode fundamental-mode lisp-interaction-mode
                                     org-mode diff-mode shell-mode eshell-mode term-mode vterm-mode
@@ -2886,14 +2889,20 @@ If the error list is visible, hide it.  Otherwise, show it."
 (use-package flycheck-inline
   :after flycheck
   :hook
-  (global-flycheck-mode . flycheck-inline-mode))
+  (global-flycheck-mode . flycheck-inline-mode)
+  (flycheck-mode . flycheck-inline-mode))
 
 (use-package prettier
   ;; :hook
   ;; ((web-mode css-mode my-json-mode) . prettier-mode)
   :general
   (my/leader-keys
-    "bp" '(prettier-prettify :wk "prettier-buffer")))
+    "bp" '(my/prettier-prettify-and-message :wk "prettier-buffer"))
+  :config
+  (defun my/prettier-prettify-and-message ()
+    (interactive)
+    (prettier-prettify)
+    (message "Prettier prettify done")))
 
 ;; DONE config built-in project or projectile
 (use-package project

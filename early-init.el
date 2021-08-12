@@ -21,7 +21,7 @@
 (defvar doom--file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
 ;; Minimize garbage collection during startup
-(setq gc-cons-threshold (expt 2 24))
+(setq gc-cons-threshold (expt 2 24)) ; 16mb
 
 (defun defer-garbage-collection-h ()
   (setq gc-cons-threshold (expt 2 24)))
