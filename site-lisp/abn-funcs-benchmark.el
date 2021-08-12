@@ -1,5 +1,7 @@
 ;;; abn-funcs-benchmark.el --- Functions for benchmark
 
+;;; URL: https://github.com/jschaf/dotfiles/blob/master/emacs/funcs/abn-funcs-benchmark.el
+
 ;;; Commentary:
 ;;
 
