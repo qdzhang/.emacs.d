@@ -1616,8 +1616,27 @@ point."
     "fR" '(my/counsel-recent-directory :wk "recent-dir")
     "bj" '(my/counsel-all-opened-dired-buffer :wk "jump-dired"))
   :config
+
+  (defconst my/rg-arguments
+    `("--hidden"
+      ;; "--no-ignore-vcs"                   ;Ignore files/dirs ONLY from `.ignore'
+      "--no-heading"
+      "--line-number"                     ;Line numbers
+      "--smart-case"
+      "--follow"                 ;Follow symlinks
+      "--max-columns" "150"      ;Emacs doesn't handle long line lengths very well
+      ;; "--ignore-file" ,(expand-file-name ".ignore" (cdr (project-current)))
+      )
+    "Default rg arguments used in the functions in `counsel' and `project'
+packages.")
+
   (setq counsel-grep-base-command
         "rg -i -M 120 --no-heading --line-number --color never '%s' %s")
+  (setq counsel-rg-base-command
+        (append '("rg")
+                my/rg-arguments
+                '("%s"
+                  )))
   (setq counsel-git-cmd "rg --files")
 
   (defun my/counsel-goto-local-home ()
@@ -2960,7 +2979,8 @@ If the error list is visible, hide it.  Otherwise, show it."
     "pf" 'project-find-file
     "pg" 'project-find-regexp
     "pk" 'project-kill-buffers
-    "pp" 'project-switch-project)
+    "pp" 'project-switch-project
+    "pr" '(my/counsel-rg-project :wk "project-rg"))
   :config
 
   ;; More example about add a new file to specify project root
@@ -3006,7 +3026,18 @@ DIR must include a .project file to be considered a project."
             (or dirs (list (project-root project)))))
 
   ;; Add the command `project-switch-to-buffer' when using `project-switch-project'
-  (add-to-list 'project-switch-commands '(?b "Switch buffer" project-switch-to-buffer)))
+  (add-to-list 'project-switch-commands '(?b "Switch buffer" project-switch-to-buffer))
+
+
+  (defun my/counsel-rg-project ()
+    "use `counsel-rg' to search for the word in the project"
+    (interactive)
+    (let ((root default-directory)
+          (project (project-current)))
+      (when project
+        (setq root (cdr project)))
+      (when root
+        (counsel-rg nil root)))))
 
 
 (use-package go-mode
