@@ -1108,6 +1108,11 @@ Start `ielm' in a split window if it's not already running."
     "ts" 'sly
     "ti" '(imenu-list-smart-toggle :wk "imenu-list"))
 
+  (general-define-key
+   :keymaps 'evil-window-map
+   "e" 'doom/window-enlargen
+   "g" 'my/window-split-toggle)
+
   ;; Comment sexps and keep parentheses balanced
   ;; Keybinding is SPC+;
   ;; https://github.com/Fuco1/smartparens/issues/942
@@ -1250,7 +1255,45 @@ Repeated invocations toggle between the two most recently open buffers."
                (tramp-tramp-file-p file-name))
           (error "Cannot open tramp file")
         (setq browse-url-browser-function 'browse-url-firefox)
-        (browse-url (concat "file://" file-name))))))
+        (browse-url (concat "file://" file-name)))))
+
+  (defun doom/window-enlargen (&optional arg)
+    "Enlargen the current window to focus on this one. Does not close other
+windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
+    (interactive "P")
+    (let ((param 'doom--enlargen-last-wconf))
+      (cl-destructuring-bind (window . wconf)
+          (or (frame-parameter nil param)
+              (cons nil nil))
+        (set-frame-parameter
+         nil param
+         (if (and (equal window (selected-window))
+                  (not arg)
+                  wconf)
+             (ignore
+              (let ((source-window (selected-window)))
+                (set-window-configuration wconf)
+                (when (window-live-p source-window)
+                  (select-window source-window))))
+           (prog1 (cons (selected-window) (or wconf (current-window-configuration)))
+             (let* ((window (selected-window))
+                    (dedicated-p (window-dedicated-p window))
+                    (preserved-p (window-parameter window 'window-preserved-size))
+                    (ignore-window-parameters t)
+                    (window-resize-pixelwise nil)
+                    (frame-resize-pixelwise nil))
+               (unwind-protect
+                   (progn
+                     (when dedicated-p
+                       (set-window-dedicated-p window nil))
+                     (when preserved-p
+                       (set-window-parameter window 'window-preserved-size nil))
+                     (maximize-window window))
+                 (set-window-dedicated-p window dedicated-p)
+                 (when preserved-p
+                   (set-window-parameter window 'window-preserved-size preserved-p))
+                 (add-hook 'doom-switch-window-hook #'doom--enlargened-forget-last-wconf-h)))))))))
+  )
 
 (use-package evil
   :ensure t
