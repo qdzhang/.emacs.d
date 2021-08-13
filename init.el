@@ -1944,7 +1944,10 @@ If BACK is t, jump backward."
   :init
   (setq company-idle-delay 0.1)
   :hook
-  (after-init . global-company-mode))
+  (after-init . global-company-mode)
+  :general
+  (company-active-map
+   "RET" 'company-complete-selection))
 
 (use-package yasnippet
   :diminish yas-minor-mode
@@ -2788,6 +2791,11 @@ Version 2018-12-23"
 (use-package tide
   :hook
   (web-mode . my/setup-tide-mode)
+  :general
+  (general-nmap
+    :keymaps 'tide-mode-map
+    "<f2>" 'tide-rename-symbol
+    "g r" 'tide-references)
   :config
   (setq tide-completion-ignore-case t
         tide-server-max-response-length (* 1024 1024))
