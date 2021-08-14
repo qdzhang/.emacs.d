@@ -1108,11 +1108,6 @@ Start `ielm' in a split window if it's not already running."
     "ts" 'sly
     "ti" '(imenu-list-smart-toggle :wk "imenu-list"))
 
-  (general-define-key
-   :keymaps 'evil-window-map
-   "e" 'doom/window-enlargen
-   "g" 'my/window-split-toggle)
-
   ;; Comment sexps and keep parentheses balanced
   ;; Keybinding is SPC+;
   ;; https://github.com/Fuco1/smartparens/issues/942
@@ -1218,22 +1213,6 @@ Such as 1+ to increment the org file according to the date number"
       (end-of-line)
       (insert ";")))
 
-  ;; Change Emacs windows from vertical split to horizontal split
-  ;; https://emacs.stackexchange.com/questions/5371/how-to-change-emacs-windows-from-vertical-split-to-horizontal-split
-  (defun my/window-split-toggle ()
-    "Toggle between horizontal and vertical split with two windows."
-    (interactive)
-    (if (> (length (window-list)) 2)
-        (error "Can't toggle with more than 2 windows!")
-      (let ((func (if (window-full-height-p)
-                      #'split-window-vertically
-                    #'split-window-horizontally)))
-        (delete-other-windows)
-        (funcall func)
-        (save-selected-window
-          (other-window 1)
-          (switch-to-buffer (other-buffer))))))
-
   ;; Same function to `evil-switch-to-windows-last-buffer'
   ;; If you dont't using evil, use this function
   ;; https://emacsredux.com/blog/2013/04/28/switch-to-previous-buffer/
@@ -1255,45 +1234,7 @@ Repeated invocations toggle between the two most recently open buffers."
                (tramp-tramp-file-p file-name))
           (error "Cannot open tramp file")
         (setq browse-url-browser-function 'browse-url-firefox)
-        (browse-url (concat "file://" file-name)))))
-
-  (defun doom/window-enlargen (&optional arg)
-    "Enlargen the current window to focus on this one. Does not close other
-windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
-    (interactive "P")
-    (let ((param 'doom--enlargen-last-wconf))
-      (cl-destructuring-bind (window . wconf)
-          (or (frame-parameter nil param)
-              (cons nil nil))
-        (set-frame-parameter
-         nil param
-         (if (and (equal window (selected-window))
-                  (not arg)
-                  wconf)
-             (ignore
-              (let ((source-window (selected-window)))
-                (set-window-configuration wconf)
-                (when (window-live-p source-window)
-                  (select-window source-window))))
-           (prog1 (cons (selected-window) (or wconf (current-window-configuration)))
-             (let* ((window (selected-window))
-                    (dedicated-p (window-dedicated-p window))
-                    (preserved-p (window-parameter window 'window-preserved-size))
-                    (ignore-window-parameters t)
-                    (window-resize-pixelwise nil)
-                    (frame-resize-pixelwise nil))
-               (unwind-protect
-                   (progn
-                     (when dedicated-p
-                       (set-window-dedicated-p window nil))
-                     (when preserved-p
-                       (set-window-parameter window 'window-preserved-size nil))
-                     (maximize-window window))
-                 (set-window-dedicated-p window dedicated-p)
-                 (when preserved-p
-                   (set-window-parameter window 'window-preserved-size preserved-p))
-                 (add-hook 'doom-switch-window-hook #'doom--enlargened-forget-last-wconf-h)))))))))
-  )
+        (browse-url (concat "file://" file-name))))))
 
 (use-package evil
   :ensure t
@@ -1353,6 +1294,76 @@ point."
     :keymaps 'evil-outer-text-objects-map
     "f" #'+evil:defun-txtobj
     "g" #'+evil:whole-buffer-txtobj)
+
+  ;; Define some functions in `evil-window-map'
+  (general-define-key
+   :keymaps 'evil-window-map
+   "e" 'doom/window-enlargen
+   "g" 'my/window-split-toggle
+   "m" 'my/toggle-maximize-window)
+
+  (defun doom/window-enlargen (&optional arg)
+    "Enlargen the current window to focus on this one. Does not close other
+windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
+    (interactive "P")
+    (let ((param 'doom--enlargen-last-wconf))
+      (cl-destructuring-bind (window . wconf)
+          (or (frame-parameter nil param)
+              (cons nil nil))
+        (set-frame-parameter
+         nil param
+         (if (and (equal window (selected-window))
+                  (not arg)
+                  wconf)
+             (ignore
+              (let ((source-window (selected-window)))
+                (set-window-configuration wconf)
+                (when (window-live-p source-window)
+                  (select-window source-window))))
+           (prog1 (cons (selected-window) (or wconf (current-window-configuration)))
+             (let* ((window (selected-window))
+                    (dedicated-p (window-dedicated-p window))
+                    (preserved-p (window-parameter window 'window-preserved-size))
+                    (ignore-window-parameters t)
+                    (window-resize-pixelwise nil)
+                    (frame-resize-pixelwise nil))
+               (unwind-protect
+                   (progn
+                     (when dedicated-p
+                       (set-window-dedicated-p window nil))
+                     (when preserved-p
+                       (set-window-parameter window 'window-preserved-size nil))
+                     (maximize-window window))
+                 (set-window-dedicated-p window dedicated-p)
+                 (when preserved-p
+                   (set-window-parameter window 'window-preserved-size preserved-p))
+                 (add-hook 'doom-switch-window-hook #'doom--enlargened-forget-last-wconf-h)))))))))
+
+  (defun my/toggle-maximize-window ()
+    "Maximize current window"
+    (interactive)
+    (if (and (= 1 (length (window-list)))
+             (assoc ?_ register-alist))
+        (jump-to-register ?_)
+      (progn
+        (window-configuration-to-register ?_)
+        (delete-other-windows))))
+
+  ;; Change Emacs windows from vertical split to horizontal split
+  ;; https://emacs.stackexchange.com/questions/5371/how-to-change-emacs-windows-from-vertical-split-to-horizontal-split
+  (defun my/window-split-toggle ()
+    "Toggle between horizontal and vertical split with two windows."
+    (interactive)
+    (if (> (length (window-list)) 2)
+        (error "Can't toggle with more than 2 windows!")
+      (let ((func (if (window-full-height-p)
+                      #'split-window-vertically
+                    #'split-window-horizontally)))
+        (delete-other-windows)
+        (funcall func)
+        (save-selected-window
+          (other-window 1)
+          (switch-to-buffer (other-buffer))))))
 
 
   ;; Config `evil-shift-width' depending on `evil-indent-variable-alist'
