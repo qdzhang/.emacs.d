@@ -3001,7 +3001,8 @@ If the error list is visible, hide it.  Otherwise, show it."
     "pg" 'project-find-regexp
     "pk" 'project-kill-buffers
     "pp" 'project-switch-project
-    "pr" '(my/counsel-rg-project :wk "project-rg"))
+    "pr" '(my/counsel-rg-project :wk "project-rg")
+    "pt" '(my/counsel-rg-extra-glob-project :wk "project-filetype-rg"))
   :config
 
   ;; More example about add a new file to specify project root
@@ -3058,7 +3059,27 @@ DIR must include a .project file to be considered a project."
       (when project
         (setq root (cdr project)))
       (when root
-        (counsel-rg nil root)))))
+        (counsel-rg nil root))))
+
+  (defun my/counsel-rg-extra-glob-project ()
+    "use `counsel-rg' to search for the word with extra glob in the project.
+Search for specify filetype.
+Reference: https://philjackson.github.io//emacs/search/rg/2021/06/25/search-specific-extensions-with-counsel-projectile-rg/"
+    (interactive)
+    (let ((root default-directory)
+          (project (project-current))
+          (glob (ivy-completing-read "Glob?: " '("*.md"
+                                                 "*.org"
+                                                 "*.css"
+                                                 "*.js"
+                                                 "*.html"
+                                                 "*.jsx"
+                                                 "*.json"
+                                                 "*.el"))))
+      (when project
+        (setq root (cdr project)))
+      (when root
+        (counsel-rg nil root (concat "--glob " glob))))))
 
 
 (use-package go-mode
