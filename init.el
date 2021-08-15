@@ -1969,9 +1969,9 @@ If BACK is t, jump backward."
   (setq company-idle-delay 0.1)
   :hook
   (after-init . global-company-mode)
-  :general
-  (company-active-map
-   "RET" 'company-complete-selection))
+  :config
+  (define-key company-active-map (kbd "RET") 'company-complete-selection)
+  (define-key company-active-map [return] 'company-complete-selection))
 
 (use-package yasnippet
   :diminish yas-minor-mode
