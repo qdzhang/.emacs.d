@@ -361,6 +361,18 @@ corresponding to the mode line clicked."
                                          (region-bounds))))
                      'font-lock-face 'font-lock-variable-name-face))))
 
+(defun simple-modeline-segment-percent-location ()
+  "Return the percent location info.
+Reference: https://github.com/AmaiKinono/Tokimacs/blob/master/site-lisp/toki-modeline.el"
+  (let ((percent (format-mode-line "%p")))
+    (setq percent
+          (pcase percent
+            ("All" "All%")
+            ("Top" " 0%")
+            ("Bottom" "100%")
+            (val val)))
+    (concat " " percent "%%%" " ")))
+
 (defun simple-modeline-segment-eol ()
   "Displays the EOL style of the current buffer in the mode-line."
   (let* ((eol (coding-system-eol-type buffer-file-coding-system))
@@ -585,7 +597,8 @@ Source: https://git.io/vQKzv"
   '((simple-modeline-segment-evil-indicator
      simple-modeline-segment-modified
      simple-modeline-segment-pretty-buffer-and-path
-     simple-modeline-segment-nyan
+     simple-modeline-segment-percent-location
+     ;; simple-modeline-segment-nyan
      simple-modeline-segment-position
      simple-modeline-evil-substitute)
     (simple-modeline-client-status
