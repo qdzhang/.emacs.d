@@ -2555,7 +2555,13 @@ respectively."
   (add-to-list 'auto-mode-alist '("presentation.html" . markdown-mode))
   (defun my-markdown-mode-hook ()
     (visual-line-mode 1)
-    (setq word-wrap-by-category t)))
+    (setq word-wrap-by-category t))
+
+  (defun my/preview-markdown ()
+    "Preview github flavored markdown"
+    (interactive)
+    (when (executable-find "markdown-preview")
+      (tat/execute-async (concat "markdown-preview " (buffer-file-name)) "markdown-preview"))))
 
 (use-package expand-region
   :bind
