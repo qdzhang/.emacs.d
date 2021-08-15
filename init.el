@@ -752,6 +752,29 @@ Source: https://git.io/vQKzv"
       (error "No number at point"))
   (replace-match (number-to-string (1- (string-to-number (match-string 0))))))
 
+;;; When changing window or some other operator happenning,
+;;; pulse highlight current line
+(defun my/pulse-line (&rest _)
+  "Pulse the current line."
+  (pulse-momentary-highlight-one-line (point)))
+
+(dolist (command '(scroll-up-command scroll-down-command
+                                     recenter-top-bottom other-window
+                                     evil-window-next ace-window))
+  (advice-add command :after #'my/pulse-line))
+
+
+;;; Pulse highlight evil yank
+;;; https://blog.meain.io/2020/emacs-highlight-yanked/
+;;; Also see: https://github.com/k-talo/volatile-highlights.el
+;;; or https://github.com/edkolev/evil-goggles
+;;; If no evil, see https://github.com/minad/goggles
+(defun my/evil-yank-advice (orig-fn beg end &rest args)
+  (pulse-momentary-highlight-region beg end)
+  (apply orig-fn beg end args))
+
+(advice-add 'evil-yank :around 'my/evil-yank-advice)
+
 
 ;;;===================
 ;;; Auto save settings
