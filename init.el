@@ -1135,7 +1135,7 @@ Start `ielm' in a split window if it's not already running."
                           (counsel-find-file))
                  (counsel-fzf)))) :wk "counsel-fzf")
     "sg" 'counsel-grep-or-swiper
-    "si" '(counsel-imenu :wk "imenu")
+    "sm" '(counsel-imenu :wk "imenu")
     "sr" 'counsel-rg
     "st" '(counsel-load-theme :wk "themes")
     "sy" 'ivy-yasnippet
@@ -1661,17 +1661,18 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
   :general
   (my/leader-keys
     "fR" '(my/counsel-recent-directory :wk "recent-dir")
+    "si" '(my/counsel-rg-in :wk "rg-in-dir")
     "bj" '(my/counsel-all-opened-dired-buffer :wk "jump-dired"))
   :config
 
   (defconst my/rg-arguments
     `("--hidden"
-      ;; "--no-ignore-vcs"                   ;Ignore files/dirs ONLY from `.ignore'
+      ;; "--no-ignore-vcs"     ;Ignore files/dirs ONLY from `.ignore'
       "--no-heading"
-      "--line-number"                     ;Line numbers
+      "--line-number"       ;Line numbers
       "--smart-case"
-      "--follow"                 ;Follow symlinks
-      "--max-columns" "150"      ;Emacs doesn't handle long line lengths very well
+      "--follow"            ;Follow symlinks
+      "--max-columns" "150" ;Emacs doesn't handle long line lengths very well
       ;; "--ignore-file" ,(expand-file-name ".ignore" (cdr (project-current)))
       )
     "Default rg arguments used in the functions in `counsel' and `project'
@@ -1803,7 +1804,12 @@ repository, then the corresponding root is used instead."
   (ivy-add-actions
    'counsel-find-file
    '(("g" prot/counsel-rg-dir "use ripgrep in root directory")
-     ("z" prot/counsel-fzf-dir "find file with fzf in root directory"))))
+     ("z" prot/counsel-fzf-dir "find file with fzf in root directory")))
+
+  (defun my/counsel-rg-in ()
+    "Use `counsel-rg' in specifed directories"
+    (interactive)
+    (counsel-rg nil (read-directory-name "rg in: ") "")))
 
 (use-package swiper
   :general
