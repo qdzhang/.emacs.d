@@ -2835,12 +2835,32 @@ Version 2018-12-23"
   (setq web-mode-block-padding 2)
   (setq web-mode-style-padding 2)
   (setq web-mode-enable-auto-pairing t)
+  (setq web-mode-enable-auto-quoting nil)
   (setq web-mode-enable-auto-closing t)
   (setq web-mode-enable-current-element-highlight t)
 
   ;; Remove < auto pair in web-mode
   (eval-after-load smartparens-strict-mode
     (sp-local-pair 'web-mode "<" nil :actions :rem))
+
+
+  ;; 1. Remove web-mode auto pairs whose end pair starts with a letter
+  ;;    (truncated autopairs like <?p and hp ?>). Smartparens handles these
+  ;;    better.
+  ;; 2. Strips out extra closing pairs to prevent redundant characters
+  ;;    inserted by smartparens.
+  (eval-after-load smartparens-strict-mode
+    (progn
+      (dolist (alist web-mode-engines-auto-pairs)
+        (setcdr alist
+                (cl-loop for pair in (cdr alist)
+                         unless (string-match-p "^[a-z-]" (cdr pair))
+                         collect (cons (car pair)
+                                       (string-trim-right (cdr pair)
+                                                          "\\(?:>\\|]\\|}\\)+\\'")))))
+      (setq web-mode-engines-auto-pairs
+            (delq nil web-mode-engines-auto-pairs))))
+
 
   (which-key-add-key-based-replacements
     "C-c C-a" "web-mode attribute"
