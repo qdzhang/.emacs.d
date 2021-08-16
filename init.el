@@ -2888,7 +2888,33 @@ Version 2018-12-23"
       ;; (setq gc-cons-threshold 100000000)
       (tide-setup)
       (eldoc-mode +1)
-      (tide-hl-identifier-mode +1))))
+      (tide-hl-identifier-mode +1)))
+
+  (defvar tide-jsconfig-content
+    "{\n\
+  \"compilerOptions\": {\n\
+    \"target\": \"es2017\",\n\
+    \"allowSyntheticDefaultImports\": true,\n\
+    \"noEmit\": true,\n\
+    \"checkJs\": true,\n\
+    \"jsx\": \"react\",\n\
+    \"lib\": [\"dom\", \"es2017\"]\n\
+  },\n\
+  \"exclude\": [\"build\", \"node_modules\", \"assets/dependencies\"]\n\
+}"
+    "Content of jsconfig.json file.")
+
+  (defun spacemacs//tide-create-jsconfig-file ()
+    "Create a jsconfig file at project root."
+    (interactive)
+    (let ((jsconfig (cdr (project-current))))
+      (if jsconfig
+          (let ((jsconfig-file (concat jsconfig "jsconfig.json")))
+            (if (file-exists-p jsconfig-file)
+                (message "File exists")
+              (with-temp-file jsconfig-file
+                (insert tide-jsconfig-content))))
+        (message "Project not found")))))
 
 (use-package flycheck
   :defer t
