@@ -1493,6 +1493,35 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
   :config
   (evil-commentary-mode))
 
+(use-package better-jumper
+  :after evil
+  :init
+  (global-set-key [remap evil-jump-forward]  #'better-jumper-jump-forward)
+  (global-set-key [remap evil-jump-backward] #'better-jumper-jump-backward)
+  (global-set-key [remap xref-pop-marker-stack] #'better-jumper-jump-backward)
+  :config
+  (better-jumper-mode 1)
+
+  (defun evil-better-jumper/set-jump-a (orig-fn &rest args)
+    "Set a jump point and ensure ORIG-FN doesn't set any new jump points."
+    (better-jumper-set-jump (if (markerp (car args)) (car args)))
+    (let ((evil--jumps-jumping t)
+          (better-jumper--jumping t))
+      (apply orig-fn args)))
+
+  ;; Creates a jump point before killing a buffer. This allows you to undo
+  ;; killing a buffer easily (only works with file buffers though; it's not
+  ;; possible to resurrect special buffers).
+  (advice-add #'kill-current-buffer :around #'evil-better-jumper/set-jump-a)
+
+  ;; Create a jump point before jumping with imenu.
+  (advice-add #'imenu :around #'evil-better-jumper/set-jump-a))
+
+(use-package evil-lion
+  :after evil
+  :config
+  (evil-lion-mode))
+
 ;;==================
 ;; Evil settings end
 
@@ -1513,6 +1542,9 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
          :map ivy-reverse-i-search-map
          ("C-k" . ivy-previous-line)
          ("C-d" . ivy-reverse-i-search-kill))
+  :general
+  (my/leader-keys
+    "sj" '(+ivy/jump-list :wk "jump-list"))
   :config
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) ")
@@ -1588,7 +1620,60 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
     (local-set-key (kbd "C-/") #'ivy-occur/undo))
 
   (add-hook 'ivy-occur-mode-hook 'ivy|occur-mode-setup)
-  (add-hook 'ivy-occur-grep-mode-hook 'ivy|occur-mode-setup))
+  (add-hook 'ivy-occur-grep-mode-hook 'ivy|occur-mode-setup)
+
+
+;;;###autoload
+  (defun +ivy/jump-list ()
+    "Go to an entry in evil's (or better-jumper's) jumplist."
+    (interactive)
+    ;; REVIEW Refactor me
+    (let (buffers)
+      (unwind-protect
+          (ivy-read "jumplist: "
+                    (nreverse
+                     (delete-dups
+                      (delq
+                       nil
+                       (mapcar (lambda (mark)
+                                 (when mark
+                                   (cl-destructuring-bind (path pt _id) mark
+                                     (let ((buf (get-file-buffer path)))
+                                       (unless buf
+                                         (push (setq buf (find-file-noselect path t))
+                                               buffers))
+                                       (with-current-buffer buf
+                                         (goto-char pt)
+                                         (font-lock-fontify-region (line-beginning-position) (line-end-position))
+                                         (cons (format "%s:%d: %s"
+                                                       (buffer-name)
+                                                       (line-number-at-pos)
+                                                       (string-trim-right (or (thing-at-point 'line) "")))
+                                               (point-marker)))))))
+                               (cddr (better-jumper-jump-list-struct-ring
+                                      (better-jumper-get-jumps (better-jumper--get-current-context))))))))
+                    :sort nil
+                    :require-match t
+                    :action (lambda (cand)
+                              (let ((mark (cdr cand)))
+                                (setq buffers
+                                      (delq
+                                       (marker-buffer mark)
+                                       buffers))
+                                (mapc #'kill-buffer buffers)
+                                (setq buffers nil)
+                                (with-current-buffer (switch-to-buffer (marker-buffer mark))
+                                  (goto-char (marker-position mark)))))
+                    :caller '+ivy/jump-list)
+        (mapc #'kill-buffer buffers))))
+
+
+  ;; Integrate `ivy' with `better-jumper'; ensure a jump point is registered
+  ;; before jumping to new locations with ivy
+  (setf (alist-get 't ivy-hooks-alist)
+        (lambda ()
+          (with-ivy-window
+            (setq +ivy--origin (point-marker))))))
 
 (use-package ace-window
   :general
@@ -2818,7 +2903,9 @@ Version 2018-12-23"
   :init
   (setq dumb-jump-prefer-searcher 'rg)
   :custom
-  (dumb-jump-selector 'ivy))
+  (dumb-jump-selector 'ivy)
+  :config
+  (add-hook 'dumb-jump-after-jump-hook #'better-jumper-set-jump))
 
 (use-package web-mode
   :ensure t
