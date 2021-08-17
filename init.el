@@ -2970,6 +2970,7 @@ Version 2018-12-23"
   (setq web-mode-enable-auto-quoting nil)
   (setq web-mode-enable-auto-closing t)
   (setq web-mode-enable-current-element-highlight t)
+  (setq web-mode-auto-close-style 3)
 
   ;; Remove < auto pair in web-mode
   (eval-after-load smartparens-strict-mode
@@ -3305,7 +3306,20 @@ Reference: https://philjackson.github.io//emacs/search/rg/2021/06/25/search-spec
       (when project
         (setq root (cdr project)))
       (when root
-        (counsel-rg nil root (concat "--glob " glob))))))
+        (counsel-rg nil root (concat "--glob " glob)))))
+
+  (defun my/create-project-root-file ()
+    "Create .project file at project root."
+    (interactive)
+    (let ((projectroot (cdr (project-current))))
+      (if projectroot
+          (let ((projectroot-file (concat projectroot ".project")))
+            (if (file-exists-p projectroot-file)
+                (message "Project root file exists")
+              (with-temp-buffer (write-file projectroot-file))))
+        (let ((projectroot-file (concat default-directory ".project")))
+          (with-temp-buffer (write-file projectroot-file))
+          (message ".project file created"))))))
 
 
 (use-package go-mode
@@ -3326,6 +3340,7 @@ Reference: https://philjackson.github.io//emacs/search/rg/2021/06/25/search-spec
   ;;   "{" 'my/go-electric-brace)
   :config
   (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+  (setq gofmt-show-errors nil)
 
   ;; https://lupan.pl/dotemacs/
   (defun my/go-electric-brace ()
