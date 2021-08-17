@@ -733,6 +733,15 @@ Source: https://git.io/vQKzv"
         (make-directory dir t)))))
 
 
+(use-package ediff
+  :ensure nil
+  :config
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+  (setq ediff-split-window-function (if (> (frame-width) 150)
+                                        'split-window-horizontally
+                                      'split-window-vertically)))
+
+
 ;;; Some useful functions
 ;;;======================
 
@@ -2764,6 +2773,7 @@ respectively."
     "d" '(:ignore t :which-key "dired")
     "db" '(my/browse-marked-file :wk "open-in-browser")
     "dc" '(tda/rsync :wk "async-rsync")
+    "de" '(my/ediff-files :wk "ediff-files")
     "di" 'image-dired
     "dp" '(tda/zip :wk "async-zip")
     "du" '(tda/unzip :wk "async-unzip")
@@ -2858,7 +2868,29 @@ Version 2018-12-23"
     "Open each of the marked files, or the file under the point, or when prefix arg, the next N files "
     (interactive "P")
     (let* ((fn-list (dired-get-marked-files nil arg)))
-      (mapc 'find-file fn-list))))
+      (mapc 'find-file fn-list)))
+
+  ;; Ediff marked files in dired
+  ;; https://oremacs.com/2017/03/18/dired-ediff/
+  (defun my/ediff-files ()
+    (interactive)
+    (let ((files (dired-get-marked-files))
+          (wnd (current-window-configuration)))
+      (if (<= (length files) 2)
+          (let ((file1 (car files))
+                (file2 (if (cdr files)
+                           (cadr files)
+                         (read-file-name
+                          "file: "
+                          (dired-dwim-target-directory)))))
+            (if (file-newer-than-file-p file1 file2)
+                (ediff-files file2 file1)
+              (ediff-files file1 file2))
+            (add-hook 'ediff-after-quit-hook-internal
+                      (lambda ()
+                        (setq ediff-after-quit-hook-internal nil)
+                        (set-window-configuration wnd))))
+        (error "no more than 2 files should be marked")))))
 
 (use-package dired-subtree
   :after dired
