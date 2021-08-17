@@ -1062,6 +1062,7 @@ Start `ielm' in a split window if it's not already running."
 
     "b" '(:ignore t :which-key "buffer")
     "br"  'revert-buffer
+    "bR" '(my/rename-file-and-buffer :wk "rename-file")
     "bs" '((lambda () (interactive)
              (pop-to-buffer "*scratch*"))
            :wk "scratch")
@@ -1091,8 +1092,7 @@ Start `ielm' in a split window if it's not already running."
     "fD" '((lambda () (interactive) (delete-file (buffer-file-name))) :wk "delete")
     "ff" 'counsel-find-file
     "fs" 'save-buffer
-    "fr" 'counsel-recentf
-    "fR" '(my/rename-file-and-buffer :wk "rename")
+    "fr" '(my/counsel-recentf :wk "counsel-recentf")
     "fn" '(my/org-journal-next-day-file :wk "next file")
     "fp" '(my/org-journal-previous-day-file :wk "previous file")
 
@@ -1251,6 +1251,19 @@ Such as 1+ to increment the org file according to the date number"
             (rename-buffer new-name)
             (set-visited-file-name new-name)
             (set-buffer-modified-p nil))))))
+
+;;;###autoload
+  (defun my/counsel-recentf ()
+    "Find a file on `recentf-list'."
+    (interactive)
+    (require 'recentf)
+    (recentf-mode)
+    (ivy-read "Recentf: " (mapcar 'abbreviate-file-name (counsel-recentf-candidates))
+              :action (lambda (f)
+                        (with-ivy-window
+                          (find-file f)))
+              :require-match t
+              :caller 'counsel-recentf))
 
   (defun my/semicolon-at-end-of-line ()
     (interactive)
@@ -1815,7 +1828,7 @@ packages.")
                     ;; fasd history
                     (if (executable-find "fasd")
                         (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
-      (ivy-read "directories:" collection
+      (ivy-read "directories:" (mapcar 'abbreviate-file-name collection)
                 :keymap counsel-recent-dir--map
                 :action (lambda (x) (dired x)))))
 
