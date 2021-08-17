@@ -2421,6 +2421,9 @@ respectively."
         org-src-tab-acts-natively t
         org-edit-src-content-indentation 0)
 
+  (setq org-startup-truncated nil)
+  (load "org-phscroll.el")
+
   ;; Org-capture templates
   ;; https://www.zmonster.me/2018/02/28/org-mode-capture.html
   (setq org-capture-templates nil)
