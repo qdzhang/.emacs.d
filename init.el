@@ -1071,12 +1071,12 @@ Start `ielm' in a split window if it's not already running."
     "bk" 'kill-current-buffer
     "bl" '(my/switch-to-previous-buffer :wk "last buffer")
 
-    "c" '(:ignore t :which-key "change text")
-    "c;" '(my/semicolon-at-end-of-line :which-key "semicolon(end)")
-    "cc" 'capitalize-word
-    "cd" 'downcase-word
-    "cg" '(my/sp-comment-with-three-semicolon :wk "sp-comment-3-semicolon")
-    "cu" 'upcase-word
+    "a" '(:ignore t :which-key "append")
+    "a;" '(my/semicolon-at-end-of-line :which-key "semicolon(end)")
+    "ac" 'capitalize-word
+    "ad" 'downcase-word
+    "ag" '(my/sp-comment-with-three-semicolon :wk "sp-comment-3-semicolon")
+    "au" 'upcase-word
 
     "e" '(:ignore t :which-key "eval")
     "eb" 'eval-buffer
@@ -1325,6 +1325,10 @@ Repeated invocations toggle between the two most recently open buffers."
         evil-visual-state-tag   (propertize " V  " 'face 'bold)
         evil-operator-state-tag (propertize " O  " 'face 'bold))
   (evil-mode 1)
+
+  (general-define-key
+   :keymaps 'evil-insert-state-map
+   "C-]" 'up-list)
 
   ;; Add XML attributes text object
   (require 'exato)
