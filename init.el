@@ -1544,6 +1544,102 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
   :config
   (evil-lion-mode))
 
+(use-package evil-surround
+  :after evil
+  :config
+  (global-evil-surround-mode 1))
+
+(use-package embrace
+  :defer t)
+
+(use-package evil-embrace
+  :after (evil evil-surround)
+  :commands embrace-add-pair embrace-add-pair-regexp
+  :hook (LaTeX-mode . embrace-LaTeX-mode-hook)
+  :hook (LaTeX-mode . +evil-embrace-latex-mode-hook-h)
+  :hook (org-mode . embrace-org-mode-hook)
+  :hook (ruby-mode . embrace-ruby-mode-hook)
+  :hook (emacs-lisp-mode . embrace-emacs-lisp-mode-hook)
+  :hook ((lisp-mode emacs-lisp-mode clojure-mode racket-mode hy-mode)
+         . +evil-embrace-lisp-mode-hook-h)
+  :hook ((c++-mode rustic-mode csharp-mode java-mode swift-mode typescript-mode)
+         . +evil-embrace-angle-bracket-modes-hook-h)
+  :hook (scala-mode . +evil-embrace-scala-mode-hook-h)
+  :init
+  (evil-embrace-enable-evil-surround-integration)
+  :config
+  (setq evil-embrace-show-help-p nil)
+
+;;;###autoload
+  (defun +evil--embrace-get-pair (char)
+    (if-let* ((pair (cdr-safe (assoc (string-to-char char) evil-surround-pairs-alist))))
+        pair
+      (if-let* ((pair (assoc-default char embrace--pairs-list)))
+          (if-let* ((real-pair (and (functionp (embrace-pair-struct-read-function pair))
+                                    (funcall (embrace-pair-struct-read-function pair)))))
+              real-pair
+            (cons (embrace-pair-struct-left pair) (embrace-pair-struct-right pair)))
+        (cons char char))))
+
+;;;###autoload
+  (defun +evil--embrace-escaped ()
+    "Backslash-escaped surround character support for embrace."
+    (let ((char (read-char "\\")))
+      (if (eq char 27)
+          (cons "" "")
+        (let ((pair (+evil--embrace-get-pair (string char)))
+              (text (if (sp-point-in-string) "\\\\%s" "\\%s")))
+          (cons (format text (car pair))
+                (format text (cdr pair)))))))
+
+;;;###autoload
+  (defun +evil--embrace-latex ()
+    "LaTeX command support for embrace."
+    (cons (format "\\%s{" (read-string "\\")) "}"))
+
+;;;###autoload
+  (defun +evil--embrace-elisp-fn ()
+    "Elisp function support for embrace."
+    (cons (format "(%s " (or (read-string "(") "")) ")"))
+
+;;;###autoload
+  (defun +evil--embrace-angle-brackets ()
+    "Type/generic angle brackets."
+    (cons (format "%s<" (or (read-string "") ""))
+          ">"))
+
+  (defun +evil-embrace-scala-mode-hook-h ()
+    (embrace-add-pair ?$ "${" "}"))
+
+  (defun +evil-embrace-latex-mode-hook-h ()
+    (embrace-add-pair-regexp ?l "\\[a-z]+{" "}" #'+evil--embrace-latex))
+
+  (defun +evil-embrace-lisp-mode-hook-h ()
+    ;; Avoid `embrace-add-pair-regexp' because it would overwrite the default
+    ;; `f' rule, which we want for other modes
+    (push (cons ?f (make-embrace-pair-struct
+                    :key ?f
+                    :read-function #'+evil--embrace-elisp-fn
+                    :left-regexp "([^ ]+ "
+                    :right-regexp ")"))
+          embrace--pairs-list))
+
+  (defun +evil-embrace-angle-bracket-modes-hook-h ()
+    (let ((var (make-local-variable 'evil-embrace-evil-surround-keys)))
+      (set var (delq ?< evil-embrace-evil-surround-keys))
+      (set var (delq ?> evil-embrace-evil-surround-keys)))
+    (embrace-add-pair-regexp ?< "\\_<[a-z0-9-_]+<" ">" #'+evil--embrace-angle-brackets)
+    (embrace-add-pair ?> "<" ">"))
+
+  ;; Add escaped-sequence support to embrace
+  (setf (alist-get ?\\ (default-value 'embrace--pairs-list))
+        (make-embrace-pair-struct
+         :key ?\\
+         :read-function #'+evil--embrace-escaped
+         :left-regexp "\\[[{(]"
+         :right-regexp "\\[]})]")))
+
+
 ;;==================
 ;; Evil settings end
 
@@ -2076,7 +2172,7 @@ If BACK is t, jump backward."
     "F" 'evil-avy-find-char-backward
     "t" 'evil-avy-find-char-to
     "T" 'evil-avy-find-char-to-backward
-    "s" 'evil-avy-goto-char-2)
+    "/" 'evil-avy-goto-char-2)
 
   (evil-define-key 'operator 'global
     "f" 'evil-avy-find-char
