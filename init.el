@@ -3571,6 +3571,9 @@ Version 2016-08-09"
     (visual-fill-column-mode 'toggle)
     (darkroom-tentative-mode 'toggle)))
 
+(use-package ivy-unicode
+  :ensure nil)
+
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
