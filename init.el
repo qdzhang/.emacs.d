@@ -733,15 +733,6 @@ Source: https://git.io/vQKzv"
         (make-directory dir t)))))
 
 
-(use-package ediff
-  :ensure nil
-  :config
-  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
-  (setq ediff-split-window-function (if (> (frame-width) 150)
-                                        'split-window-horizontally
-                                      'split-window-vertically)))
-
-
 ;;; Some useful functions
 ;;;======================
 
@@ -3555,6 +3546,19 @@ Version 2016-08-09"
 
 (use-package macrostep
   :defer t)
+
+(use-package ediff
+  :ensure nil
+  :defer t
+  :general
+  (my/leader-keys
+    "ol" 'ediff)
+  :config
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+  (setq ediff-split-window-function (if (> (frame-width) 150)
+                                        'split-window-horizontally
+                                      'split-window-vertically)))
+
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
