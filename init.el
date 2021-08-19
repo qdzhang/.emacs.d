@@ -3559,6 +3559,18 @@ Version 2016-08-09"
                                         'split-window-horizontally
                                       'split-window-vertically)))
 
+(use-package darkroom
+  :ensure nil
+  :defer t
+  :general
+  (my/leader-keys
+    "td" '(my/toggle-darkroom-tentative-mode :wk "darkroom"))
+  :config
+  (defun my/toggle-darkroom-tentative-mode ()
+    (interactive)
+    (visual-fill-column-mode 'toggle)
+    (darkroom-tentative-mode 'toggle)))
+
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
