@@ -3141,12 +3141,13 @@ Version 2018-12-23"
     \"target\": \"es2017\",\n\
     \"allowSyntheticDefaultImports\": true,\n\
     \"noEmit\": true,\n\
-    \"checkJs\": true,\n\
+    \"checkJs\": false,\n\
     \"jsx\": \"react\",\n\
     \"lib\": [\"dom\", \"es2017\"]\n\
   },\n\
   \"exclude\": [\"build\", \"node_modules\", \"assets/dependencies\"]\n\
-}"
+}\n\
+"
     "Content of jsconfig.json file.")
 
   (defun spacemacs//tide-create-jsconfig-file ()
