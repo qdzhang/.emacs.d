@@ -3432,7 +3432,25 @@ Reference: https://philjackson.github.io//emacs/search/rg/2021/06/25/search-spec
               (with-temp-buffer (write-file projectroot-file))))
         (let ((projectroot-file (concat default-directory ".project")))
           (with-temp-buffer (write-file projectroot-file))
-          (message ".project file created"))))))
+          (message ".project file created")))))
+
+  (defvar fdignore-content
+    "/node_modules\n\
+/.git\n\
+"
+    "Content of .fdignore file.")
+
+  (defun my/create-fd-ignore-file ()
+    "Create a fdignore file at project root."
+    (interactive)
+    (let ((fdignore (cdr (project-current))))
+      (if fdignore
+          (let ((fdignore-file (concat fdignore ".fdignore")))
+            (if (file-exists-p fdignore-file)
+                (message "File exists")
+              (with-temp-file fdignore-file
+                (insert fdignore-content))))
+        (message ".fdignore file created")))))
 
 
 (use-package go-mode
