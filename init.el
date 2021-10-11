@@ -1119,6 +1119,7 @@ Start `ielm' in a split window if it's not already running."
     "ob" '(my/browse-current-file :wk "open-in-browser")
     "od" '(dired-jump :wk "dired")
     "oe" 'eshell
+    "og" '(google-search :wk "google")
     "oi" '(my/open-ielm-in-split-window :wk "ielm")
     "ot" '(my/open-vterm-in-split-window :wk "split-term")
     "oT" 'vterm
@@ -1283,7 +1284,21 @@ Repeated invocations toggle between the two most recently open buffers."
                (tramp-tramp-file-p file-name))
           (error "Cannot open tramp file")
         (setq browse-url-browser-function 'browse-url-firefox)
-        (browse-url (concat "file://" file-name))))))
+        (browse-url (concat "file://" file-name)))))
+
+  ;; Search google for the keywords from minibuffer
+  ;; https://www.lucacambiaghi.com/vanilla-emacs/readme.html#h:01E26AB9-2829-4076-9665-E218832FB1A3
+  (defun google-search-str (str)
+    (browse-url
+     (concat "https://www.google.com/search?q=" str)))
+  (defun google-search ()
+    "Google search region, if active, or ask for search string."
+    (interactive)
+    (if (region-active-p)
+        (google-search-str
+         (buffer-substring-no-properties (region-beginning)
+                                         (region-end)))
+      (google-search-str (read-from-minibuffer "Google Search: ")))))
 
 (use-package evil
   :ensure t
