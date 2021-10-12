@@ -3111,7 +3111,7 @@ Version 2018-12-23"
   (setq web-mode-enable-auto-quoting nil)
   (setq web-mode-enable-auto-closing t)
   (setq web-mode-enable-current-element-highlight t)
-  (setq web-mode-auto-close-style 3)
+  (setq web-mode-auto-close-style 1)
 
   ;; Remove < auto pair in web-mode
   (eval-after-load smartparens-strict-mode
