@@ -2923,6 +2923,7 @@ respectively."
     "d /" '(my/dired-filter :wk "narrow"))
   :hook
   (dired-mode . dired-hide-details-mode)
+  (dired-mode . auto-revert-mode)
   :custom
   (dired-dwim-target t)
   (dired-guess-shell-alist-user '(("\\.pdf\\'" "llpp")
