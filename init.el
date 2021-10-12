@@ -3640,6 +3640,11 @@ Version 2016-08-09"
 (use-package ivy-unicode
   :ensure nil)
 
+(use-package journalctl-mode)
+
+(use-package yaml-mode
+  :ensure nil)
+
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
