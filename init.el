@@ -3638,12 +3638,15 @@ Version 2016-08-09"
     (darkroom-tentative-mode 'toggle)))
 
 (use-package ivy-unicode
-  :ensure nil)
+  :ensure nil
+  :defer t)
 
-(use-package journalctl-mode)
+(use-package journalctl-mode
+  :defer t)
 
 (use-package yaml-mode
-  :ensure nil)
+  :ensure nil
+  :defer t)
 
 
 ;;; Restore file-name-hander-alist
