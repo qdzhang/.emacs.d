@@ -1756,12 +1756,13 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
           (undo)
         (user-error "Filter stack is empty"))))
 
-  (defun ivy|occur-mode-setup ()
-    (local-set-key "/" #'ivy-occur/filter-lines)
-    (local-set-key (kbd "C-/") #'ivy-occur/undo))
+  (evil-define-key 'normal ivy-occur-mode-map
+    "/" 'ivy-occur/filter-lines
+    "C-/" 'ivy-occur/undo)
 
-  (add-hook 'ivy-occur-mode-hook 'ivy|occur-mode-setup)
-  (add-hook 'ivy-occur-grep-mode-hook 'ivy|occur-mode-setup)
+  (evil-define-key 'normal ivy-occur-grep-mode-map
+    "/" 'ivy-occur/filter-lines
+    "C-/" 'ivy-occur/undo)
 
 
 ;;;###autoload
@@ -2195,7 +2196,7 @@ If BACK is t, jump backward."
     "F" 'evil-avy-find-char-backward
     "t" 'evil-avy-find-char-to
     "T" 'evil-avy-find-char-to-backward
-    "/" 'evil-avy-goto-char-2)
+    "s" 'evil-avy-goto-char-2)
 
   (evil-define-key 'operator 'global
     "f" 'evil-avy-find-char
