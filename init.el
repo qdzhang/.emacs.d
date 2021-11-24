@@ -1121,6 +1121,7 @@ Start `ielm' in a split window if it's not already running."
     "oe" 'eshell
     "og" '(google-search :wk "google")
     "oi" '(my/open-ielm-in-split-window :wk "ielm")
+    "om" 'man
     "ot" '(my/open-vterm-in-split-window :wk "split-term")
     "oT" 'vterm
     ;; "oT" '(my/ansi-term-bash :wk "term")
