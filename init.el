@@ -1819,23 +1819,22 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
 
 (use-package ace-window
   :general
-  (my/leader-keys
-    "w" 'ace-window)
+  ("M-p" 'ace-window)
   :custom
-  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  (aw-keys '(?h ?j ?k ?l ?y ?u ?i ?o ?p))
   (aw-scope 'frame)
   (aw-dispatch-always t)
   (aw-dispatch-alist
    '((?m aw-swap-window "Swap Windows")
      (?M aw-move-window "Move Window")
      (?c aw-copy-window "Copy Window")
-     (?j aw-switch-buffer-in-window "Select Buffer")
+     (?b aw-switch-buffer-in-window "Select Buffer")
      (?n aw-flip-window)
      (?u aw-switch-buffer-other-window "Switch Buffer Other Window")
-     (?c aw-split-window-fair "Split Fair Window")
-     (?v aw-split-window-vert "Split Vert Window")
-     (?b aw-split-window-horz "Split Horz Window")
-     (?o delete-other-windows "Delete Other Windows")
+     (?f aw-split-window-fair "Split Fair Window")
+     (?2 aw-split-window-vert "Split Vert Window")
+     (?3 aw-split-window-horz "Split Horz Window")
+     (?0 delete-other-windows "Delete Other Windows")
      (?x ace-delete-window "Delete Window")
      (?? aw-show-dispatch-help)))
   (aw-minibuffer-flag t)
@@ -2031,7 +2030,8 @@ repository, then the corresponding root is used instead."
   (ivy-add-actions
    'counsel-find-file
    '(("g" prot/counsel-rg-dir "use ripgrep in root directory")
-     ("z" prot/counsel-fzf-dir "find file with fzf in root directory")))
+     ("z" prot/counsel-fzf-dir "find file with fzf in root directory")
+     ("a" prot/counsel-fzf-ace-window "ace-window switch")))
 
   (defun my/counsel-rg-in ()
     "Use `counsel-rg' in specifed directories"
