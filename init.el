@@ -2890,6 +2890,12 @@ respectively."
 (use-package vterm
   :defer t
   :config
+  ;; Set evil initial state to `emacs' in vterm-mode
+  (evil-set-initial-state 'vterm-mode 'emacs)
+
+  ;; Make vterm render corrent evil state cursor shape
+  (advice-add #'vterm--redraw :after (lambda (&rest args) (evil-refresh-cursor evil-state)))
+
   (defun my/vterm-exit-kill-buffer-window (process event)
     "Kill buffer and window on shell process termination."
     (when (not (process-live-p process))
@@ -2900,7 +2906,7 @@ respectively."
             (unless (one-window-p)
               (delete-window)))))))
 
-  (evil-define-key 'insert vterm-mode-map
+  (evil-define-key 'emacs vterm-mode-map
     (kbd "C-\\") 'toggle-input-method
     (kbd "C-a") 'vterm-send-C-a
     (kbd "C-b") 'vterm-send-C-b
@@ -2916,7 +2922,8 @@ respectively."
     (kbd "C-r") 'vterm-send-C-r
     (kbd "C-s") 'vterm-send-C-s
     (kbd "C-t") 'vterm-send-C-t
-    (kbd "C-u") 'vterm-send-C-u)
+    (kbd "C-u") 'vterm-send-C-u
+    (kbd "C-S-v") 'vterm-yank)
   :hook
   (vterm-mode . (lambda () (set-process-sentinel (get-buffer-process (buffer-name) ) #'my/vterm-exit-kill-buffer-window))))
 
