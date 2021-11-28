@@ -3255,20 +3255,20 @@ CALLBACK is the function that we need to call when we are done, on all the error
   (defun +lsp--flycheck-eglot--on-diagnostics (diags &rest _)
     (cl-labels
         ((flymake-diag->flycheck-err
-          (diag)
-          (with-current-buffer (flymake--diag-buffer diag)
-            (flycheck-error-new-at-pos
-             (flymake--diag-beg diag)
-             (pcase (flymake--diag-type diag)
-               ('eglot-note 'info)
-               ('eglot-warning 'warning)
-               ('eglot-error 'error)
-               (_ (error "Unknown diagnostic type, %S" diag)))
-             (flymake--diag-text diag)
-             :end-pos (flymake--diag-end diag)
-             :checker 'eglot
-             :buffer (current-buffer)
-             :filename (buffer-file-name)))))
+           (diag)
+           (with-current-buffer (flymake--diag-buffer diag)
+             (flycheck-error-new-at-pos
+              (flymake--diag-beg diag)
+              (pcase (flymake--diag-type diag)
+                ('eglot-note 'info)
+                ('eglot-warning 'warning)
+                ('eglot-error 'error)
+                (_ (error "Unknown diagnostic type, %S" diag)))
+              (flymake--diag-text diag)
+              :end-pos (flymake--diag-end diag)
+              :checker 'eglot
+              :buffer (current-buffer)
+              :filename (buffer-file-name)))))
       (setq +lsp--flycheck-eglot--current-errors
             (mapcar #'flymake-diag->flycheck-err diags))
       ;; Call Flycheck to update the diagnostics annotations
