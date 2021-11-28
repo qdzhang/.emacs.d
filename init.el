@@ -3658,6 +3658,12 @@ Version 2016-08-09"
   :ensure nil
   :defer t)
 
+(use-package quickrun
+  :defer t
+  :general
+  (my/leader-keys
+    "or" 'quickrun))
+
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
