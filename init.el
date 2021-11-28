@@ -915,7 +915,7 @@ Start `ielm' in a split window if it's not already running."
 
 (require 'hl-todo)
 (global-hl-todo-mode 1)
-(which-key-add-key-based-replacements "C-c t" "hl-todo")
+(eval-after-load 'which-key (which-key-add-key-based-replacements "C-c t" "hl-todo"))
 (define-key hl-todo-mode-map (kbd "C-c t p") 'hl-todo-previous)
 (define-key hl-todo-mode-map (kbd "C-c t n") 'hl-todo-next)
 (define-key hl-todo-mode-map (kbd "C-c t o") 'hl-todo-occur)
