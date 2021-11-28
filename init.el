@@ -705,7 +705,7 @@ Source: https://git.io/vQKzv"
 (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 (setq scroll-step 1) ;; keyboard scroll one line at a time
-(better-pixel-scroll-mode) ;; This function needs Emacs 29
+;; (better-pixel-scroll-mode) ;; This function needs Emacs 29
 
 ;; Show init time in a message
 ;; Use a hook so the message doesn't get clobbered by other messages.
