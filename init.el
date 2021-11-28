@@ -628,6 +628,10 @@ Source: https://git.io/vQKzv"
                  mode-line-end-spaces)))
 
 
+;;;=============================
+;;; Mode-line configurations end
+
+
 ;; Line number
 (global-linum-mode 0)
 (global-display-line-numbers-mode 1)
@@ -2521,6 +2525,11 @@ respectively."
     "np" 'org-toggle-inline-images
     "nt" 'org-todo)
   :config
+  ;; ensure TAB is bound to org-cycle in normal mode
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal outline-mode-map (kbd "<tab>") #'org-cycle)
+    (evil-define-key 'normal outline-mode-map (kbd "TAB") #'org-cycle))
+
   (defun my-org-mode-hook ()
     (visual-line-mode 1)
     (setq evil-auto-indent nil)
