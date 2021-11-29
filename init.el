@@ -92,7 +92,7 @@ Ignores `ARGS'."
   (let ((default-directory (file-name-as-directory dir)))
     (add-to-list 'load-path dir)
     (normal-top-level-add-subdirs-to-load-path)))
-(add-subdirs-to-load-path "~/.emacs.d/site-lisp/")
+(add-subdirs-to-load-path (expand-file-name "~/.emacs.d/site-lisp/"))
 
 ;; Use-package settings
 ;; ==============================
@@ -923,8 +923,8 @@ Start `ielm' in a split window if it's not already running."
 
 ;; Themes path
 
-(add-subdirs-to-load-path "~/.emacs.d/themes/")
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(add-subdirs-to-load-path (expand-file-name "~/.emacs.d/themes/"))
+(add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/themes/"))
 
 ;; purp theme
 ;; dark theme
