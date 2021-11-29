@@ -3697,6 +3697,12 @@ Version 2016-08-09"
 
   (setq hs-set-up-overlay 'hideshow-folded-overlay-fn))
 
+(use-package tab-bar
+  :if(> emacs-major-version 26)
+  :config
+  (tab-bar-mode 1)
+  (setq tab-bar-new-tab-choice "*scratch*"))
+
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
