@@ -55,6 +55,14 @@ created."
  (set-fontset-font t 'symbol "JetBrainsMono Nerd Font Mono" nil 'append)
  (set-fontset-font t 'symbol "Symbola" nil 'append))
 
+;;; A macro to determine system type
+;;; https://stackoverflow.com/a/26137517
+(defmacro with-system (type &rest body)
+  "Evaluate BODY if `system-type' equals TYPE."
+  (declare (indent defun))
+  `(when (eq system-type ',type)
+     ,@body))
+
 
 (require 'package)
 
@@ -1103,7 +1111,7 @@ Start `ielm' in a split window if it's not already running."
     "oi" '(my/open-ielm-in-split-window :wk "ielm")
     "om" 'man
     "ot" '(my/open-vterm-in-split-window :wk "split-term")
-    "oT" 'vterm
+    "oT" 'multi-vterm
     ;; "oT" '(my/ansi-term-bash :wk "term")
 
     "s" '(:ignore t :which-key "search")
@@ -2875,6 +2883,14 @@ respectively."
 
 (use-package vterm
   :defer t
+  :hook
+  (vterm-mode . (lambda () (set-process-sentinel (get-buffer-process (buffer-name) ) #'my/vterm-exit-kill-buffer-window)))
+  :bind (:map vterm-mode-map
+              ("C-x C-f" . (lambda (&rest _)
+                             (interactive)
+                             (with-system gnu/linux
+                               (my/vterm-directory-sync))
+                             (call-interactively 'counsel-find-file))))
   :config
   ;; Set evil initial state to `emacs' in vterm-mode
   (evil-set-initial-state 'vterm-mode 'emacs)
@@ -2910,8 +2926,19 @@ respectively."
     (kbd "C-t") 'vterm-send-C-t
     (kbd "C-u") 'vterm-send-C-u
     (kbd "C-S-v") 'vterm-yank)
-  :hook
-  (vterm-mode . (lambda () (set-process-sentinel (get-buffer-process (buffer-name) ) #'my/vterm-exit-kill-buffer-window))))
+
+  ;; Directory synchronization (linux-only)
+  (with-system gnu/linux
+    (defun my/vterm-directory-sync ()
+      "Synchronize current working directory."
+      (when vterm--process
+        (let* ((pid (process-id vterm--process))
+               (dir (file-truename (format "/proc/%d/cwd" pid))))
+          (setq-local default-directory (concat dir "/")))))))
+
+(use-package multi-vterm
+  :after vterm
+  :defer t)
 
 (use-package dired
   :ensure nil
