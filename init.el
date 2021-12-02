@@ -3703,6 +3703,9 @@ Version 2016-08-09"
   (tab-bar-mode 1)
   (setq tab-bar-new-tab-choice "*scratch*"))
 
+(use-package cmake-mode
+  :defer t)
+
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
