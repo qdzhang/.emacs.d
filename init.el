@@ -353,13 +353,13 @@ corresponding to the mode line clicked."
   `((line-number-mode
      ((column-number-mode
        (column-number-indicator-zero-based
-        (8 " %l:%c")
-        (8 " %l:%C"))
-       (5 " L%l")))
+        (8 " %l:%c ")
+        (8 " %l:%C "))
+       (5 " L%l ")))
      ((column-number-mode
        (column-number-indicator-zero-based
-        (5 " C%c")
-        (5 " C%C")))))
+        (5 " C%c ")
+        (5 " C%C ")))))
     ,(if (region-active-p)
          (propertize (format "+%s"
                              (apply #'+ (mapcar
@@ -601,6 +601,31 @@ Source: https://git.io/vQKzv"
          " - "))
      'face 'simple-modeline-panel)))
 
+(defun doom-modeline-themes--overlay-sort (a b)
+  "Sort overlay A and B."
+  (< (overlay-start a) (overlay-start b)))
+
+(defun simple-modeline-iedit ()
+  "Show the number of iedit regions matches + what match you're on."
+  (when (and (bound-and-true-p iedit-mode)
+             (bound-and-true-p iedit-occurrences-overlays))
+    (propertize
+     (let ((this-oc (or (let ((inhibit-message t))
+                          (iedit-find-current-occurrence-overlay))
+                        (save-excursion (iedit-prev-occurrence)
+                                        (iedit-find-current-occurrence-overlay))))
+           (length (length iedit-occurrences-overlays)))
+       (format " %s/%d "
+               (if this-oc
+                   (- length
+                      (length (memq this-oc (sort (append iedit-occurrences-overlays nil)
+                                                  #'doom-modeline-themes--overlay-sort)))
+                      -1)
+                 "-")
+               length))
+     'face 'simple-modeline-panel)))
+
+
 (defcustom simple-modeline-segments
   '((simple-modeline-segment-evil-indicator
      simple-modeline-segment-modified
@@ -608,7 +633,8 @@ Source: https://git.io/vQKzv"
      simple-modeline-segment-percent-location
      ;; simple-modeline-segment-nyan
      simple-modeline-segment-position
-     simple-modeline-evil-substitute)
+     simple-modeline-evil-substitute
+     simple-modeline-iedit)
     (simple-modeline-client-status
      simple-modeline-rime-indicator
      simple-modeline-narrowed-status
