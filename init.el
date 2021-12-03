@@ -3734,6 +3734,15 @@ Version 2016-08-09"
 (use-package cmake-mode
   :defer t)
 
+(use-package iedit
+  :bind
+  (:map global-map ("C-;" . nil)))
+
+(use-package evil-iedit-state
+  :after iedit
+  :config
+  (setq evil-iedit-state-tag (propertize " [E]  ")
+        evil-iedit-insert-state-tag (propertize " [Ei]  ")))
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
