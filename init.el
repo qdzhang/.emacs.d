@@ -1046,7 +1046,8 @@ Start `ielm' in a split window if it's not already running."
              (pop-to-buffer "*scratch*"))
            :wk "scratch")
     "bd" 'kill-current-buffer
-    "bb" 'counsel-switch-buffer
+    "bb" 'ivy-switch-buffer
+    "bi" 'counsel-ibuffer
     "bk" 'kill-current-buffer
     "bl" '(my/switch-to-previous-buffer :wk "last buffer")
 
