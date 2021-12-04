@@ -1685,7 +1685,7 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
 (use-package ivy
   :diminish
   :init (ivy-mode 1)
-  :bind (("C-s" . swiper)
+  :bind (("C-s" . nil)
          :map ivy-minibuffer-map
          ;; ("TAB" . ivy-partial)
          ("TAB" . my/ivy-done)
@@ -2143,6 +2143,8 @@ repository, then the corresponding root is used instead."
 
 (use-package avy
   :after evil
+  :bind (:map evil-normal-state-map
+              ("C-s" . evil-avy-goto-char-timer))
   :config
 
   ;;========================================
@@ -2230,7 +2232,64 @@ If BACK is t, jump backward."
     "f" 'evil-avy-find-char
     "F" 'evil-avy-find-char-backward
     "t" 'evil-avy-find-char-to
-    "T" 'evil-avy-find-char-to-backward))
+    "T" 'evil-avy-find-char-to-backward)
+
+  ;;===========================
+  ;; Config avy dispatch list
+  ;; https://karthinks.com/software/avy-can-do-anything/
+  ;;===========================
+  (defun my/avy-action-kill-whole-line (pt)
+    (save-excursion
+      (goto-char pt)
+      (kill-whole-line))
+    (select-window
+     (cdr
+      (ring-ref avy-ring 0)))
+    t)
+
+  (defun my/avy-action-mark-to-char (pt)
+    (activate-mark)
+    (goto-char pt))
+
+  (defun my/avy-goto-char-this-window (&optional arg)
+    "Goto char in this window with hints."
+    (interactive "P")
+    (let ((avy-all-windows)
+          (current-prefix-arg (if arg 4)))
+      (call-interactively 'avy-goto-char)))
+
+  (defun my/avy-action-copy-whole-line (pt)
+    (save-excursion
+      (goto-char pt)
+      (cl-destructuring-bind (start . end)
+          (bounds-of-thing-at-point 'line)
+        (copy-region-as-kill start end)))
+    (select-window
+     (cdr
+      (ring-ref avy-ring 0)))
+    t)
+
+  (defun my/avy-action-yank-whole-line (pt)
+    (my/avy-action-copy-whole-line pt)
+    (save-excursion (yank))
+    t)
+
+  (defun my/avy-action-teleport-whole-line (pt)
+    (my/avy-action-kill-whole-line pt)
+    (save-excursion (yank)) t)
+
+  (setq avy-dispatch-alist '((?k . avy-action-kill-move)
+                             (?K . avy-action-kill-stay)
+                             (?x . my/avy-action-kill-whole-line)
+                             (?t . avy-action-teleport)
+                             (?m . avy-action-mark)
+                             (?  . my/avy-action-mark-to-char)
+                             (?w . avy-action-copy)
+                             (?W . my/avy-action-copy-whole-line)
+                             (?y . avy-action-yank)
+                             (?Y . my/avy-action-yank-whole-line)
+                             (?i . avy-action-ispell)
+                             (?z . avy-action-zap-to-char))))
 
 (use-package ivy-avy
   :after (ivy avy))
