@@ -3711,15 +3711,20 @@ Version 2016-08-09"
 (define-key hl-todo-mode-map (kbd "C-c t o") 'hl-todo-occur)
 (define-key hl-todo-mode-map (kbd "C-c t i") 'hl-todo-insert)
 
-;; Origami is used as evil folding backend
+;;; Origami is used as evil folding backend
 
-;; Alternative:
-;; - `hs-minor-mode', can be used in conjunction with [hideshowvis](https://www.emacswiki.org/emacs/hideshowvis.el)
-;; - `outline-mode', can be used in conjunction with [backline](https://github.com/tarsius/backline)
-;;                   and some config examples: https://www.reddit.com/r/emacs/comments/e2u5n9/code_folding_with_outlineminormode/
+;;; Alternative:
+;;; - `hs-minor-mode', can be used in conjunction with [hideshowvis](https://www.emacswiki.org/emacs/hideshowvis.el)
+;;; - `outline-mode', can be used in conjunction with [backline](https://github.com/tarsius/backline)
+;;;                   and some config examples: https://www.reddit.com/r/emacs/comments/e2u5n9/code_folding_with_outlineminormode/
 
-;; Depends on fringer-helper
-;; Maybe should load after evil
+;;; Depends on fringer-helper
+;;; Maybe should load after evil
+;;;
+;;; This is a further development fork from original project origami.
+;;; https://github.com/elp-revive/origami.el
+;;; Need to install this package manually
+;;;
 ;; (use-package origami
 ;;   :after evil
 ;;   :ensure nil
@@ -3727,12 +3732,12 @@ Version 2016-08-09"
 ;;   :config
 ;;   (global-origami-mode 1))
 
-;; Some config can be used for reference
-;; TODO: adapt some config examples
-;; https://www.reddit.com/r/emacs/comments/6fmpwb/evil_and_builtin_folding/
-;; https://www.reddit.com/r/emacs/comments/5ei7wa/awesome_vimlike_folding_for_evilmode_with_markers/
+;;; Some config can be used for reference
+;;; TODO: adapt some config examples
+;;; https://www.reddit.com/r/emacs/comments/6fmpwb/evil_and_builtin_folding/
+;;; https://www.reddit.com/r/emacs/comments/5ei7wa/awesome_vimlike_folding_for_evilmode_with_markers/
 
-;; Use hideshow as evil folding backend
+;; Use hideshow(`hs-minor-mode') as evil folding backend
 (use-package hideshow
   :after evil
   :defer t
