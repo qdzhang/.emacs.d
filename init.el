@@ -1106,6 +1106,7 @@ Start `ielm' in a split window if it's not already running."
     ;; Learn the `map!' macro of doom emacs
     "g" '(:ignore t :which-key "git")
     "gg" 'magit-status
+    "gf" 'magit-file-dispatch
     "gs" 'counsel-git-grep
     "gL" 'counsel-git-log
 
@@ -2451,7 +2452,28 @@ shell exits, the buffer is killed."
            (filename (buffer-file-name))
            (full-command (concat command filename)))
       (my/run-in-vterm full-command)
-      (evil-collection-vterm-insert-line))))
+      (evil-collection-vterm-insert-line)))
+
+  ;; https://www.reddit.com/r/emacs/comments/bcpexy/comment/eksftnx/?utm_source=share&utm_medium=web2x&context=3
+  (defun my/magit-log-visit-changed-file ()
+    "Visit a changed file of revision under point in `magit-log-mode'.
+
+Uses `general-simulate-key', so `general-simulate-RET' will
+become defined after invocation."
+    (interactive)
+    (general-simulate-key "RET")
+    ;; visit the commit
+    (general-simulate-RET)
+    ;; move to first changed file in diff buffer
+    (setf (point) (point-min))
+    (search-forward "|" nil t)
+    ;; open the revision
+    (general-simulate-RET))
+
+  (general-define-key
+   :keymaps '(magit-log-mode-map)
+   :states 'normal
+   "C-<return>" #'my/magit-log-visit-changed-file))
 
 (use-package undo-fu
   :config
