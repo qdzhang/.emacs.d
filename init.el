@@ -2145,7 +2145,7 @@ repository, then the corresponding root is used instead."
   :after ivy)
 
 (use-package avy
-  :after evil
+  :defer nil
   :bind (:map evil-normal-state-map
               ("C-s" . evil-avy-goto-char-timer))
   :config
