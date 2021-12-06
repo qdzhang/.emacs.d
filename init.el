@@ -3878,11 +3878,19 @@ Version 2016-08-09"
         evil-iedit-insert-state-tag (propertize " [Ei]  ")))
 
 (use-package git-gutter
+  :init
+  (which-key-add-key-based-replacements "C-c g" "git-gutter")
   :general
-  (my/leader-keys
-    "gt" '(my/ivy-goto-git-gutter :wk "git-gutter"))
+  ("C-c g l" '(my/ivy-goto-git-gutter :wk "git-gutter-list"))
+  ("C-c g j" 'git-gutter:next-hunk)
+  ("C-c g k" 'git-gutter:previous-hunk)
+  ("C-c g r" 'git-gutter:revert-hunk)
+  ("C-c g s" 'git-gutter:stage-hunk)
+  ("C-c g p" 'git-gutter:popup-hunk)
+  ("C-c g v" 'git-gutter:statistic)
+  ("C-c g m" 'git-gutter:mark-hunk)
   :config
-  (global-git-gutter-mode +1)
+  (global-git-gutter-mode 1)
 
   ;; Use ivy to navigate git gutter chunks
   ;; https://blog.binchen.org/posts/enhance-emacs-git-gutter-with-ivy-mode.html
@@ -3923,8 +3931,7 @@ Version 2016-08-09"
                             ;; we handle both data structure
                             (unless (numberp e) (setq e (cdr e)))
                             (goto-line e)))
-      (message "NO git-gutters!")))
-  )
+      (message "NO git-gutters!"))))
 
 
 (use-package git-overlay
