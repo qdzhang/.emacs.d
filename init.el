@@ -3906,6 +3906,11 @@ Version 2016-08-09"
   )
 
 
+(use-package git-overlay
+  :ensure nil
+  :general
+  (my/leader-keys
+    "tg" 'git-overlay))
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
