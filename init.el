@@ -668,10 +668,11 @@ Source: https://git.io/vQKzv"
 
 ;; Line number
 (global-linum-mode 0)
-(global-display-line-numbers-mode 1)
+;; (global-display-line-numbers-mode 1)
 (column-number-mode)  ; Display line number in the mode line
 (setq display-line-numbers-grow-only t)
 (setq display-line-numbers-width-start t)
+(setq display-line-numbers-type 'visual)
 ;; Disable line numbers for some modes
 (defun my/disable-line-numbers (&optional arg)
   (display-line-numbers-mode -1))
@@ -1159,6 +1160,7 @@ Start `ielm' in a split window if it's not already running."
     "sy" 'ivy-yasnippet
 
     "t" '(:ignore t :which-key "toggle")
+    "tl" 'display-line-numbers-mode
     "ts" 'sly
     "ti" '(imenu-list-smart-toggle :wk "imenu-list"))
 
