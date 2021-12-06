@@ -3933,6 +3933,10 @@ Version 2016-08-09"
                             (goto-line e)))
       (message "NO git-gutters!"))))
 
+(use-package yascroll
+  :config
+  (global-yascroll-bar-mode 1)
+  (setq yascroll:delay-to-hide nil))
 
 (use-package git-overlay
   :ensure nil
