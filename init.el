@@ -3841,7 +3841,26 @@ Version 2016-08-09"
 
 (use-package tab-bar
   :if(> emacs-major-version 26)
+  :bind
+  ([remap project-switch-project] . my/switch-project-in-new-tab)
   :config
+  (setq-default tab-bar-border 5
+                tab-bar-close-button nil
+                tab-bar-back-button nil
+                tab-bar-new-button nil)
+  (defun my/switch-project-in-new-tab ()
+    (interactive)
+    (let (succ)
+      (unwind-protect
+          (progn
+            (tab-bar-new-tab)
+            (call-interactively #'project-switch-project)
+            (when-let ((proj (project-current)))
+              (tab-bar-rename-tab (format " %s " (file-name-nondirectory (directory-file-name (cdr proj)))))
+              (setq succ t)))
+        (unless succ
+          (tab-bar-close-tab)))))
+
   (tab-bar-mode 1)
   (setq tab-bar-new-tab-choice "*scratch*"))
 
