@@ -3734,10 +3734,6 @@ Version 2016-08-09"
   :init
   (which-key-add-key-based-replacements "C-c l" "link-hint"))
 
-(use-package so-long
-  :ensure nil
-  :config (global-so-long-mode 1))
-
 (use-package abn-funcs-benchmark
   :ensure nil)
 
