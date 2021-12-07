@@ -16,3 +16,6 @@
 [submodule "site-lisp/too-long-lines-mode"]
 	path = site-lisp/too-long-lines-mode
 	url = git@github.com:qdzhang/too-long-lines-mode.git
+[submodule "site-lisp/firefox-bookmarks"]
+	path = site-lisp/firefox-bookmarks
+	url = git@github.com:tangxinfa/firefox-bookmarks.git

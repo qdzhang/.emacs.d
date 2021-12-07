@@ -3947,7 +3947,11 @@ Version 2016-08-09"
 (use-package too-long-lines-mode
   :ensure nil
   :config
-  (too-long-lines-mode 1))
+  (too-long-lines-mode 1)
+  (setq too-long-lines-threshold 1000))
+
+(use-package firefox-bookmarks
+  :ensure nil)
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
