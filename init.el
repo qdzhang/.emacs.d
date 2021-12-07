@@ -3944,5 +3944,10 @@ Version 2016-08-09"
   (my/leader-keys
     "tg" 'git-overlay))
 
+(use-package too-long-lines-mode
+  :ensure nil
+  :config
+  (too-long-lines-mode 1))
+
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))

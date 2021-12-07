@@ -13,3 +13,6 @@
 [submodule "site-lisp/git-overlay"]
 	path = site-lisp/git-overlay
 	url = git@github.com:qdzhang/git-overlay.git
+[submodule "site-lisp/too-long-lines-mode"]
+	path = site-lisp/too-long-lines-mode
+	url = git@github.com:qdzhang/too-long-lines-mode.git
