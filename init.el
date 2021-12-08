@@ -2146,10 +2146,7 @@ repository, then the corresponding root is used instead."
   :after ivy)
 
 (use-package avy
-  :defer nil
-  :bind (:map evil-normal-state-map
-              ("C-s" . evil-avy-goto-char-timer))
-  :config
+  :init
 
   ;;========================================
   ;; Replace evil f/F/t/T motions with avy
@@ -2211,6 +2208,7 @@ If BACK is t, jump backward."
           (forward-char))
       (evil-find-char-to-backward count char)))
 
+  :config
   ;; Replace motions
 
   (evil-define-key 'normal 'global
@@ -2237,6 +2235,9 @@ If BACK is t, jump backward."
     "F" 'evil-avy-find-char-backward
     "t" 'evil-avy-find-char-to
     "T" 'evil-avy-find-char-to-backward)
+
+  (evil-define-key 'normal 'global
+    (kbd "C-s") 'evil-avy-goto-char-timer)
 
   ;;===========================
   ;; Config avy dispatch list
@@ -2605,6 +2606,8 @@ respectively."
   :pin org
   :hook
   (org-mode . my-org-mode-hook)
+  (org-mode . (lambda ()
+                (push '(?= . ("=" . "=")) evil-surround-pairs-alist)))
   :general
   (my/leader-keys
     "n" '(:ignore t :which-key "notes")
