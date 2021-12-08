@@ -117,7 +117,8 @@ Ignores `ARGS'."
 
 (use-package server
   :ensure nil
-  :hook (after-init . server-mode))
+  :commands (server-running-p)
+  :hook (after-init . (lambda() (unless (server-running-p) (server-start)))))
 
 
 ;; Global key bindings
@@ -3948,6 +3949,13 @@ Version 2016-08-09"
 
 (use-package firefox-bookmarks
   :ensure nil)
+
+(use-package beacon
+  :ensure nil
+  :config
+  (beacon-mode 1)
+  :custom
+  (beacon-push-mark 35))
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
