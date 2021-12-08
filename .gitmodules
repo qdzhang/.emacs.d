@@ -19,3 +19,6 @@
 [submodule "site-lisp/firefox-bookmarks"]
 	path = site-lisp/firefox-bookmarks
 	url = git@github.com:tangxinfa/firefox-bookmarks.git
+[submodule "site-lisp/beacon"]
+	path = site-lisp/beacon
+	url = git@github.com:Malabarba/beacon.git

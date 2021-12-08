@@ -798,10 +798,10 @@ Source: https://git.io/vQKzv"
   "Pulse the current line."
   (pulse-momentary-highlight-one-line (point)))
 
-(dolist (command '(scroll-up-command scroll-down-command
-                                     recenter-top-bottom other-window
-                                     evil-window-next ace-window))
-  (advice-add command :after #'my/pulse-line))
+;; (dolist (command '(scroll-up-command scroll-down-command
+;;                                      recenter-top-bottom other-window
+;;                                      evil-window-next ace-window))
+;;   (advice-add command :after #'my/pulse-line))
 
 
 ;;; Pulse highlight evil yank
