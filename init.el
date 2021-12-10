@@ -2303,6 +2303,7 @@ If BACK is t, jump backward."
   :diminish
   :init
   (setq company-idle-delay 0.1)
+  (setq company-global-modes '(not org-mode))
   :hook
   (after-init . global-company-mode)
   :config
@@ -3780,8 +3781,7 @@ Version 2016-08-09"
   :defer t)
 
 (use-package yaml-mode
-  :ensure nil
-  :defer t)
+  :ensure nil)
 
 (use-package quickrun
   :defer t
