@@ -42,6 +42,8 @@ created."
 
 (spacemacs|do-after-display-system-init
  (set-face-attribute 'default nil :font (font-spec :family "Sarasa Mono SC" :size 24))
+ (set-face-attribute 'variable-pitch nil :family "IBM Plex Serif")
+ (set-face-attribute 'fixed-pitch nil :family "Sarasa Mono SC")
  (set-fontset-font t 'han "LXGW WenKai")
  (set-fontset-font t 'kana "Sarasa Mono J")
  (set-fontset-font t 'hangul "Sarasa Mono K")
@@ -3761,6 +3763,9 @@ Version 2016-08-09"
                                         'split-window-horizontally
                                       'split-window-vertically)))
 
+(use-package org-variable-pitch
+  :ensure nil)
+
 (use-package darkroom
   :ensure nil
   :defer t
@@ -3771,7 +3776,8 @@ Version 2016-08-09"
   (defun my/toggle-darkroom-tentative-mode ()
     (interactive)
     (visual-fill-column-mode 'toggle)
-    (darkroom-tentative-mode 'toggle)))
+    (darkroom-tentative-mode 'toggle)
+    (org-variable-pitch-minor-mode 'toggle)))
 
 (use-package ivy-unicode
   :ensure nil
