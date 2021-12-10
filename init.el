@@ -2751,25 +2751,29 @@ respectively."
            (current-buffer))))))
 
 
+  ;;=================================================================================
   ;; Replace org checkbox to unicode symbol and add strike through line
   ;; https://jft.home.blog/2019/07/17/use-unicode-symbol-to-display-org-mode-checkboxes/
   ;; https://www.reddit.com/r/emacs/comments/brt0sk/prettifysymbolsmode_is_so_cool/
-  (add-hook 'org-mode-hook (lambda ()
-                             "Beautify Org Checkbox Symbol"
-                             (push '("[ ]" .  "☐") prettify-symbols-alist)
-                             (push '("[X]" . "☑" ) prettify-symbols-alist)
-                             (push '("[-]" . "❍" ) prettify-symbols-alist)
-                             (prettify-symbols-mode)))
-  (defface org-checkbox-done-text
-    '((t :inherit (font-lock-comment-face)
-         :strike-through t))
-    "Face for the text part of a checked org-mode checkbox.")
+  ;;=================================================================================
+  ;; (add-hook 'org-mode-hook (lambda ()
+  ;;                            "Beautify Org Checkbox Symbol"
+  ;;                            (push '("[ ]" .  "☐") prettify-symbols-alist)
+  ;;                            (push '("[X]" . "☑" ) prettify-symbols-alist)
+  ;;                            (push '("[-]" . "❍" ) prettify-symbols-alist)
+  ;;                            (prettify-symbols-mode)))
+  ;; (defface org-checkbox-done-text
+  ;;   '((t :inherit (font-lock-comment-face)
+  ;;        :strike-through t))
+  ;;   "Face for the text part of a checked org-mode checkbox.")
 
-  (font-lock-add-keywords
-   'org-mode
-   `(("^[ \t]*\\(?:[-+*]\\|[0-9]+[).]\\)[ \t]+\\(\\(?:\\[@\\(?:start:\\)?[0-9]+\\][ \t]*\\)?\\[\\(?:X\\|\\([0-9]+\\)/\\2\\)\\][^\n]*\n\\)"
-      1 'org-checkbox-done-text prepend))
-   'append)
+  ;; (font-lock-add-keywords
+  ;;  'org-mode
+  ;;  `(("^[ \t]*\\(?:[-+*]\\|[0-9]+[).]\\)[ \t]+\\(\\(?:\\[@\\(?:start:\\)?[0-9]+\\][ \t]*\\)?\\[\\(?:X\\|\\([0-9]+\\)/\\2\\)\\][^\n]*\n\\)"
+  ;;     1 'org-checkbox-done-text prepend))
+  ;;  'append)
+
+  ;;=================================================================================
 
   ;; Use `:hidden' keyword to hide an individual org src block
   ;; https://emacs.stackexchange.com/questions/44914/choose-individual-startup-visibility-of-org-modes-source-blocks/44923#44923
