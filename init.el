@@ -3235,6 +3235,13 @@ Version 2018-12-23"
   :config
   (add-hook 'dumb-jump-after-jump-hook #'better-jumper-set-jump))
 
+(use-package xref
+  :ensure nil
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+  (setq xref-show-xrefs-function #'xref-show-definitions-completing-read))
+
 (use-package web-mode
   :ensure t
   :mode
