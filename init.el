@@ -3977,5 +3977,16 @@ Version 2016-08-09"
   :custom
   (beacon-push-mark 35))
 
+;; Required by `source-peek'
+;; TODO Create a new package: use quick-peek to show flycheck diagnostics
+(use-package quick-peek)
+
+;; TODO Add more backends of `source-peek':
+;;       - eglot
+;;       - lsp-mode
+;;       - elisp-def
+(use-package source-peek
+  :ensure nil)
+
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
