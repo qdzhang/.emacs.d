@@ -3988,5 +3988,18 @@ Version 2016-08-09"
 (use-package source-peek
   :ensure nil)
 
+;; Find elisp definitions
+(use-package elisp-def)
+
+(use-package find-define
+  :ensure nil
+  :general
+  (:keymaps 'evil-normal-state-map
+            "gd" 'find-define)
+  :config
+  ;; Create jump point before `find-define' and `find-define-back'
+  (advice-add #'find-define :around #'evil-better-jumper/set-jump-a)
+  (advice-add #'find-define-back :around #'evil-better-jumper/set-jump-a))
+
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
