@@ -3323,6 +3323,10 @@ Version 2018-12-23"
   (setq tide-completion-ignore-case t
         tide-server-max-response-length (* 1024 1024))
 
+  ;; Use better-jumper to manipulate jump-list
+  (advice-add #'tide-jump-to-definition :around #'evil-better-jumper/set-jump-a)
+  (advice-add #'tide-references :around #'evil-better-jumper/set-jump-a)
+
   (defun my/setup-tide-mode ()
     "Use hl-identifier-mode only on js or ts buffers."
     (when (and (stringp buffer-file-name)
