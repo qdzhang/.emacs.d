@@ -1115,6 +1115,7 @@ Start `ielm' in a split window if it's not already running."
     "gL" 'counsel-git-log
 
     "h" '(:ignore t :which-key "describe")
+    "hb" 'describe-bindings
     "he" 'view-echo-area-messages
     "hf" '(counsel-describe-function :wk "describe-function")
     "hF" 'describe-face
@@ -1123,7 +1124,7 @@ Start `ielm' in a split window if it's not already running."
     "hL" 'find-library
     "hm" 'describe-mode
     "hk" 'describe-key
-    "hK" 'describe-keymap
+    "hK" '(my/describe-keymap :wk "describe-keymap")
     "hs" 'use-package-report
     "hp" 'describe-package
     "hv" '(counsel-describe-variable :wk "describe-variable")
@@ -1166,6 +1167,24 @@ Start `ielm' in a split window if it's not already running."
     "tl" 'display-line-numbers-mode
     "ts" 'sly
     "ti" '(imenu-list-smart-toggle :wk "imenu-list"))
+
+  ;; https://stackoverflow.com/a/36994486
+  (defun my/describe-keymap (keymap)
+    "Describe a keymap using `substitute-command-keys'."
+    (interactive
+     (list (completing-read
+            "Keymap: " (let (maps)
+                         (mapatoms (lambda (sym)
+                                     (and (boundp sym)
+                                          (keymapp (symbol-value sym))
+                                          (push sym maps))))
+                         maps)
+            nil t)))
+    (with-output-to-temp-buffer (format "*keymap: %s*" keymap)
+      (princ (format "%s\n\n" keymap))
+      (princ (substitute-command-keys (format "\\{%s}" keymap)))
+      (with-current-buffer standard-output ;; temp buffer
+        (setq help-xref-stack-item (list #'my/describe-keymap keymap)))))
 
   ;; Comment sexps and keep parentheses balanced
   ;; Keybinding is SPC+;
