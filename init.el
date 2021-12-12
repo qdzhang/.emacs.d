@@ -3786,10 +3786,6 @@ Version 2016-08-09"
     (darkroom-tentative-mode 'toggle)
     (org-variable-pitch-minor-mode 'toggle)))
 
-(use-package ivy-unicode
-  :ensure nil
-  :defer t)
-
 (use-package journalctl-mode
   :defer t)
 

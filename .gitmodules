@@ -7,9 +7,6 @@
 [submodule "site-lisp/hl-todo"]
 	path = site-lisp/hl-todo
 	url = git@github.com:tarsius/hl-todo.git
-[submodule "site-lisp/ivy-unicode"]
-	path = site-lisp/ivy-unicode
-	url = https://github.com/qdzhang/ivy-unicode
 [submodule "site-lisp/git-overlay"]
 	path = site-lisp/git-overlay
 	url = git@github.com:qdzhang/git-overlay.git
