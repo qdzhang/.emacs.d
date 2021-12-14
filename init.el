@@ -2557,7 +2557,7 @@ become defined after invocation."
 (use-package smartparens-config
   :ensure smartparens
   :diminish smartparens-mode
-  :config (progn (show-smartparens-global-mode t)))
+  :config (show-smartparens-global-mode t))
 
 (use-package smartparens
   :hook
@@ -3906,6 +3906,21 @@ Version 2016-08-09"
 (use-package iedit
   :bind
   (:map global-map ("C-;" . nil)))
+
+(use-package flyspell
+  :hook
+  (org-mode . flyspell-mode)
+  (markdown-mode . flyspell-mode)
+  :config
+  (setq ispell-program-name (executable-find "hunspell")
+        ispell-dictionary "en_US"))
+
+(use-package flyspell-correct
+  :after flyspell
+  :bind (:map flyspell-mode-map ("C-;" . flyspell-correct-wrapper)))
+
+(use-package flyspell-correct-ivy
+  :after flyspell-correct)
 
 (use-package evil-iedit-state
   :after iedit
