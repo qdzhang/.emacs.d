@@ -19,3 +19,9 @@
 [submodule "site-lisp/beacon"]
 	path = site-lisp/beacon
 	url = git@github.com:Malabarba/beacon.git
+[submodule "site-lisp/el2markdown"]
+	path = site-lisp/el2markdown
+	url = git@github.com:Lindydancer/el2markdown.git
+[submodule "site-lisp/editcmacro"]
+	path = site-lisp/editcmacro
+	url = git@github.com:Lindydancer/editcmacro.git

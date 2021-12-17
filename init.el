@@ -4102,5 +4102,35 @@ Version 2016-08-09"
   (advice-add #'find-define :around #'evil-better-jumper/set-jump-a)
   (advice-add #'find-define-back :around #'evil-better-jumper/set-jump-a))
 
+;; A function to use `rgrep' or `vc-git-grep' in a specific directory
+;; https://www.manueluberti.eu/emacs/2021/09/10/rgrep-and-vc-git-grep/
+(defun mu-recursive-grep (search-term search-path)
+  "Recursively search for SEARCH-TERM in SEARCH-PATH."
+  (interactive
+   (progn
+     (unless grep-command
+       (grep-compute-defaults))
+     (let ((search-term (grep-read-regexp))
+           (search-path (expand-file-name
+                         (read-directory-name
+                          "Directory: " nil default-directory t))))
+       (list search-term search-path))))
+  (if (vc-root-dir)
+      (vc-git-grep search-term "*" search-path)
+    (rgrep search-term "*" search-path)))
+
+(use-package el2markdown
+  :ensure nil
+  :config
+  (autoload 'el2markdown-view-buffer  "el2markdown" nil t)
+  (autoload 'el2markdown-write-file   "el2markdown" nil t)
+  (autoload 'el2markdown-write-readme "el2markdown" nil t))
+
+(use-package editcmacro
+  :ensure nil
+  :config
+  (add-hook 'c-mode-hook   #'editcmacro-mode)
+  (add-hook 'c++-mode-hook #'editcmacro-mode))
+
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
