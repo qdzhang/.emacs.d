@@ -3323,6 +3323,9 @@ Version 2018-12-23"
 
 (use-package xref
   :ensure nil
+  :general
+  (:keymaps 'evil-normal-state-map
+            "gr" 'xref-find-references)
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
