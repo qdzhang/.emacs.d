@@ -4138,5 +4138,63 @@ Version 2016-08-09"
   (add-hook 'c-mode-hook   #'editcmacro-mode)
   (add-hook 'c++-mode-hook #'editcmacro-mode))
 
+(use-package reformatter
+  :defer t
+  :config
+
+  ;; Config shfmt
+  (defgroup shfmt nil
+    "Reformat shell scripts using shfmt."
+    :group 'languages)
+
+  (defcustom shfmt-command "shfmt"
+    "Command used for reformatting."
+    :type 'string)
+
+  (defcustom shfmt-arguments ()
+    "Arguments passed to shfmt."
+    :type '(list string))
+
+;;;###autoload (autoload 'shfmt-buffer "shfmt" nil t)
+;;;###autoload (autoload 'shfmt-region "shfmt" nil t)
+;;;###autoload (autoload 'shfmt-on-save-mode "shfmt" nil t)
+  (reformatter-define shfmt
+    :program shfmt-command
+    :args shfmt-arguments
+    :lighter " ShFmt"
+    :group 'shfmt)
+
+  ;; Config clang-format
+  (defgroup clang-format nil
+    "Reformat shell scripts using clang-format."
+    :group 'languages)
+
+  (defcustom clang-format-command "clang-format"
+    "Command used for reformatting."
+    :type 'string)
+
+  (defcustom clang-format-arguments ()
+    "Arguments passed to clang-format."
+    :type '(list string))
+
+;;;###autoload (autoload 'clang-format-buffer "clang-format" nil t)
+;;;###autoload (autoload 'clang-format-region "clang-format" nil t)
+;;;###autoload (autoload 'clang-format-on-save-mode "clang-format" nil t)
+  (reformatter-define clang-format
+    :program clang-format-command
+    :args clang-format-arguments
+    :lighter " Clang-Format"
+    :group 'clang-format)
+
+  (defun my/set-clang-format-style ( )
+    "Set `clang-format' style according to whether .clang-format file exists"
+    (let ((project-root (cdr (project-current))))
+      (unless (or (f-exists-p (expand-file-name ".clang-format"))
+                  (f-exists-p (expand-file-name ".clang-format" project-root)))
+        (setq-local clang-format-arguments (list "-style=llvm")))))
+
+  (add-hook 'c-mode-hook #'my/set-clang-format-style)
+  (add-hook 'c++-mode-hook #'my/set-clang-format-style))
+
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
