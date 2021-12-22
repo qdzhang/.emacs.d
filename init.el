@@ -1158,7 +1158,7 @@ Start `ielm' in a split window if it's not already running."
                           (counsel-find-file))
                  (counsel-fzf)))) :wk "counsel-fzf")
     "sg" 'counsel-grep-or-swiper
-    "sm" '(counsel-imenu :wk "imenu")
+    "sm" '(counsel-semantic-or-imenu :wk "semantic/imenu")
     "sr" 'counsel-rg
     "st" '(counsel-load-theme :wk "themes")
     "sy" 'ivy-yasnippet
@@ -3031,7 +3031,7 @@ FACE defaults to inheriting from default and highlight."
   (c-mode . eglot-ensure)
   (c++-mode . eglot-ensure)
   :config
-  (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd")))
+  (add-to-list 'eglot-server-programs '((c++-mode c-mode) "ccls")))
 
 (use-package sly
   :defer t
@@ -4202,6 +4202,46 @@ Version 2016-08-09"
 
   (add-hook 'c-mode-hook #'my/set-clang-format-style)
   (add-hook 'c++-mode-hook #'my/set-clang-format-style))
+
+(use-package ggtags
+  :config
+  (add-hook 'c-mode-common-hook
+            (lambda ()
+              (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
+                (progn (ggtags-mode 1)
+                       (setq-local imenu-create-index-function #'ggtags-build-imenu-index)))))
+  (define-key ggtags-mode-map (kbd "C-c k s") 'ggtags-find-other-symbol)
+  (define-key ggtags-mode-map (kbd "C-c k h") 'ggtags-view-tag-history)
+  (define-key ggtags-mode-map (kbd "C-c k r") 'ggtags-find-reference)
+  (define-key ggtags-mode-map (kbd "C-c k d") 'ggtags-find-definition)
+  (define-key ggtags-mode-map (kbd "C-c k f") 'ggtags-find-file)
+  (define-key ggtags-mode-map (kbd "C-c k c") 'ggtags-create-tags)
+  (define-key ggtags-mode-map (kbd "C-c k u") 'ggtags-update-tags)
+
+  (define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
+
+  (general-def 'normal ggtags-mode-map
+    [remap xref-find-definitions] 'ggtags-find-tag-dwim
+    [remap find-define] 'ggtags-find-tag-dwim
+    [remap xref-find-references] 'ggtags-find-reference)
+
+  (setq ggtags-update-on-save nil)
+  (setq ggtags-highlight-tag nil)
+  (setq ggtags-navigation-mode-lighter nil)
+  (setq ggtags-mode-line-project-name nil))
+
+(use-package semantic
+  :ensure nil
+  :defer t
+  :hook
+  (c-mode . semantic-mode)
+  (c++-mode . semantic-mode)
+  :config
+  (use-package srefactor
+    :config
+    (require 'srefactor-lisp))
+
+  (add-hook 'srefactor-ui-menu-mode-hook 'evil-emacs-state))
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
