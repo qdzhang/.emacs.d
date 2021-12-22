@@ -3717,6 +3717,7 @@ Reference: https://philjackson.github.io//emacs/search/rg/2021/06/25/search-spec
   (defvar fdignore-content
     "/node_modules\n\
 /.git\n\
+/.ccls-cache\n\
 "
     "Content of .fdignore file.")
 
@@ -3987,9 +3988,9 @@ Version 2016-08-09"
   (:map global-map ("C-;" . nil)))
 
 (use-package flyspell
-  :hook
-  (org-mode . flyspell-mode)
-  (markdown-mode . flyspell-mode)
+  :general
+  (my/leader-keys
+    "os" 'flyspell-mode)
   :config
   (setq ispell-program-name (executable-find "hunspell")
         ispell-dictionary "en_US"))
