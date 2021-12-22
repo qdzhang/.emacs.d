@@ -2582,6 +2582,13 @@ become defined after invocation."
   ;; Remove ) auto pair in web-mode
   (sp-local-pair 'sh-mode "(" nil :actions nil)
 
+  ;; Add comments quote in c-mode
+  (sp-with-modes '(c-mode c++-mode objc-mode java-mode)
+    (sp-local-pair "/*" "*/" :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+    ;; Doxygen blocks
+    (sp-local-pair "/**" "*/" :post-handlers '(("||\n[i]" "RET") ("||\n[i]" "SPC")))
+    (sp-local-pair "/*!" "*/" :post-handlers '(("||\n[i]" "RET") ("[d-1]< | " "SPC"))))
+
   ;; Enable smartparens-strict-mode in the minibuffer, during eval-expression
   ;; https://emacsredux.com/blog/2013/04/18/evaluate-emacs-lisp-in-the-minibuffer/
   (defun my/conditionally-enable-smartparens-mode ()
