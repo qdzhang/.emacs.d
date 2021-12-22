@@ -68,14 +68,14 @@ created."
 
 (require 'package)
 
-;; TODO: Org ELPA will be shutting down and Org contrib will be moving to NonGNU ELPA
+;; DONE: Org ELPA will be shutting down and Org contrib will be moving to NonGNU ELPA
 ;; Keep an eye on the changes of mirrors
 (setq package-archives '(("gnu"   . "https://mirrors.bfsu.edu.cn/elpa/gnu/")
-                         ("melpa" . "https://mirrors.bfsu.edu.cn/elpa/melpa/")
-                         ("org" . "https://mirrors.bfsu.edu.cn/elpa/org/"))
-      package-archive-priorities '(("org" . 10)
-                                   ("gnu" . 5)
-                                   ("melpa" . 0)))
+                         ("nongnu" . "https://mirrors.bfsu.edu.cn/elpa/nongnu/")
+                         ("melpa" . "https://mirrors.bfsu.edu.cn/elpa/melpa/"))
+      package-archive-priorities '(("gnu" . 10)
+                                   ("melpa" . 5)
+                                   ("nongnu" . 1)))
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
@@ -2694,8 +2694,6 @@ FACE defaults to inheriting from default and highlight."
 
 (use-package org
   :defer t
-  :ensure org-plus-contrib
-  :pin org
   :hook
   (org-mode . my-org-mode-hook)
   (org-mode . (lambda ()
@@ -2721,6 +2719,7 @@ FACE defaults to inheriting from default and highlight."
 
   (defun my-org-mode-hook ()
     (visual-line-mode 1)
+    (org-phscroll-mode 1)
     (setq evil-auto-indent nil)
     (setq word-wrap-by-category t))
 
@@ -2742,7 +2741,7 @@ FACE defaults to inheriting from default and highlight."
         org-edit-src-content-indentation 0)
 
   (setq org-startup-truncated nil)
-  (load "org-phscroll.el")
+  (require 'org-phscroll)
 
   ;; Org-capture templates
   ;; https://www.zmonster.me/2018/02/28/org-mode-capture.html
