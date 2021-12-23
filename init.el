@@ -3600,6 +3600,7 @@ If the error list is visible, hide it.  Otherwise, show it."
   ;; ((web-mode css-mode my-json-mode) . prettier-mode)
   :general
   (my/leader-keys
+    :keymaps '(web-mode-map css-mode-map my-json-mode-map)
     "bp" '(my/prettier-prettify-and-message :wk "prettier-buffer"))
   :config
   (defun my/prettier-prettify-and-message ()
@@ -4147,6 +4148,13 @@ Version 2016-08-09"
 
 (use-package reformatter
   :defer t
+  :general
+  (my/leader-keys
+    :keymaps '(c-mode-map c++-mode-map)
+    "bp" 'clang-format)
+  (my/leader-keys
+    :keymaps 'sh-mode-map
+    "bp" 'shfmt)
   :config
 
   ;; Config shfmt
@@ -4236,6 +4244,10 @@ Version 2016-08-09"
   :hook
   (c-mode . semantic-mode)
   (c++-mode . semantic-mode)
+  :general
+  (my/leader-keys
+    :keymaps 'emacs-lisp-mode-map
+    "bp" '(srefactor-lisp-format-buffer :wk "elisp-format"))
   :config
   (use-package srefactor
     :config
