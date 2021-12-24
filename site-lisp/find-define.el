@@ -136,8 +136,8 @@
   (require 'dumb-jump)
   (setq dumb-jump-prefer-searcher 'rg)
   (if (null prefix)
-      (xref-find-definitions prefix)
-    (xref-find-definitions-other-window prefix)))
+      (xref-find-definitions (symbol-name (symbol-at-point)))
+    (xref-find-definitions-other-window (symbol-name (symbol-at-point)))))
 
 (defun find-define-remember-position ()
   (point-to-register 8))
