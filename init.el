@@ -4246,8 +4246,8 @@ Version 2016-08-09"
   (c++-mode . semantic-mode)
   :general
   (my/leader-keys
-    :keymaps 'emacs-lisp-mode-map
-    "bp" '(srefactor-lisp-format-buffer :wk "elisp-format"))
+    :keymaps '(emacs-lisp-mode-map lisp-mode-map)
+    "bp" '(srefactor-lisp-format-buffer :wk "lisp-format"))
   :config
   (use-package srefactor
     :config
