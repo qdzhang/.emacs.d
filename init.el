@@ -585,7 +585,7 @@ Source: https://git.io/vQKzv"
       (:eval
        (if
            (frame-parameter nil 'client)
-           "@ " "")))
+           (concat "@" server-name " |") "")))
      help-echo "emacsclient frame")))
 
 (defun simple-modeline-evil-substitute ()
@@ -845,6 +845,7 @@ Source: https://git.io/vQKzv"
   (infer-indentation-style))
 (add-hook 'c-mode-hook 'infer-indent-hook)
 (add-hook 'emacs-lisp-mode-hook 'infer-indent-hook)
+(setq-default indent-tabs-mode nil)
 
 ;;; General indent settings
 ;;;========================
@@ -3096,6 +3097,8 @@ FACE defaults to inheriting from default and highlight."
   ;; use-package, so :bind cannot be used here
   (with-eval-after-load 'sly-mrepl
     (define-key sly-mrepl-mode-map (kbd "M-r") 'counsel-sly-mrepl-history)))
+
+(use-package sly-quicklisp)
 
 (use-package vterm
   :defer t
