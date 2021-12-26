@@ -2733,7 +2733,7 @@ FACE defaults to inheriting from default and highlight."
   (setq org-default-notes-file "~/org/notes.org"
         org-agenda-files '("~/org/agenda.org")
         org-todo-keywords '((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELED(c)"))
-        org-ellipsis "  "
+        ;; org-ellipsis "  "
         org-startup-indented t
         org-log-into-drawer "LOGBOOK"
         org-archive-location "~/org/archive.org::datetree/"
@@ -2982,12 +2982,12 @@ FACE defaults to inheriting from default and highlight."
         org-journal-file-format "%Y-%m-%d.org"))
 
 
-(use-package org-superstar
-  :after org
-  :hook
-  (org-mode . org-superstar-mode)
-  :config
-  (setq org-superstar-headline-bullets-list '("⬤" "◉" "○" "✸" "◆" "▲" "▶")))
+;; (use-package org-superstar
+;;   :after org
+;;   :hook
+;;   (org-mode . org-superstar-mode)
+;;   :config
+;;   (setq org-superstar-headline-bullets-list '("⬤" "◉" "○" "✸" "◆" "▲" "▶")))
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
@@ -4064,11 +4064,6 @@ Version 2016-08-09"
                             (unless (numberp e) (setq e (cdr e)))
                             (goto-line e)))
       (message "NO git-gutters!"))))
-
-(use-package yascroll
-  :config
-  (global-yascroll-bar-mode 1)
-  (setq yascroll:delay-to-hide nil))
 
 (use-package git-overlay
   :ensure nil
