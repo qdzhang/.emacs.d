@@ -1016,13 +1016,17 @@ Start `ielm' in a split window if it's not already running."
 ;;   :config
 ;;   (load-theme 'sanityinc-tomorrow-night t))
 
-(use-package modus-themes
-  :init
-  (setq modus-themes-no-mixed-fonts t
-        modus-themes-org-blocks 'gray-background)
-  (modus-themes-load-themes)
-  :config
-  (modus-themes-load-operandi))
+(if (not (string= "emacstty" (daemonp)))
+    (use-package modus-themes
+      :init
+      (setq modus-themes-no-mixed-fonts t
+            modus-themes-org-blocks 'gray-background)
+      (modus-themes-load-themes)
+      :config
+      (modus-themes-load-operandi))
+  (use-package color-theme-sanityinc-tomorrow
+    :config
+    (load-theme 'sanityinc-tomorrow-eighties t)))
 
 ;; (use-package apropospriate-theme
 ;;   :config
