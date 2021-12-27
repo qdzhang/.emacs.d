@@ -3953,7 +3953,7 @@ Version 2016-08-09"
   :hook (prog-mode . hs-minor-mode)
   :config
   ;; Make hideshow overlay more conspicuous
-  (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
+  (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :background "#ff8" :box t))))
 
   (defun hideshow-folded-overlay-fn (ov)
     (when (eq 'code (overlay-get ov 'hs))
@@ -4251,6 +4251,7 @@ Version 2016-08-09"
     :keymaps '(emacs-lisp-mode-map lisp-mode-map)
     "bp" '(srefactor-lisp-format-buffer :wk "lisp-format"))
   :config
+  (advice-add 'semantic-idle-scheduler-function :around #'ignore)
   (use-package srefactor
     :config
     (require 'srefactor-lisp))
