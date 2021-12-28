@@ -70,3 +70,5 @@ image-dired/
 racket-mode/
 amx-items
 projects
+semanticdb/
+eln-cache/
