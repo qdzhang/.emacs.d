@@ -4119,15 +4119,6 @@ Version 2016-08-09"
 ;; Find elisp definitions
 (use-package elisp-def)
 
-(use-package find-define
-  :ensure nil
-  :general
-  (:keymaps 'evil-normal-state-map
-            "gd" 'find-define)
-  :config
-  ;; Create jump point before `find-define' and `find-define-back'
-  (advice-add #'find-define :around #'evil-better-jumper/set-jump-a)
-  (advice-add #'find-define-back :around #'evil-better-jumper/set-jump-a))
 
 ;; A function to use `rgrep' or `vc-git-grep' in a specific directory
 ;; https://www.manueluberti.eu/emacs/2021/09/10/rgrep-and-vc-git-grep/
@@ -4241,11 +4232,6 @@ Version 2016-08-09"
 
   (define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
 
-  (general-def 'normal ggtags-mode-map
-    [remap xref-find-definitions] 'ggtags-find-tag-dwim
-    [remap find-define] 'ggtags-find-tag-dwim
-    [remap xref-find-references] 'ggtags-find-reference)
-
   (setq ggtags-update-on-save nil)
   (setq ggtags-highlight-tag nil)
   (setq ggtags-navigation-mode-lighter nil)
@@ -4268,6 +4254,23 @@ Version 2016-08-09"
     (require 'srefactor-lisp))
 
   (add-hook 'srefactor-ui-menu-mode-hook 'evil-emacs-state))
+
+(use-package doom-lookup
+  :ensure nil
+  :config
+  (general-define-key
+   :keymaps 'override
+   :states '(normal visual)
+   "gd" #'+lookup/definition
+   "gr" #'+lookup/references
+   "gf" #'+lookup/file)
+
+  (set-lookup-handlers! 'emacs-lisp-mode
+    :definition #'elisp-def)
+  (set-lookup-handlers! 'ggtags-mode
+    :definition #'ggtags-find-tag-dwim
+    :references #'ggtags-find-reference
+    :file #'ggtags-find-file))
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
