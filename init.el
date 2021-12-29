@@ -3884,6 +3884,17 @@ Version 2016-08-09"
 (use-package org-variable-pitch
   :ensure nil)
 
+(use-package org-appear
+  :init
+  ;; Instant toggle raw format on insert mode, 0.5 second delay on normal mode.
+  (add-hook 'evil-insert-state-entry-hook (lambda() (setq org-appear-delay 0)))
+  (add-hook 'evil-normal-state-entry-hook (lambda() (setq org-appear-delay 0.5)))
+  :hook
+  (org-mode . org-appear-mode)
+  :config
+  ;; Hide emphasis makers.
+  (setq org-hide-emphasis-markers t))
+
 (use-package darkroom
   :ensure nil
   :defer t
