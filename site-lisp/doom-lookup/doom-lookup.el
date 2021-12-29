@@ -306,15 +306,59 @@ Will return nil if neither is available. These require ripgrep to be installed."
   (unless identifier
     (let ((query (rxt-quote-pcre identifier)))
       (ignore-errors
-        (cond ((featurep! :completion ivy)
-               (+ivy-file-search :query query)
-               t)
-              ((featurep! :completion helm)
-               (+helm-file-search :query query)
-               t)
-              ((featurep! :completion vertico)
-               (+vertico-file-search :query query)
-               t))))))
+        (+ivy-file-search :query query)))))
+
+;;;###autoload
+(cl-defun +ivy-file-search (&key query in all-files (recursive t) prompt args)
+  "Conduct a file search using ripgrep.
+:query STRING
+  Determines the initial input to search for.
+:in PATH
+  Sets what directory to base the search out of. Defaults to the current
+  project's root.
+:recursive BOOL
+  Whether or not to search files recursively from the base directory."
+  (declare (indent defun))
+  (unless (executable-find "rg")
+    (user-error "Couldn't find ripgrep in your PATH"))
+  (require 'counsel)
+  (let* ((this-command 'counsel-rg)
+         (project-root (or (cdr (project-current)) default-directory))
+         (directory (or in project-root))
+         (args (concat (if all-files " -uu")
+                       (unless recursive " --maxdepth 1")
+                       " --hidden -g!.git "
+                       (mapconcat #'shell-quote-argument args " "))))
+    (setq deactivate-mark t)
+    (counsel-rg
+     (or query
+         (when (doom-region-active-p)
+           (replace-regexp-in-string
+            "[! |]" (lambda (substr)
+                      (cond ((and (string= substr " ")
+                                  (not (featurep! +fuzzy)))
+                             "  ")
+                            ((string= substr "|")
+                             "\\\\\\\\|")
+                            ((concat "\\\\" substr))))
+            (rxt-quote-pcre (doom-thing-at-point-or-region)))))
+     directory args
+     (or prompt
+         (format "Search project [%s]: "
+                 (cond ((equal directory default-directory)
+                        "./")
+                       ((equal directory project-root)
+                        (project-current))
+                       ((file-relative-name directory project-root)))
+                 (string-trim args))))))
+
+;;;###autoload
+(defun +ivy/project-search (&optional arg initial-query directory)
+  "Performs a live project search from the project root using ripgrep.
+If ARG (universal argument), include all files, even hidden or compressed ones,
+in the search."
+  (interactive "P")
+  (+ivy-file-search :query initial-query :in directory :all-files arg))
 
 (defun +lookup-evil-goto-definition-backend-fn (_identifier)
   "Uses `evil-goto-definition' to conduct a text search for IDENTIFIER in the
@@ -485,8 +529,7 @@ Otherwise, falls back on `find-file-at-point'."
 ;; `dumb-jump' to find what you want.
 
 (defvar +lookup-definition-functions
-  '(+lookup-dictionary-definition-backend-fn
-    +lookup-xref-definitions-backend-fn
+  '(+lookup-xref-definitions-backend-fn
     +lookup-dumb-jump-backend-fn
     +lookup-project-search-backend-fn
     +lookup-evil-goto-definition-backend-fn)

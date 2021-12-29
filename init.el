@@ -3403,8 +3403,7 @@ Version 2018-12-23"
   :general
   (general-nmap
     :keymaps 'tide-mode-map
-    "<f2>" 'tide-rename-symbol
-    "g r" 'tide-references)
+    "<f2>" 'tide-rename-symbol)
   :config
   (setq tide-completion-ignore-case t
         tide-server-max-response-length (* 1024 1024))
@@ -4270,7 +4269,9 @@ Version 2016-08-09"
   (set-lookup-handlers! 'ggtags-mode
     :definition #'ggtags-find-tag-dwim
     :references #'ggtags-find-reference
-    :file #'ggtags-find-file))
+    :file #'ggtags-find-file)
+  (set-lookup-handlers! 'tide-mode
+    :references #'tide-references))
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
