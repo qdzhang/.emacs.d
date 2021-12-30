@@ -1091,6 +1091,7 @@ Start `ielm' in a split window if it's not already running."
     "ac" 'capitalize-word
     "ad" 'downcase-word
     "ag" '(my/sp-comment-with-three-semicolon :wk "sp-comment-3-semicolon")
+    "ai" 'auto-insert
     "au" 'upcase-word
 
     "e" '(:ignore t :which-key "eval")
@@ -4302,6 +4303,8 @@ Version 2016-08-09"
     (require 'srefactor-lisp))
 
   (add-hook 'srefactor-ui-menu-mode-hook 'evil-emacs-state))
+
+(use-package pcre2el)
 
 (use-package doom-lookup
   :ensure nil
