@@ -4323,7 +4323,10 @@ Version 2016-08-09"
     :references #'ggtags-find-reference
     :file #'ggtags-find-file)
   (set-lookup-handlers! 'tide-mode
-    :references #'tide-references))
+    :references #'tide-references)
+  (set-lookup-handlers! 'go-mode
+    :references #'+lookup-mu-rgrep-search-backend-fn))
+
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))

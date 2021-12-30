@@ -360,6 +360,12 @@ in the search."
   (interactive "P")
   (+ivy-file-search :query initial-query :in directory :all-files arg))
 
+(defun +lookup-mu-rgrep-search-backend-fn (_identifier)
+  "Use `mu-recursive-grep' function to search specific directory or specific
+project recursively."
+  (when (commandp 'mu-recursive-grep t)
+    (call-interactively 'mu-recursive-grep)))
+
 (defun +lookup-evil-goto-definition-backend-fn (_identifier)
   "Uses `evil-goto-definition' to conduct a text search for IDENTIFIER in the
 current buffer."
@@ -558,9 +564,9 @@ argument: the identifier at point. See `set-lookup-handlers!' about adding to
 this list.")
 
 (defvar +lookup-references-functions
-  '(+lookup-thesaurus-definition-backend-fn
-    +lookup-xref-references-backend-fn
-    +lookup-project-search-backend-fn)
+  '(+lookup-xref-references-backend-fn
+    +lookup-project-search-backend-fn
+    +lookup-mu-rgrep-search-backend-fn)
   "Functions for `+lookup/references' to try, before resorting to `dumb-jump'.
 Stops at the first function to return non-nil or change the current
 window/point.
