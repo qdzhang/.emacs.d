@@ -3586,14 +3586,18 @@ If the error list is visible, hide it.  Otherwise, show it."
   ;;   (setq flycheck-javascript-eslint-executable "eslint_d"))
 
   ;; Use json-jq for json files
-  (define-derived-mode my-json-mode web-mode "MyJSON"
-    "My custom JSON mode")
-  (add-to-list 'auto-mode-alist '("\\.json\\'" . my-json-mode))
-
   (flycheck-add-mode 'json-jq 'my-json-mode)
 
   (flycheck-add-mode 'css-stylelint 'css-mode)
   (setq flycheck-stylelintrc ".stylelintrc.json"))
+
+;; Define a custom json mode
+;; Load after web-mode
+;; Configure `flycheck' to use json-jq as checker in `my-json-mode'
+;; Configure `reformatter' use jq as formater in `my-json-mode'
+(define-derived-mode my-json-mode web-mode "MyJSON"
+  "My custom JSON mode")
+(add-to-list 'auto-mode-alist '("\\.json\\'" . my-json-mode))
 
 (use-package flycheck-inline
   :after flycheck
@@ -4212,7 +4216,52 @@ Version 2016-08-09"
         (setq-local clang-format-arguments (list "-style=llvm")))))
 
   (add-hook 'c-mode-hook #'my/set-clang-format-style)
-  (add-hook 'c++-mode-hook #'my/set-clang-format-style))
+  (add-hook 'c++-mode-hook #'my/set-clang-format-style)
+
+  ;; Config jq
+  (defgroup jq-format nil
+    "JSON reformatting using jq."
+    :group 'json)
+
+  (defcustom jq-format-command "jq"
+    "Name of the jq executable."
+    :group 'jq-format
+    :type 'string)
+
+  (defcustom jq-format-sort-keys t
+    "Whether to sort keys."
+    :group 'jq-format
+    :type 'boolean)
+
+  (defcustom jq-format-extra-args nil
+    "Extra arguments to pass to jq."
+    :group 'jq-format
+    :type '(repeat string))
+
+;;;###autoload (autoload 'jq-format-json-buffer "jq-format" nil t)
+;;;###autoload (autoload 'jq-format-json-region "jq-format" nil t)
+;;;###autoload (autoload 'jq-format-json-on-save-mode "jq-format" nil t)
+  (reformatter-define jq-format-json
+    :program jq-format-command
+    :args (jq-format--make-args)
+    :lighter " JSONFmt"
+    :group 'jq-format)
+
+;;;###autoload (autoload 'jq-format-jsonlines-buffer "jq-format" nil t)
+;;;###autoload (autoload 'jq-format-jsonlines-region "jq-format" nil t)
+;;;###autoload (autoload 'jq-format-jsonlines-on-save-mode "jq-format" nil t)
+  (reformatter-define jq-format-jsonlines
+    :program jq-format-command
+    :args (append '("--compact-output") (jq-format--make-args))
+    :lighter " JSONLFmt"
+    :group 'jq-format)
+
+  (defun jq-format--make-args ()
+    "Helper to build the argument list for jq."
+    (append
+     (when jq-format-sort-keys '("--sort-keys"))
+     jq-format-extra-args
+     '("." "-"))))
 
 (use-package ggtags
   :config
