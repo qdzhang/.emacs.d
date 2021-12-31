@@ -175,13 +175,13 @@ Ignores `ARGS'."
 ;;; https://emacs-china.org/t/topic/655
 ;;; https://emacs.stackexchange.com/questions/13652/how-to-customize-mode-line-format
 
-(use-package nyan-mode
-  :init
-  (setq nyan-animate-nyancat t)
-  (setq nyan-wavy-trail t)
-  :config
-  (setq nyan-minimum-window-width 75)
-  (setq nyan-bar-length 25))
+;; (use-package nyan-mode
+;;   :init
+;;   (setq nyan-animate-nyancat t)
+;;   (setq nyan-wavy-trail t)
+;;   :config
+;;   (setq nyan-minimum-window-width 75)
+;;   (setq nyan-bar-length 25))
 
 (use-package minions
   :config (minions-mode 1))
