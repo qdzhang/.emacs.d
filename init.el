@@ -4330,6 +4330,61 @@ Version 2016-08-09"
   (set-lookup-handlers! 'go-mode
     :references #'+lookup-mu-rgrep-search-backend-fn))
 
+(use-package newsticker
+  :ensure nil
+  :defer t
+  :init
+  (setq newsticker-retrieval-interval 0)
+  :general
+  (my/leader-keys
+    "on" '(my/newsticker-treeview-in-new-tab :wk "newsticker"))
+  :config
+  (defun my/newsticker-treeview-in-new-tab ()
+    (interactive)
+    (let (succ)
+      (unwind-protect
+          (progn
+            (tab-bar-new-tab)
+            (call-interactively #'newsticker-treeview)
+            (tab-bar-rename-tab "newsticker")
+            (setq succ t))
+        (unless succ
+          (tab-bar-close-tab)))))
+
+  (defun my/newsticker-treeview-quit-and-close-tab ()
+    (interactive)
+    (newsticker-treeview-quit)
+    (newsticker-stop)
+    (tab-close))
+
+  (general-define-key
+   :keymaps 'newsticker-treeview-mode-map
+   :states 'normal
+   "q" 'my/newsticker-treeview-quit-and-close-tab)
+
+  :custom
+  (newsticker-url-list '(
+                         ;; ("title" "URL" other options)
+                         ("emacs redux" "https://emacsredux.com/atom.xml" nil nil nil)
+                         ("batsov" "https://batsov.com/atom.xml" nil nil nil)
+                         ("meta redux" "https://metaredux.com/feed.xml" nil nil nil)
+                         ("Ruanyifeng" "https://www.ruanyifeng.com/blog/atom.xml" nil nil nil)
+                         ("Sachachua emacs news" "https://sachachua.com/blog/category/emacs-news/feed" nil nil nil)
+                         ("Planet Emacs Life" "https://planet.emacslife.com/atom.xml" nil nil nil)
+                         ("Karthinks" "https://karthinks.com/index.xml" nil nil nil)
+                         ("ruzkuku" "https://ruzkuku.com/all.atom" nil nil nil)
+                         ("lazycat" "https://manateelazycat.github.io/feed.xml" nil nil nil)
+                         ("jlelse" "https://jlelse.blog/.rss")
+                         ("honmaple" "https://honmaple.me/atom.xml")
+                         ("ianthehenry" "https://ianthehenry.com/feed.xml")
+                         ("manueluberti" "https://www.manueluberti.eu/feed.xml")
+                         ("kevq" "https://kevq.uk/feed.xml")
+                         ))
+  (newsticker-retrieval-method 'extern)
+  (newsticker-wget-name "curl")
+  (newsticker-wget-arguments '("--disable" "--silent" "--location"))
+  (newsticker-url-list-defaults nil)    ;remove default list (i.e. emacswiki)
+  (newsticker-automatically-mark-items-as-old nil))
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
