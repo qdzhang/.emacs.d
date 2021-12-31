@@ -4000,6 +4000,9 @@ Version 2016-08-09"
         (unless succ
           (tab-bar-close-tab)))))
 
+  (when (> emacs-major-version 27)
+    (add-to-list 'tab-bar-format #'tab-bar-format-menu-bar))
+
   (tab-bar-mode 1)
   (setq tab-bar-new-tab-choice "*scratch*"))
 
