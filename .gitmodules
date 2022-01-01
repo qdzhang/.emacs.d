@@ -25,3 +25,6 @@
 [submodule "site-lisp/editcmacro"]
 	path = site-lisp/editcmacro
 	url = git@github.com:Lindydancer/editcmacro.git
+[submodule "site-lisp/tiny"]
+	path = site-lisp/tiny
+	url = git@github.com:abo-abo/tiny.git

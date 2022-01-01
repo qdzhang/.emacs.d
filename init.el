@@ -4386,5 +4386,12 @@ Version 2016-08-09"
   (newsticker-url-list-defaults nil)    ;remove default list (i.e. emacswiki)
   (newsticker-automatically-mark-items-as-old nil))
 
+(use-package tiny
+  :ensure nil
+  :config
+  (general-define-key
+   :states 'insert
+   "C-;" 'tiny-expand))
+
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
