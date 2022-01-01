@@ -4334,7 +4334,8 @@ Version 2016-08-09"
   :ensure nil
   :defer t
   :init
-  (setq newsticker-retrieval-interval 0)
+  (setq newsticker-retrieval-interval 0
+        newsticker-ticker-interval 0)
   :general
   (my/leader-keys
     "on" '(my/newsticker-treeview-in-new-tab :wk "newsticker"))
@@ -4379,16 +4380,22 @@ Version 2016-08-09"
                          ("ianthehenry" "https://ianthehenry.com/feed.xml")
                          ("manueluberti" "https://www.manueluberti.eu/feed.xml")
                          ("kevq" "https://kevq.uk/feed.xml")
+                         ("hacker news" "https://hnrss.org/frontpage")
+                         ("hacker news comments" "https://hnrss.org/bestcomments")
+                         ("lobsters" "https://lobste.rs/rss")
+                         ("jameslittle" "https://jameslittle.me/feed.xml")
                          ))
   (newsticker-retrieval-method 'extern)
   (newsticker-wget-name "curl")
-  (newsticker-wget-arguments '("--disable" "--silent" "--location"))
+  (newsticker-wget-arguments '("--disable" "--silent" "--location" "--proxy" "socks5://127.0.0.1:7890"))
   (newsticker-url-list-defaults nil)    ;remove default list (i.e. emacswiki)
   (newsticker-automatically-mark-items-as-old nil))
 
 (use-package tiny
   :ensure nil
   :config
+  ;; Full syntax:
+  ;; m{range start:=0}{separator:= }{range end}{Lisp expr:=indentity}|{format expr:=%d}
   (general-define-key
    :states 'insert
    "C-;" 'tiny-expand))
