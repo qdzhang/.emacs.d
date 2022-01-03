@@ -2332,7 +2332,7 @@ If BACK is t, jump backward."
   :diminish
   :init
   (setq company-idle-delay 0.1)
-  (setq company-global-modes '(not org-mode))
+  (setq company-global-modes '(not org-mode markdown-mode))
   :hook
   (after-init . global-company-mode)
   :config
