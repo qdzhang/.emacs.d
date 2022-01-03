@@ -4381,7 +4381,6 @@ Version 2016-08-09"
                          ("manueluberti" "https://www.manueluberti.eu/feed.xml")
                          ("kevq" "https://kevq.uk/feed.xml")
                          ("hacker news" "https://hnrss.org/frontpage")
-                         ("hacker news comments" "https://hnrss.org/bestcomments")
                          ("lobsters" "https://lobste.rs/rss")
                          ("jameslittle" "https://jameslittle.me/feed.xml")
                          ))
