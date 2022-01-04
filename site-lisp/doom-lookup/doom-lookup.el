@@ -378,6 +378,19 @@ current buffer."
           (not (and (>= pt beg)
                     (<  pt end))))))))
 
+(defun my/--project-p ()
+  "Determine whether is a project"
+  (and (my/--project-root)
+       t))
+
+(defun my/--project-root ()
+  "Return project root directory, if not a project, return `default-directory'"
+  (let ((root default-directory)
+        (project (project-current)))
+    (when project
+      (setq root (cdr project)))
+    root))
+
 (defun +lookup-ffap-backend-fn (identifier)
   "Tries to locate the file at point (or in active selection).
 Uses find-in-project functionality (provided by ivy, helm, or project),
@@ -394,12 +407,9 @@ otherwise falling back to ffap.el (find-file-at-point)."
                 (or (file-exists-p guess)
                     (ffap-url-p guess)))
            (find-file-at-point guess))
-          ((and (featurep! :completion ivy)
-                (doom-project-p))
-           (counsel-file-jump guess (doom-project-root)))
-          ((and (featurep! :completion vertico)
-                (doom-project-p))
-           (+vertico/find-file-in (doom-project-root) guess))
+          ((and (featurep 'ivy)
+                (my/--project-p))
+           (counsel-file-jump guess (my/--project-root)))
           ((find-file-at-point (ffap-prompter guess))))
     t))
 
