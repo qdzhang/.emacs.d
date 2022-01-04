@@ -4399,5 +4399,34 @@ Version 2016-08-09"
    :states 'insert
    "C-;" 'tiny-expand))
 
+(use-package annotate
+  :general
+  (my/leader-keys
+    "oa" 'annotate-mode))
+
+(use-package proced
+  :ensure nil
+  :init
+  (setq-default proced-auto-update-flag t
+                proced-auto-update-interval 3)
+  :general
+  (my/leader-keys
+    "op" 'proced))
+
+(use-package redacted
+  :general
+  (my/local-leader-keys
+    "o" '(:ignore t :wk "open")
+    "or" 'redacted-mode)
+  :config
+  ;; Enable `read-only-mode' to ensure that we don't change what we can't read.
+  (add-hook 'redacted-mode-hook (lambda () (read-only-mode (if redacted-mode 1 -1)))))
+
+(use-package cbm
+  :ensure nil
+  :general
+  (my/leader-keys
+    "bc" 'cbm-switch-buffer))
+
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
