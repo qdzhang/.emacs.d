@@ -4382,6 +4382,7 @@ Version 2016-08-09"
                          ("hacker news" "https://hnrss.org/frontpage")
                          ("lobsters" "https://lobste.rs/rss")
                          ("jameslittle" "https://jameslittle.me/feed.xml")
+                         ("ag91" "https://ag91.github.io/rss.xml")
                          ))
   (newsticker-retrieval-method 'extern)
   (newsticker-wget-name "curl")

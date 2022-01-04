@@ -380,7 +380,7 @@ current buffer."
 
 (defun my/--project-p ()
   "Determine whether is a project"
-  (and (my/--project-root)
+  (and (project-current)
        t))
 
 (defun my/--project-root ()
