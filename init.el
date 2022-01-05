@@ -4428,5 +4428,11 @@ Version 2016-08-09"
   (my/leader-keys
     "bc" 'cbm-switch-buffer))
 
+(use-package wwg
+  :ensure nil
+  :general
+  (my/leader-keys
+    "ow" 'wwg-mode))
+
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
