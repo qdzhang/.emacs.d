@@ -1020,6 +1020,32 @@ Start `ielm' in a split window if it's not already running."
       :init
       (setq modus-themes-no-mixed-fonts t
             modus-themes-org-blocks 'gray-background)
+      ;; Override colors from
+      ;; https://www.reddit.com/r/emacs/comments/rn6qz0/comment/hprlsrl/?utm_source=share&utm_medium=web2x&context=3
+      (setq modus-themes-vivendi-color-overrides '((fg-main . "#fdf3ec")
+                                                   (bg-main . "#24242d")
+                                                   (bg-region . "#4f3d88")
+                                                   (bg-inactive . "#2f2f3b")
+                                                   (bg-hl-line . "#2f2f3b")))
+      ;; A subtle ochre tint for operandi theme
+      ;; (setq modus-themes-operandi-color-overrides '((bg-main . "#fefcf4")
+      ;;                                               (bg-dim . "#faf6ef")
+      ;;                                               (bg-alt . "#f7efe5")
+      ;;                                               (bg-active . "#e8dfd1")
+      ;;                                               (bg-inactive . "#f6ece5")))
+      (setq modus-themes-operandi-color-overrides '((fg-main . "#000000")
+                                                    (bg-main . "#faf8f5")
+                                                    (bg-region . "#efdfff")
+                                                    (bg-inactive . "#e6e4e1")
+                                                    (bg-hl-line . "#e6e4e1")))
+
+      (defun my/customize-modus-vivendi nil
+        (setq modus-themes-syntax '(yellow-comments faint alt-syntax green-strings))
+        (set-face-background 'show-paren-match "#E02C6D"))
+      (defun my/customize-modus-operandi nil
+        (setq modus-themes-syntax '(yellow-comments)))
+      (advice-add 'modus-themes-load-vivendi :before 'my/customize-modus-vivendi)
+      (advice-add 'modus-themes-load-operandi :before 'my/customize-modus-operandi)
       (modus-themes-load-themes)
       :config
       (modus-themes-load-operandi))
