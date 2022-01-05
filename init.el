@@ -2687,8 +2687,7 @@ FACE defaults to inheriting from default and highlight."
                    (or face '(:inherit default :inherit highlight)))
       ol))
 
-  (setq show-paren-style 'paren
-        show-paren-delay 0.03
+  (setq show-paren-delay 0.03
         show-paren-highlight-openparen t
         show-paren-when-point-inside-paren nil
         show-paren-when-point-in-periphery t)
