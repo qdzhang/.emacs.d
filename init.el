@@ -1023,7 +1023,9 @@ Start `ielm' in a split window if it's not already running."
       ;; Override colors from
       ;; https://www.reddit.com/r/emacs/comments/rn6qz0/comment/hprlsrl/?utm_source=share&utm_medium=web2x&context=3
       (setq modus-themes-vivendi-color-overrides '((fg-main . "#fdf3ec")
-                                                   (bg-main . "#24242d")
+                                                   (bg-main . "#282828")
+                                                   (bg-tab-active . "#24242d")
+                                                   (bg-paren-match . "#E02C6D")
                                                    (bg-region . "#4f3d88")
                                                    (bg-inactive . "#2f2f3b")
                                                    (bg-hl-line . "#2f2f3b")))
@@ -1040,8 +1042,7 @@ Start `ielm' in a split window if it's not already running."
                                                     (bg-hl-line . "#e6e4e1")))
 
       (defun my/customize-modus-vivendi nil
-        (setq modus-themes-syntax '(yellow-comments faint alt-syntax green-strings))
-        (set-face-background 'show-paren-match "#E02C6D"))
+        (setq modus-themes-syntax '(yellow-comments faint alt-syntax green-strings)))
       (defun my/customize-modus-operandi nil
         (setq modus-themes-syntax '(yellow-comments)))
       (advice-add 'modus-themes-load-vivendi :before 'my/customize-modus-vivendi)
