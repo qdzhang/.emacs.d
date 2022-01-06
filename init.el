@@ -1027,32 +1027,49 @@ Start `ielm' in a split window if it's not already running."
                                                    (bg-tab-active . "#24242d")
                                                    (bg-paren-match . "#E02C6D")
                                                    (bg-region . "#4f3d88")
-                                                   (bg-inactive . "#2f2f3b")
+                                                   (bg-inactive . "#32302f")
                                                    (bg-hl-line . "#2f2f3b")))
-      ;; A subtle ochre tint for operandi theme
-      ;; (setq modus-themes-operandi-color-overrides '((bg-main . "#fefcf4")
-      ;;                                               (bg-dim . "#faf6ef")
-      ;;                                               (bg-alt . "#f7efe5")
-      ;;                                               (bg-active . "#e8dfd1")
-      ;;                                               (bg-inactive . "#f6ece5")))
-      (setq modus-themes-operandi-color-overrides '((fg-main . "#000000")
-                                                    (bg-main . "#faf8f5")
-                                                    (bg-region . "#efdfff")
-                                                    (bg-inactive . "#e6e4e1")
-                                                    (bg-hl-line . "#e6e4e1")))
+
+      (modus-themes-load-themes)
+      :config
+      ;; (modus-themes-load-operandi)
+
+      (setq modus-themes-syntax '(yellow-comments faint alt-syntax green-strings))
+
+      (defun my-modus-themes-custom-faces ()
+        (pcase (modus-themes--current-theme)
+          ('modus-operandi
+           (modus-themes-with-colors
+             (custom-set-faces
+              `(cursor ((,class :background ,fg-main))))))
+          ('modus-vivendi
+           (modus-themes-with-colors
+             (custom-set-faces
+              `(cursor ((,class :background ,fg-main)))
+              `(mode-line-inactive ((,class :box ,bg-hl-line))))))))
+
+      (add-hook 'modus-themes-after-load-theme-hook #'my-modus-themes-custom-faces)
 
       (defun my/customize-modus-vivendi nil
         (setq modus-themes-syntax '(yellow-comments faint alt-syntax green-strings)))
       (defun my/customize-modus-operandi nil
         (setq modus-themes-syntax '(yellow-comments)))
       (advice-add 'modus-themes-load-vivendi :before 'my/customize-modus-vivendi)
-      (advice-add 'modus-themes-load-operandi :before 'my/customize-modus-operandi)
-      (modus-themes-load-themes)
-      :config
-      (modus-themes-load-operandi))
+      (advice-add 'modus-themes-load-operandi :before 'my/customize-modus-operandi))
   (use-package color-theme-sanityinc-tomorrow
     :config
     (load-theme 'sanityinc-tomorrow-eighties t)))
+
+(use-package heaven-and-hell
+  :init
+  (setq heaven-and-hell-themes
+        '((light . modus-operandi)
+          (dark . modus-vivendi))) ;; Themes can be the list: (dark . (tsdh-dark wombat))
+  ;; Optionall, load themes without asking for confirmation.
+  (setq heaven-and-hell-load-theme-no-confirm t)
+  :hook (after-init . heaven-and-hell-init-hook)
+  :bind (("C-c <f6>" . heaven-and-hell-load-default-theme)
+         ("<f6>" . heaven-and-hell-toggle-theme)))
 
 ;; (use-package apropospriate-theme
 ;;   :config
