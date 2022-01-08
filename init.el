@@ -44,7 +44,7 @@ created."
  (set-face-attribute 'default nil :font (font-spec :family "Sarasa Mono SC" :size 24))
  (set-face-attribute 'variable-pitch nil :family "IBM Plex Serif")
  (set-face-attribute 'fixed-pitch nil :family "Sarasa Mono SC")
- (set-fontset-font t 'han "LXGW WenKai")
+ (set-fontset-font t 'han "Sarasa Mono SC")
  (set-fontset-font t 'kana "Sarasa Mono J")
  (set-fontset-font t 'hangul "Sarasa Mono K")
  (set-fontset-font t 'cjk-misc "Sarasa Mono SC")
