@@ -2756,6 +2756,7 @@ FACE defaults to inheriting from default and highlight."
   (visual-line-mode . visual-fill-column-mode))
 
 (use-package org
+  :ensure nil
   :defer t
   :hook
   (org-mode . my-org-mode-hook)
@@ -2802,6 +2803,24 @@ FACE defaults to inheriting from default and highlight."
         org-src-preserve-indentation nil
         org-src-tab-acts-natively t
         org-edit-src-content-indentation 0)
+
+  (defface org-bold
+    '((t :foreground "#d2268b"
+         :background "#fefefe"
+         :weight extra-bold
+         :underline t
+         :overline nil))
+    "Face for org-mode bold."
+    :group 'org-faces)
+
+  (setq org-emphasis-alist
+        '(("*" org-bold)
+          ("/" italic)
+          ("_" underline)
+          ("=" org-verbatim verbatim)
+          ("~" org-code verbatim)
+          ("+"
+           (:strike-through t))))
 
   (setq org-startup-truncated nil)
   (require 'org-phscroll)
