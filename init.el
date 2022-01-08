@@ -384,6 +384,21 @@ Reference: https://github.com/AmaiKinono/Tokimacs/blob/master/site-lisp/toki-mod
             (val val)))
     (concat " " percent "%%%" " ")))
 
+(defvar-local simple-modeline--pdf-pages nil)
+(defun doom-modeline-update-pdf-pages ()
+  "Update PDF pages."
+  (setq simple-modeline--pdf-pages
+        (format " P%d/%d "
+                (or (pdf-view-current-page) 0)
+                (pdf-cache-number-of-pages))))
+(add-hook 'pdf-view-change-page-hook #'doom-modeline-update-pdf-pages)
+
+(defun simple-modeline-pdf-pages ()
+  "Display PDF pages."
+  (when (eq major-mode 'pdf-view-mode)
+    (propertize simple-modeline--pdf-pages
+                'face 'mode-line-highlight)))
+
 (defun simple-modeline-segment-eol ()
   "Displays the EOL style of the current buffer in the mode-line."
   (let* ((eol (coding-system-eol-type buffer-file-coding-system))
@@ -634,6 +649,7 @@ Source: https://git.io/vQKzv"
      simple-modeline-segment-pretty-buffer-and-path
      simple-modeline-segment-percent-location
      ;; simple-modeline-segment-nyan
+     simple-modeline-pdf-pages
      simple-modeline-segment-position
      simple-modeline-evil-substitute
      simple-modeline-iedit)
@@ -4505,6 +4521,103 @@ Version 2016-08-09"
   :general
   (my/leader-keys
     "ow" 'wwg-mode))
+
+(use-package pdf-tools
+  :defer t
+  :mode "\\.pdf\\'"
+  :commands (pdf-loader-install)
+  :init
+  (evil-set-initial-state 'pdf-view-mode 'normal)
+  :config
+  (pdf-tools-install)
+  (setq-default pdf-view-display-size 'fit-width)
+
+  ;; Config isearch in pdf-tools
+  ;; https://emacs-china.org/t/pdf-tools-isearch-repeat-forward-backward/16417/2
+  (with-eval-after-load 'pdf-tools
+    (defun my/isearch-failed? ()
+      (or (not isearch-success) isearch-error))
+
+    (defvar-local my/pdf-isearch-highlight-matches nil)
+    (defun my/pdf-isearch-cleanup-highlight ()
+      (setq my/pdf-isearch-highlight-matches nil)
+      (pdf-view-redisplay))
+
+    (defun my/pdf-isearch-hl-matches-controllable-highlight (orig-fun current matches &optional occur-hack-p)
+      (funcall orig-fun current matches (or my/pdf-isearch-highlight-matches occur-hack-p)))
+    (advice-add #'pdf-isearch-hl-matches
+                :around #'my/pdf-isearch-hl-matches-controllable-highlight)
+
+    (defun my/pdf-isearch-repeat-forward (&optional arg)
+      (interactive "P")
+      (setq my/pdf-isearch-highlight-matches t)
+      (isearch-repeat-forward arg))
+
+    (defun my/pdf-isearch-repeat-backward (&optional arg)
+      (interactive "P")
+      (setq my/pdf-isearch-highlight-matches t)
+      (isearch-repeat-backward arg))
+
+    ;; 搜索超过文档结尾时，直接wrap到文档头开始搜索，不要暂停，
+    ;; 如果不这样设置，则搜索超过文档结尾时，暂停的时候，结尾的高亮会不见
+    ;; 估计不难修复，但是这样搞更简单。
+    (add-hook 'pdf-view-mode-hook
+              (lambda () (setq-local isearch-wrap-pause nil)))
+
+    (defun my/pdf-view-force-normal-state ()
+      (interactive)
+      (evil-force-normal-state)
+      (my/pdf-isearch-cleanup-highlight))
+
+    (advice-add #'pdf-isearch-mode-initialize
+                :before
+                (lambda (&rest args)
+                  "在正常使用C-s等进行搜索的时候，重置 `my/pdf-isearch-highlight-matches'。"
+                  (setq my/pdf-isearch-highlight-matches nil)))
+
+    (defun my/pdf-isearch-mode-cleanup ()
+      "按/键搜索，如果搜索成功，则按回车后不要清除高亮，如果搜索失败，则清除高亮。"
+      (pdf-isearch-active-mode -1)
+      (when (my/isearch-failed?) (pdf-view-redisplay)))
+    (advice-add #'pdf-isearch-mode-cleanup
+                :override #'my/pdf-isearch-mode-cleanup)
+
+    (defmacro my/modify-evil-collection-key-bindings (mode &rest body)
+      (declare (indent defun))
+      (let ((feature-name (intern (concat "evil-collection-" (symbol-name mode))))
+            (setup-fun-name (intern (concat "evil-collection-" (symbol-name mode) "-setup"))))
+        `(if (featurep ',feature-name)
+             ;; 在当前evil-collection的实现中，如果feature-name对应的文件
+             ;; 已经加载，则对应的按键setup函数也已经调用，故在这种情况下，
+             ;; 我们可以直接执行body。
+             (progn ,@body)
+           (with-eval-after-load ',feature-name
+             (define-advice ,setup-fun-name (:after (&rest _))
+               ,(concat "修改evil-collection设置的" (symbol-name mode) "的按键绑定。")
+               ,@body)))))
+
+    (my/modify-evil-collection-key-bindings pdf
+                                            (evil-define-key 'normal pdf-view-mode-map
+                                              ;; 按n/N 向前/向后搜索，按ESC则返回normal state的同时清除搜索高亮
+                                              (kbd "n") #'my/pdf-isearch-repeat-forward
+                                              (kbd "N") #'my/pdf-isearch-repeat-backward
+                                              (kbd "<escape>") #'my/pdf-view-force-normal-state)))
+
+  (general-define-key
+   :keymaps 'pdf-view-mode-map
+   :states 'normal
+   "y" 'pdf-view-kill-ring-save
+   "i" 'pdf-misc-display-metadata
+   "o" 'pdf-outline
+   "al" 'pdf-annot-list-annotations
+   "ad" 'pdf-annot-delete
+   "aa" 'pdf-annot-attachment-dired
+   "am" 'pdf-annot-add-markup-annotation
+   "at" 'pdf-annot-add-text-annotation
+   "h" 'image-backward-hscroll
+   "l" 'image-forward-hscroll
+   "j" 'pdf-view-next-line-or-next-page
+   "k" 'pdf-view-previous-line-or-previous-page))
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
