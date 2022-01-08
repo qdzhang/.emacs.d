@@ -1193,7 +1193,7 @@ Start `ielm' in a split window if it's not already running."
     "oi" '(my/open-ielm-in-split-window :wk "ielm")
     "om" 'man
     "ot" '(my/open-vterm-in-split-window :wk "split-term")
-    "oT" 'multi-vterm
+    "oT" '(my/open-vterm-in-new-tab :wk "vterm")
     ;; "oT" '(my/ansi-term-bash :wk "term")
 
     "s" '(:ignore t :which-key "search")
@@ -1216,6 +1216,12 @@ Start `ielm' in a split window if it's not already running."
     "tl" 'display-line-numbers-mode
     "ts" 'sly
     "ti" '(imenu-list-smart-toggle :wk "imenu-list"))
+
+  (defun my/open-vterm-in-new-tab ()
+    "Open vterm in new tab"
+    (interactive)
+    (tab-bar-new-tab)
+    (multi-vterm))
 
   ;; https://stackoverflow.com/a/36994486
   (defun my/describe-keymap (keymap)
@@ -1638,6 +1644,8 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
   (global-set-key [remap xref-pop-marker-stack] #'better-jumper-jump-backward)
   :config
   (better-jumper-mode 1)
+  (define-key evil-motion-state-map (kbd "C-o") 'better-jumper-jump-backward)
+  (define-key evil-motion-state-map (kbd "<C-i>") 'better-jumper-jump-forward)
 
   (defun evil-better-jumper/set-jump-a (orig-fn &rest args)
     "Set a jump point and ensure ORIG-FN doesn't set any new jump points."
@@ -3036,6 +3044,8 @@ FACE defaults to inheriting from default and highlight."
 ;;   (org-mode . org-superstar-mode)
 ;;   :config
 ;;   (setq org-superstar-headline-bullets-list '("⬤" "◉" "○" "✸" "◆" "▲" "▶")))
+
+(use-package edit-indirect)
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
