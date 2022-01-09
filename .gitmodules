@@ -28,7 +28,3 @@
 [submodule "site-lisp/tiny"]
 	path = site-lisp/tiny
 	url = git@github.com:abo-abo/tiny.git
-[submodule "/home/qdzhang/.emacs.d/site-lisp/emacs-application-framework"]
-	path = /home/qdzhang/.emacs.d/site-lisp/emacs-application-framework
-	url = https://github.com/emacs-eaf/emacs-application-framework.git
-	branch = master
