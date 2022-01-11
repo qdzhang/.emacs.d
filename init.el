@@ -597,9 +597,9 @@ Source: https://git.io/vQKzv"
     (:propertize
      (""
       (:eval
-       (if
-           (frame-parameter nil 'client)
-           (concat "@" server-name " |") "")))
+       (if (frame-parameter nil 'client)
+           (propertize (concat "@" server-name " ")
+                       'face 'simple-modeline-status-info))))
      help-echo "emacsclient frame")))
 
 (defun simple-modeline-evil-substitute ()
@@ -3090,7 +3090,13 @@ FACE defaults to inheriting from default and highlight."
   :init (setq markdown-command "multimarkdown")
   :hook
   (markdown-mode . my-markdown-mode-hook)
+  (markdown-mode . embrace-markdown-mode-hook)
   :config
+
+;;;###autoload
+  (defun embrace-markdown-mode-hook ()
+    (embrace-add-pair ?` "`" "`"))
+
   (add-to-list 'auto-mode-alist '("presentation.html" . markdown-mode))
   (defun my-markdown-mode-hook ()
     (visual-line-mode 1)
@@ -4187,7 +4193,9 @@ Version 2016-08-09"
   :ensure nil
   :config
   (too-long-lines-mode 1)
-  (setq too-long-lines-threshold 1000))
+  (setq too-long-lines-threshold 1000)
+  (add-hook 'image-mode-hook (lambda ()
+                               (too-long-lines-mode -1))))
 
 (use-package firefox-bookmarks
   :ensure nil)
@@ -4196,6 +4204,10 @@ Version 2016-08-09"
   :ensure nil
   :config
   (beacon-mode 1)
+
+  ;; Fix beacon blinking constantly in *scratch* buffer
+  ;; https://github.com/Malabarba/beacon/issues/76
+  (setq beacon-blink-when-window-scrolls nil)
   :custom
   (beacon-push-mark 35))
 
@@ -4523,7 +4535,6 @@ Version 2016-08-09"
     "ow" 'wwg-mode))
 
 (use-package pdf-tools
-  :defer t
   :mode "\\.pdf\\'"
   :commands (pdf-loader-install)
   :init
@@ -4602,6 +4613,10 @@ Version 2016-08-09"
                                               (kbd "n") #'my/pdf-isearch-repeat-forward
                                               (kbd "N") #'my/pdf-isearch-repeat-backward
                                               (kbd "<escape>") #'my/pdf-view-force-normal-state)))
+
+  (add-hook 'pdf-view-mode-hook
+            (lambda ()
+              (set (make-local-variable 'evil-normal-state-cursor) (list nil))))
 
   (general-define-key
    :keymaps 'pdf-view-mode-map
