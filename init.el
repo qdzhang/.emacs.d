@@ -4619,5 +4619,15 @@ Version 2016-08-09"
    "j" 'pdf-view-next-line-or-next-page
    "k" 'pdf-view-previous-line-or-previous-page))
 
+(use-package gif-screencast
+  :defer t
+  :config
+  (global-set-key (kbd "<f7>") #'gif-screencast)
+  (global-set-key (kbd "<f8>") #'gif-screencast-toggle-pause)
+  (global-set-key (kbd "<f9>") #'gif-screencast-stop)
+
+  (setq gif-screencast-output-directory (expand-file-name "~/Pictures/Screencasts")))
+
+
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
