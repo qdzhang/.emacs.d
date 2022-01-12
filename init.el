@@ -1215,8 +1215,8 @@ Start `ielm' in a split window if it's not already running."
     "og" '(google-search :wk "google")
     "oi" '(my/open-ielm-in-split-window :wk "ielm")
     "om" 'man
-    "ot" '(my/open-vterm-in-split-window :wk "split-term")
-    "oT" '(my/open-vterm-in-new-tab :wk "vterm")
+    ;; "ot" '(my/open-vterm-in-split-window :wk "split-term")
+    ;; "oT" '(my/open-vterm-in-new-tab :wk "vterm")
     ;; "oT" '(my/ansi-term-bash :wk "term")
 
     "s" '(:ignore t :which-key "search")
@@ -3262,7 +3262,11 @@ FACE defaults to inheriting from default and highlight."
 
 (use-package multi-vterm
   :after vterm
-  :defer t)
+  :defer t
+  :config
+  (evil-define-key 'normal vterm-mode-map (kbd ",c") #'multi-vterm)
+  (evil-define-key 'normal vterm-mode-map (kbd ",n") #'multi-vterm-next)
+  (evil-define-key 'normal vterm-mode-map (kbd ",p") #'multi-vterm-prev))
 
 (use-package dired
   :ensure nil
@@ -4649,6 +4653,33 @@ Version 2016-08-09"
   (global-set-key (kbd "<f9>") #'gif-screencast-stop)
 
   (setq gif-screencast-output-directory (expand-file-name "~/Pictures/Screencasts")))
+
+(use-package popper
+  :bind (("C-`"   . popper-toggle-latest)
+         ("M-`"   . popper-cycle)
+         ("C-M-`" . popper-toggle-type))
+  :general
+  (my/leader-keys
+    "ot" 'multi-vterm)
+  :init
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          ("\\*Async Shell Command\\*" . hide)
+          help-mode
+          compilation-mode))
+  (setq popper-reference-buffers
+        (append popper-reference-buffers
+                '("^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
+                  "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
+                  "^\\*term.*\\*$"   term-mode   ;term as a popup
+                  "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
+                  )))
+  (popper-mode +1)
+  (popper-echo-mode +1)
+  :config
+  ;; (setq popper-group-function #'popper-group-by-directory)
+  (setq popper-window-height '20))
 
 
 ;;; Restore file-name-hander-alist
