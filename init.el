@@ -543,12 +543,19 @@ mouse-1: Display minor modes menu"
             (if buffer-file-truename
                 (let* ((cur-dir (file-name-directory (buffer-file-name)))
                        (one-up-dir (-as-> cur-dir it (or (f-parent it) "")))
-                       (shrunk (shrink-path-file-mixed one-up-dir cur-dir (buffer-file-name))))
+                       (shrunk (shrink-path-file-mixed one-up-dir cur-dir (buffer-file-name)))
+                       (full-file-name (car (last shrunk)))
+                       (len-file-name (length full-file-name))
+                       (shrunk-file-name (if (> len-file-name 40)
+                                             (concat (substring full-file-name 0 20)
+                                                     "..."
+                                                     (substring full-file-name (- len-file-name 7) len-file-name))
+                                           full-file-name)))
                   (concat (car shrunk)
                           (propertize
                            (mapconcat #'identity (butlast (cdr shrunk)) "/")
                            'face 'simple-modeline-project-path-face)
-                          (propertize (car (last shrunk)) 'face 'mode-line-buffer-id)))
+                          (propertize shrunk-file-name 'face 'mode-line-buffer-id)))
               (buffer-name))))
           " "))
 
