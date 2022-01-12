@@ -4546,12 +4546,12 @@ Version 2016-08-09"
     "ow" 'wwg-mode))
 
 (use-package pdf-tools
-  :mode "\\.pdf\\'"
   :commands (pdf-loader-install)
+  :magic ("%PDF" . pdf-view-mode)
   :init
   (evil-set-initial-state 'pdf-view-mode 'normal)
   :config
-  (pdf-tools-install)
+  (pdf-tools-install :no-query)
   (setq-default pdf-view-display-size 'fit-width)
 
   ;; Config isearch in pdf-tools
@@ -4619,15 +4619,19 @@ Version 2016-08-09"
                ,@body)))))
 
     (my/modify-evil-collection-key-bindings pdf
-                                            (evil-define-key 'normal pdf-view-mode-map
-                                              ;; 按n/N 向前/向后搜索，按ESC则返回normal state的同时清除搜索高亮
-                                              (kbd "n") #'my/pdf-isearch-repeat-forward
-                                              (kbd "N") #'my/pdf-isearch-repeat-backward
-                                              (kbd "<escape>") #'my/pdf-view-force-normal-state)))
+      (evil-define-key 'normal pdf-view-mode-map
+        ;; 按n/N 向前/向后搜索，按ESC则返回normal state的同时清除搜索高亮
+        (kbd "n") #'my/pdf-isearch-repeat-forward
+        (kbd "N") #'my/pdf-isearch-repeat-backward
+        (kbd "<escape>") #'my/pdf-view-force-normal-state)))
 
   (add-hook 'pdf-view-mode-hook
             (lambda ()
               (set (make-local-variable 'evil-normal-state-cursor) (list nil))))
+
+  ;; Save pdf information in save-place
+  (use-package saveplace-pdf-view
+    :after pdf-tools)
 
   (general-define-key
    :keymaps 'pdf-view-mode-map
