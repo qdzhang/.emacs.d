@@ -4647,11 +4647,10 @@ Version 2016-08-09"
 
 (use-package gif-screencast
   :defer t
+  :bind (("<f7>" . gif-screencast)
+         ("<f8>" . gif-screencast-toggle-pause)
+         ("<f9>" . gif-screencast-stop))
   :config
-  (global-set-key (kbd "<f7>") #'gif-screencast)
-  (global-set-key (kbd "<f8>") #'gif-screencast-toggle-pause)
-  (global-set-key (kbd "<f9>") #'gif-screencast-stop)
-
   (setq gif-screencast-output-directory (expand-file-name "~/Pictures/Screencasts")))
 
 (use-package popper
