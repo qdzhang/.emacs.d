@@ -3099,6 +3099,11 @@ FACE defaults to inheriting from default and highlight."
   (markdown-mode . my-markdown-mode-hook)
   (markdown-mode . embrace-markdown-mode-hook)
   :config
+;;;###autoload
+  (defun my/markdown-mode-time-stamp ()
+    "Insert time stamp in markdown mode"
+    (interactive)
+    (insert (format-time-string "%Y-%m-%d")))
 
 ;;;###autoload
   (defun embrace-markdown-mode-hook ()
@@ -3109,6 +3114,7 @@ FACE defaults to inheriting from default and highlight."
     (visual-line-mode 1)
     (setq word-wrap-by-category t))
 
+;;;###autoload
   (defun my/preview-markdown ()
     "Preview github flavored markdown"
     (interactive)
@@ -3889,7 +3895,10 @@ inserted between the braces between the braces."
   (defun my/godoc-package ()
     "Display godoc for given package (with completion)."
     (interactive)
-    (godoc (ivy-read "Package: " (go-packages) :require-match t))))
+    (godoc (ivy-read "Package: " (go-packages) :require-match t)))
+
+  (use-package go-playground
+    :after go-mode))
 
 (setq-default eglot-workspace-configuration
               '((:gopls .
