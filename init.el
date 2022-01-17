@@ -4693,6 +4693,8 @@ Version 2016-08-09"
   ;; (setq popper-group-function #'popper-group-by-directory)
   (setq popper-window-height '20))
 
+(use-package pkgbuild-mode
+  :ensure nil)
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
