@@ -3304,10 +3304,11 @@ FACE defaults to inheriting from default and highlight."
                                   ("\\.mpg\\'"  "mpv")
                                   ("\\.mpeg\\'" "mpv")
                                   ("\\.webm\\'" "mpv")
-                                  ("\\.jpg\\'" "qview")
-                                  ("\\.png\\'" "qview")
-                                  ("\\.gif\\'" "qview")
-                                  ("\\.jpeg\\'" "qview")
+                                  ("\\.webp\\'" "vwebp")
+                                  ("\\.jpg\\'" "mpv --config-dir=$HOME/.config/mvi")
+                                  ("\\.png\\'" "mpv --config-dir=$HOME/.config/mvi")
+                                  ("\\.gif\\'" "mpv --config-dir=$HOME/.config/mvi")
+                                  ("\\.jpeg\\'" "mpv --config-dir=$HOME/.config/mvi")
                                   ("\\.epub\\'" "llpp")
                                   ("\\.azw3\\'" "ebook-viewer")))
   (dired-recursive-copies 'always)
@@ -4678,6 +4679,7 @@ Version 2016-08-09"
         '("\\*Messages\\*"
           "Output\\*$"
           ("\\*Async Shell Command\\*" . hide)
+          "\\*Flycheck errors\\*"
           help-mode
           compilation-mode))
   (setq popper-reference-buffers
