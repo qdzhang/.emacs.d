@@ -3869,7 +3869,8 @@ Reference: https://philjackson.github.io//emacs/search/rg/2021/06/25/search-spec
   (my/leader-keys
     :keymaps 'go-mode-map
     "hg" 'my/godoc-package
-    "hd" 'godoc)
+    "hd" 'godoc
+    "bp" 'gofmt)
   ;; Use smartparens post-handler to replace this function
   ;; (general-def go-mode-map
   ;;   "{" 'my/go-electric-brace)
@@ -4309,6 +4310,28 @@ Version 2016-08-09"
     :args shfmt-arguments
     :lighter " ShFmt"
     :group 'shfmt)
+
+  ;; Config go fmt
+  (defgroup gofmt nil
+    "Reformat Golang files using gofmt."
+    :group 'languages)
+
+  (defcustom gofmt-command "go fmt"
+    "Command used for reformatting."
+    :type 'string)
+
+  (defcustom gofmt-arguments ()
+    "Arguments passed to gofmt."
+    :type '(list string))
+
+;;;###autoload (autoload 'gofmt-buffer "gofmt" nil t)
+;;;###autoload (autoload 'gofmt-region "gofmt" nil t)
+;;;###autoload (autoload 'gofmt-on-save-mode "gofmt" nil t)
+  (reformatter-define gofmt
+    :program gofmt-command
+    :args gofmt-arguments
+    :lighter " Gofmt"
+    :group 'gofmt)
 
   ;; Config clang-format
   (defgroup clang-format nil
