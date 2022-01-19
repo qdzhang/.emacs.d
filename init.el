@@ -4316,7 +4316,7 @@ Version 2016-08-09"
     "Reformat Golang files using gofmt."
     :group 'languages)
 
-  (defcustom gofmt-command "go fmt"
+  (defcustom gofmt-command "gofmt"
     "Command used for reformatting."
     :type 'string)
 
