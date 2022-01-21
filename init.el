@@ -4721,5 +4721,12 @@ Version 2016-08-09"
 (use-package pkgbuild-mode
   :ensure nil)
 
+(use-package geiser-guile)
+(use-package macrostep-geiser
+  :after geiser-mode
+  :config
+  (add-hook 'geiser-mode-hook #'macrostep-geiser-setup)
+  (add-hook 'geiser-repl-mode-hook #'macrostep-geiser-setup))
+
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
