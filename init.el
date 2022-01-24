@@ -4670,7 +4670,7 @@ Version 2016-08-09"
    :keymaps 'pdf-view-mode-map
    :states 'normal
    "y" 'pdf-view-kill-ring-save
-   "i" 'pdf-misc-display-metadata
+   "I" 'pdf-misc-display-metadata
    "o" 'pdf-outline
    "al" 'pdf-annot-list-annotations
    "ad" 'pdf-annot-delete
@@ -4681,6 +4681,16 @@ Version 2016-08-09"
    "l" 'image-forward-hscroll
    "j" 'pdf-view-next-line-or-next-page
    "k" 'pdf-view-previous-line-or-previous-page))
+
+(use-package org-noter
+  :config
+  (setq org-noter-always-create-frame nil
+        org-noter-notes-search-path '("~/org/pdf-annotation"))
+
+  (general-define-key
+   :keymaps 'pdf-view-mode-map
+   :states 'normal
+   "i" 'org-noter))
 
 (use-package gif-screencast
   :defer t
