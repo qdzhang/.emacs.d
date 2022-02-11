@@ -103,6 +103,9 @@ Ignores `ARGS'."
     (add-to-list 'load-path dir)
     (normal-top-level-add-subdirs-to-load-path)))
 (add-subdirs-to-load-path (expand-file-name "~/.emacs.d/site-lisp/"))
+(add-subdirs-to-load-path (expand-file-name "~/.emacs.d/config/"))
+
+(require 'init-proxy)
 
 ;; Use-package settings
 ;; ==============================
