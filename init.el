@@ -3142,9 +3142,9 @@ FACE defaults to inheriting from default and highlight."
   ([remap describe-key] . helpful-key))
 
 (use-package eglot
-  :hook
-  (c-mode . eglot-ensure)
-  (c++-mode . eglot-ensure)
+  ;; :hook
+  ;; (c-mode . eglot-ensure)
+  ;; (c++-mode . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs '((c++-mode c-mode) "ccls")))
 
@@ -4740,6 +4740,10 @@ Version 2016-08-09"
   :config
   (add-hook 'geiser-mode-hook #'macrostep-geiser-setup)
   (add-hook 'geiser-repl-mode-hook #'macrostep-geiser-setup))
+
+(use-package org-modern
+  :config
+  (add-hook 'org-mode-hook #'org-modern-mode))
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
