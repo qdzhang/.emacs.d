@@ -4439,8 +4439,8 @@ Version 2016-08-09"
   :ensure nil
   :defer t
   :hook
-  (c-mode . semantic-mode)
-  (c++-mode . semantic-mode)
+  (c-mode . my/c-semantic-hooks)
+  (c++-mode . my/c-semantic-hooks)
   :general
   (my/leader-keys
     :keymaps '(emacs-lisp-mode-map lisp-mode-map)
@@ -4451,7 +4451,28 @@ Version 2016-08-09"
     :config
     (require 'srefactor-lisp))
 
-  (add-hook 'srefactor-ui-menu-mode-hook 'evil-emacs-state))
+  (add-hook 'srefactor-ui-menu-mode-hook 'evil-emacs-state)
+
+  (global-semanticdb-minor-mode 1)
+  (global-semantic-idle-scheduler-mode 1)
+  (semantic-add-system-include "/usr/include/gtk-3.0/" 'c-mode)
+
+  (global-set-key (kbd "<f5>") (lambda ()
+                                 (interactive)
+                                 (setq-local compilation-read-command nil)
+                                 (call-interactively 'compile)))
+
+  (defun my/c-semantic-hooks ()
+    (semantic-mode 1)
+    ;; Use `company-clang' to auto complate
+    (setq company-backends (delete 'company-semantic company-backends))
+    (local-set-key "\C-c\C-j" 'semantic-ia-fast-jump)
+    (local-set-key "\C-c\C-s" 'semantic-ia-show-summary)))
+
+(use-package company-c-headers
+  :config
+  (add-to-list 'company-backends 'company-c-headers))
+
 
 (use-package pcre2el)
 
