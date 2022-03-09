@@ -3405,6 +3405,9 @@ Version 2018-12-23"
                         (set-window-configuration wnd))))
         (error "no more than 2 files should be marked")))))
 
+(use-package arview
+  :ensure nil)
+
 (use-package dired-subtree
   :after dired
   :custom
