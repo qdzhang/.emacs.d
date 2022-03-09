@@ -3124,6 +3124,11 @@ FACE defaults to inheriting from default and highlight."
     (when (executable-find "markdown-preview")
       (tat/execute-async (concat "markdown-preview " (buffer-file-name)) "markdown-preview"))))
 
+(use-package separedit
+  :config
+  (define-key prog-mode-map (kbd "C-c e") #'separedit)
+  (setq separedit-default-mode 'markdown-mode))
+
 (use-package expand-region
   :bind
   (("C-=" . er/expand-region)
