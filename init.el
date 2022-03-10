@@ -3186,9 +3186,9 @@ FACE defaults to inheriting from default and highlight."
   (defun eval-grab-output (string)
     (let ((res nil))
       (sly-eval-async `(slynk:eval-and-grab-output ,string)
-                      (lambda (result)
-                        (cl-destructuring-bind (output value) result
-                          (setf res (car (read-from-string value))))))
+        (lambda (result)
+          (cl-destructuring-bind (output value) result
+            (setf res (car (read-from-string value))))))
       (while (null res)
         (sleep-for 0.1))
       res))
@@ -3648,10 +3648,10 @@ CALLBACK is the function that we need to call when we are done, on all the error
     (bound-and-true-p eglot--managed-mode))
 
   (flycheck-define-generic-checker 'eglot
-    "Report `eglot' diagnostics using `flycheck'."
-    :start #'+lsp--flycheck-eglot-init
-    :predicate #'+lsp--flycheck-eglot-available-p
-    :modes '(prog-mode text-mode))
+                                   "Report `eglot' diagnostics using `flycheck'."
+                                   :start #'+lsp--flycheck-eglot-init
+                                   :predicate #'+lsp--flycheck-eglot-available-p
+                                   :modes '(prog-mode text-mode))
 
   (push 'eglot flycheck-checkers)
 
