@@ -3292,6 +3292,7 @@ FACE defaults to inheriting from default and highlight."
     "de" '(my/ediff-files :wk "ediff-files")
     "di" 'image-dired
     "dp" '(tda/zip :wk "async-zip")
+    "d RET" 'dired-start-process
     "du" '(tda/unzip :wk "async-unzip")
     "ds" 'xah-dired-sort
     "dw" '(wdired-change-to-wdired-mode :wk "wdired")
@@ -3331,6 +3332,35 @@ FACE defaults to inheriting from default and highlight."
   ;; Avoid popup `Async Shell Command' window when using `dired-do-async-shell-command'
   ;; https://emacs.stackexchange.com/questions/5553/async-shell-process-buffer-always-clobbers-window-arrangement
   (add-to-list 'display-buffer-alist (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))
+
+  (use-package dired-aux
+    :ensure nil
+    :config
+    (add-to-list 'dired-compress-file-suffixes
+                 '("\\.rar\\'" ".rar" "unrar x")))
+
+  (defvar dired-filelist-cmd
+    '(("mpv")
+      ("llpp")))
+
+  ;; Create a new procedure to start a process in dired without popup windows.
+  ;; The process will persist when Emacs is closed.
+  ;; https://emacs.stackexchange.com/a/5558
+  (defun dired-start-process (cmd &optional file-list)
+    (interactive
+     (let ((files (dired-get-marked-files t current-prefix-arg)))
+       (list
+        (dired-read-shell-command "& on %s: " current-prefix-arg files)
+        files)))
+    (start-process
+     cmd nil shell-file-name
+     shell-command-switch
+     (format "nohup 1>/dev/null 2>/dev/null %s \"%s\""
+             (if (> (length file-list) 1)
+                 (format "%s %s" cmd
+                         (cadr (assoc cmd dired-filelist-cmd)))
+               cmd)
+             (mapconcat #'expand-file-name file-list "\" \""))))
 
   ;; Dired async
   ;; https://vxlabs.com/2018/03/30/asynchronous-rsync-with-emacs-dired-and-tramp/
