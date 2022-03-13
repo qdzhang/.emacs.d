@@ -4804,5 +4804,19 @@ Version 2016-08-09"
   :config
   (add-hook 'org-mode-hook #'org-modern-mode))
 
+(use-package shelldon
+  :config
+  (add-hook 'shelldon-mode-hook 'ansi-color-for-comint-mode-on)
+  (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
+  (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+
+  ;; Use `display-buffer-alist' to put shelldon output buffer at buttom of window
+  ;; (setf (alist-get "*\\(shelldon.*\\)" display-buffer-alist)
+  ;;       `((display-buffer-reuse-window display-buffer-in-previous-window display-buffer-in-side-window)
+  ;;         (side . bottom)
+  ;;         (slot . 0)
+  ;;         (reusable-frames . visible)))
+  )
+
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
