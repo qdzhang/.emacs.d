@@ -1136,7 +1136,7 @@ Start `ielm' in a split window if it's not already running."
     :states '(normal visual)
     :keymaps 'override
     :prefix ","
-    :global-prefix "SPC m")
+    :global-prefix "C-,")
 
   (my/leader-keys
     "SPC" '(counsel-M-x :which-key "execute command")
@@ -4817,6 +4817,20 @@ Version 2016-08-09"
   ;;         (slot . 0)
   ;;         (reusable-frames . visible)))
   )
+
+(use-package bongo
+  :general
+  (my/local-leader-keys
+    "b" '(:ignore t :wk "bongo")
+    "bb" 'bongo-list-buffers
+    "bd" 'bongo-dired-library-mode
+    "bk" 'bongo-kill
+    "bl" 'bongo-dired-play-line
+    "be" 'bongo-dired-append-enqueue-lines
+    "bi" 'bongo-dired-insert-enqueue-lines
+    "bp" 'bongo-playlist
+    "b RET" 'bongo-dired-dwim
+    "b SPC" 'bongo-pause/resume))
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
