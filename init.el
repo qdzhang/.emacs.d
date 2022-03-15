@@ -4829,6 +4829,7 @@ Version 2016-08-09"
     "be" 'bongo-dired-append-enqueue-lines
     "bi" 'bongo-dired-insert-enqueue-lines
     "bp" 'bongo-playlist
+    "bq" 'bongo-quit
     "b RET" 'bongo-dired-dwim
     "b SPC" 'bongo-pause/resume))
 
