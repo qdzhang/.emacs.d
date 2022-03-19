@@ -521,6 +521,17 @@ mouse-1: Display minor modes menu"
             (rbenv--modeline-with-face (rbenv--active-ruby-version)))))
 
 
+;; The mode line segment shows current python executable
+;; hover text is the full path
+(defun simple-modeline-venv-python-version ()
+  "Show current python executable, hover text is the full path"
+  '(:eval (if (eq major-mode 'python-mode)
+              (if pyvenv-virtual-env
+                  (propertize (concat " [" pyvenv-virtual-env-name "]")
+                              'help-echo (format "%s" pyvenv-virtual-env-path-directories))
+                (propertize " [system]"
+                            'help-echo (executable-find python-shell-interpreter))))))
+
 (defun simple-modeline-segment-vc ()
   "Displays color-coded version control information in the mode-line."
   '(vc-mode vc-mode))
@@ -679,6 +690,8 @@ Source: https://git.io/vQKzv"
      simple-modeline-segment-misc-info
      simple-modeline-segment-process
      simple-modeline-segment-vc
+     simple-modeline-rbenv-ruby-version
+     simple-modeline-venv-python-version
      simple-modeline-segment-major-mode
      simple-modeline-flycheck-status))
   "Simple modeline segments."
@@ -3157,7 +3170,8 @@ FACE defaults to inheriting from default and highlight."
   ;; (c-mode . eglot-ensure)
   ;; (c++-mode . eglot-ensure)
   :config
-  (add-to-list 'eglot-server-programs '((c++-mode c-mode) "ccls")))
+  (add-to-list 'eglot-server-programs '((c++-mode c-mode) "ccls"))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio"))))
 
 (use-package sly
   :defer t
@@ -4901,6 +4915,184 @@ Version 2016-08-09"
     (apply old-func args))
   (advice-add #'ruby-test-run-command :around #'amk-ruby-test-pretty-error-diffs-setup))
 
+(use-package anaconda-mode
+  :defer t
+  ;; :hook
+  ;; (python-mode . anaconda-mode)
+  :config
+  (set-lookup-handlers! 'anaconda-mode
+    :definition #'anaconda-mode-find-definitions
+    :references #'anaconda-mode-find-references))
+
+(use-package company-anaconda
+  :after anaconda-mode
+  :config
+  (add-to-list 'company-backends 'company-anaconda))
+
+(use-package cython-mode
+  :defer t
+  :general
+  (my/leader-keys 'cython-mode
+    "hh" 'anaconda-mode-show-doc
+    "gu" 'anaconda-mode-find-references))
+
+(defvar my/project-after-switch-project-hook nil
+  "Hoook for `project-switch-project'. Hook functions are called after switching project")
+
+(defun my/project-after-switch-project ()
+  "Switch project in projec.el"
+  (project-switch-project)
+  (run-hooks 'my/project-after-switch-project-hook))
+
+(defvar python-auto-set-local-pyvenv-virtualenv 'on-visit
+  "Automatically set pyvenv virtualenv from \"venv\".
+Possible values are `on-visit', `on-project-switch' or `nil'.")
+
+(defvar spacemacs--python-pyvenv-modes nil
+  "List of major modes where to add pyvenv support.")
+
+(defun spacemacs//pyvenv-mode-set-local-virtualenv ()
+  "Set pyvenv virtualenv from \"venv\" by looking in parent directories.
+Handle \"venv\" being a virtualenv directory or a file specifying either
+absolute or relative virtualenv path. Relative path is checked relative to
+location of \"venv\" file, then relative to pyvenv-workon-home()."
+  (interactive)
+  (let ((root-path (locate-dominating-file default-directory "venv")))
+    (when root-path
+      (let ((file-path (expand-file-name "venv" root-path)))
+        (cond ((file-directory-p file-path)
+               (pyvenv-activate file-path) (setq-local pyvenv-activate file-path))
+              (t (let* ((virtualenv-path-in-file
+                         (with-temp-buffer
+                           (insert-file-contents-literally file-path)
+                           (buffer-substring-no-properties (line-beginning-position)
+                                                           (line-end-position))))
+                        (virtualenv-abs-path
+                         (if (file-name-absolute-p virtualenv-path-in-file)
+                             virtualenv-path-in-file
+                           (format "%s/%s" root-path virtualenv-path-in-file))))
+                   (cond ((file-directory-p virtualenv-abs-path)
+                          (pyvenv-activate virtualenv-abs-path)
+                          (setq-local pyvenv-activate virtualenv-abs-path))
+                         (t (pyvenv-workon virtualenv-path-in-file)
+                            (setq-local pyvenv-workon virtualenv-path-in-file))))))))))
+
+(defun spacemacs/pyenv-executable-find (command)
+  "Find executable taking pyenv shims into account.
+If the executable is a system executable and not in the same path
+as the pyenv version then also return nil. This works around https://github.com/pyenv/pyenv-which-ext
+"
+  (if (executable-find "pyenv")
+      (progn
+        (let ((pyenv-string (shell-command-to-string (concat "pyenv which " command)))
+              (pyenv-version-names (split-string (string-trim (shell-command-to-string "pyenv version-name")) ":"))
+              (executable nil)
+              (i 0))
+          (if (not (string-match "not found" pyenv-string))
+              (while (and (not executable)
+                          (< i (length pyenv-version-names)))
+                (if (string-match (elt pyenv-version-names i) (string-trim pyenv-string))
+                    (setq executable (string-trim pyenv-string)))
+                (if (string-match (elt pyenv-version-names i) "system")
+                    (setq executable (string-trim (executable-find command))))
+                (setq i (1+ i))))
+          executable))
+    (executable-find command)))
+
+(defun spacemacs//python-setup-shell (&rest args)
+  (if (spacemacs/pyenv-executable-find "ipython")
+      (progn
+        (setq python-shell-interpreter "ipython")
+        (let ((version (replace-regexp-in-string "\\(\\.dev\\)?[\r\n|\n]$" ""
+                                                 (shell-command-to-string
+                                                  (format "\"%s\" --version"
+                                                          (string-trim (spacemacs/pyenv-executable-find "ipython")))))))
+          (if (or (version< version "5")
+                  (string-blank-p version))
+              (setq python-shell-interpreter-args "-i")
+            (setq python-shell-interpreter-args "--simple-prompt -i"))))
+    (progn
+      (setq python-shell-interpreter-args "-i"
+            python-shell-interpreter "python"))))
+
+
+(defun spacemacs//python-setup-checkers (&rest args)
+  (when (fboundp 'flycheck-set-checker-executable)
+    (let ((pylint (spacemacs/pyenv-executable-find "pylint"))
+          (flake8 (spacemacs/pyenv-executable-find "flake8")))
+      (when pylint
+        (flycheck-set-checker-executable "python-pylint" pylint))
+      (when flake8
+        (flycheck-set-checker-executable "python-flake8" flake8)))))
+
+(defun spacemacs/python-setup-everything (&rest args)
+  (apply 'spacemacs//python-setup-shell args)
+  (apply 'spacemacs//python-setup-checkers args))
+
+(use-package pyvenv
+  :init
+  (progn
+    (add-hook 'python-mode-hook #'pyvenv-tracking-mode)
+    (add-to-list 'spacemacs--python-pyvenv-modes 'python-mode)
+    (pcase python-auto-set-local-pyvenv-virtualenv
+      ('on-visit
+       (dolist (m spacemacs--python-pyvenv-modes)
+         (add-hook (intern (format "%s-hook" m))
+                   'spacemacs//pyvenv-mode-set-local-virtualenv)))
+      ('on-project-switch
+       (add-hook 'my/project-after-switch-project-hook
+                 'spacemacs//pyvenv-mode-set-local-virtualenv)))
+    ;; setup shell correctly on environment switch
+    (dolist (func '(pyvenv-activate pyvenv-deactivate pyvenv-workon))
+      (advice-add func :after 'spacemacs/python-setup-everything))))
+
+
+(use-package python-mode
+  :ensure nil
+  :mode "\\.py\\'"
+  :hook
+  (python-mode . pyvenv-tracking-mode)
+  :custom
+  (python-indent-offset 4))
+
+(use-package py-isort
+  :defer t
+  :preface
+  ;; from https://www.snip2code.com/Snippet/127022/Emacs-auto-remove-unused-import-statemen
+  (defun spacemacs/python-remove-unused-imports ()
+    "Use Autoflake to remove unused function"
+    "autoflake --remove-all-unused-imports -i unused_imports.py"
+    (interactive)
+    (if (executable-find "autoflake")
+        (progn
+          (shell-command (format "autoflake --remove-all-unused-imports -i %s"
+                                 (shell-quote-argument (buffer-file-name))))
+          (revert-buffer t t t))
+      (message "Error: Cannot find autoflake executable.")))
+
+  (defun spacemacs//python-sort-imports ()
+    ;; py-isort-before-save checks the major mode as well, however we can prevent
+    ;; it from loading the package unnecessarily by doing our own check
+    (when (derived-mode-p 'python-mode)
+      (py-isort-before-save)
+      (spacemacs/python-remove-unused-imports))))
+
+(use-package python-black
+  :demand t
+  :after python
+  :general
+  (my/leader-keys
+    :keymaps 'python-mode-map
+    "bp" '(my/python-reformat :wk "python-format-buffer"))
+  :config
+  (defun my/python-reformat ()
+    "Reformat pyton code using:
+     - `black' : format code
+     - `isort' : sort imports
+     - `autoflake' : remove unused imports"
+    (interactive)
+    (python-black)
+    (spacemacs//python-sort-imports)))
 
 
 ;;; Restore file-name-hander-alist
