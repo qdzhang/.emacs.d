@@ -3169,6 +3169,10 @@ FACE defaults to inheriting from default and highlight."
   ;; :hook
   ;; (c-mode . eglot-ensure)
   ;; (c++-mode . eglot-ensure)
+  :general
+  (my/local-leader-keys
+    "oe" 'eglot
+    "oE" 'eglot-shutdown)
   :config
   (add-to-list 'eglot-server-programs '((c++-mode c-mode) "ccls"))
   (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio"))))
