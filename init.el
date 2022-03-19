@@ -3606,6 +3606,14 @@ Version 2018-12-23"
   :general
   (my/leader-keys
     "of" 'flycheck-mode)
+  (my/local-leader-keys
+    "f" '(:ignore t :which-key "flycheck")
+    "fl" '(spacemacs/goto-flycheck-error-list :wk "flycheck-error-list")
+    "fn" 'flycheck-next-error
+    "fp" 'flycheck-previous-error
+    "ff" '(spacemacs/toggle-flycheck-error-list :wk "togglg-flycheck-error-list")
+    "fv" 'flycheck-verify-checker
+    "fs" 'flycheck-select-checker)
   :init
   (setq flycheck-global-modes '(not text-mode outline-mode fundamental-mode lisp-interaction-mode
                                     org-mode diff-mode shell-mode eshell-mode term-mode vterm-mode
