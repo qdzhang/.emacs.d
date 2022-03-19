@@ -515,6 +515,12 @@ mouse-1: Display minor modes menu"
                                 ((eq tag evil-operator-state-tag) 'simple-modeline-evil-operator-state)))
               " "))))
 
+(defun simple-modeline-rbenv-ruby-version ()
+  "Display rbenv ruby version in the mode-line"
+  '(:eval (when (eq major-mode 'ruby-mode)
+            (rbenv--modeline-with-face (rbenv--active-ruby-version)))))
+
+
 (defun simple-modeline-segment-vc ()
   "Displays color-coded version control information in the mode-line."
   '(vc-mode vc-mode))
@@ -4840,6 +4846,62 @@ Version 2016-08-09"
     "bq" 'bongo-quit
     "b RET" 'bongo-dired-dwim
     "b SPC" 'bongo-pause/resume))
+
+(use-package ruby-mode
+  :ensure nil
+  :defer t
+  :mode (("Appraisals\\'" . ruby-mode)
+         ("\\(Rake\\|Thor\\|Guard\\|Gem\\|Cap\\|Vagrant\\|Berks\\|Pod\\|Puppet\\)file\\'" . ruby-mode)
+         ("\\.\\(rb\\|rabl\\|ru\\|builder\\|rake\\|thor\\|gemspec\\|jbuilder\\|pryrc\\)\\'" . ruby-mode))
+  :custom
+  (ruby-insert-encoding-magic-comment nil "Not needed in Ruby 2")
+  :config
+  (use-package rbenv
+    :defer t
+    :init
+    (setq rbenv-installation-dir "/usr/")
+    (defun spacemacs//enable-rbenv ()
+      "Enable rbenv, use .ruby-version if exists."
+      (require 'rbenv)
+      (let ((version-file-path (rbenv--locate-file ".ruby-version")))
+        (global-rbenv-mode)
+        ;; try to use the ruby defined in .ruby-version
+        (if version-file-path
+            (progn
+              (rbenv-use (rbenv--read-version-from-file
+                          version-file-path))
+              (message (concat "[rbenv] Using ruby version "
+                               "from .ruby-version file.")))
+          (message "[rbenv] Using the currently activated ruby."))))
+    (setq rbenv-show-active-ruby-in-modeline nil)
+    :hook
+    (ruby-mode . spacemacs//enable-rbenv)))
+
+(use-package inf-ruby)
+
+;; (use-package robe
+;;   :hook
+;;   (ruby-mode . robo-mode))
+
+(use-package ruby-test-mode
+  :after ruby-mode
+  :diminish ruby-test-mode
+  :config
+  (defun amk-ruby-test-pretty-error-diffs (old-func &rest args)
+    "Make error diffs prettier."
+    (let ((exit-status (cadr args)))
+      (apply old-func args)
+      (when (> exit-status 0)
+        (diff-mode)
+        ;; Remove self
+        (advice-remove #'compilation-handle-exit #'amk-ruby-test-pretty-error-diffs))))
+  (defun amk-ruby-test-pretty-error-diffs-setup (old-func &rest args)
+    "Set up advice to enable pretty diffs when tests fail."
+    (advice-add #'compilation-handle-exit :around #'amk-ruby-test-pretty-error-diffs)
+    (apply old-func args))
+  (advice-add #'ruby-test-run-command :around #'amk-ruby-test-pretty-error-diffs-setup))
+
+
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
