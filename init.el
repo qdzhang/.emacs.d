@@ -5063,7 +5063,7 @@ as the pyenv version then also return nil. This works around https://github.com/
   :defer t
   :preface
   ;; from https://www.snip2code.com/Snippet/127022/Emacs-auto-remove-unused-import-statemen
-  (defun spacemacs/python-remove-unused-imports ()
+  (defun spacemacs//python-remove-unused-imports ()
     "Use Autoflake to remove unused function"
     "autoflake --remove-all-unused-imports -i unused_imports.py"
     (interactive)
@@ -5077,9 +5077,9 @@ as the pyenv version then also return nil. This works around https://github.com/
   (defun spacemacs//python-sort-imports ()
     ;; py-isort-before-save checks the major mode as well, however we can prevent
     ;; it from loading the package unnecessarily by doing our own check
+    (interactive)
     (when (derived-mode-p 'python-mode)
-      (py-isort-before-save)
-      (spacemacs/python-remove-unused-imports))))
+      (py-isort-before-save))))
 
 (use-package python-black
   :demand t
@@ -5087,16 +5087,7 @@ as the pyenv version then also return nil. This works around https://github.com/
   :general
   (my/leader-keys
     :keymaps 'python-mode-map
-    "bp" '(my/python-reformat :wk "python-format-buffer"))
-  :config
-  (defun my/python-reformat ()
-    "Reformat pyton code using:
-     - `black' : format code
-     - `isort' : sort imports
-     - `autoflake' : remove unused imports"
-    (interactive)
-    (python-black)
-    (spacemacs//python-sort-imports)))
+    "bp" 'python-black))
 
 
 ;;; Restore file-name-hander-alist
