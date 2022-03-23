@@ -3636,7 +3636,7 @@ Version 2018-12-23"
     "fn" 'flycheck-next-error
     "fp" 'flycheck-previous-error
     "ff" '(spacemacs/toggle-flycheck-error-list :wk "togglg-flycheck-error-list")
-    "fv" 'flycheck-verify-checker
+    "fv" 'flycheck-verify-setup
     "fs" 'flycheck-select-checker)
   :init
   (setq flycheck-global-modes '(not text-mode outline-mode fundamental-mode lisp-interaction-mode
