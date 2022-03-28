@@ -2685,11 +2685,9 @@ become defined after invocation."
   (sp-local-pair 'sh-mode "(" nil :actions nil)
 
   ;; Add comments quote in c-mode
-  (sp-with-modes '(c-mode c++-mode objc-mode java-mode)
-    (sp-local-pair "/*" "*/" :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
-    ;; Doxygen blocks
-    (sp-local-pair "/**" "*/" :post-handlers '(("||\n[i]" "RET") ("||\n[i]" "SPC")))
-    (sp-local-pair "/*!" "*/" :post-handlers '(("||\n[i]" "RET") ("[d-1]< | " "SPC"))))
+  (sp-local-pair '(c-mode c++-mode objc-mode java-mode)
+                 "/*!" "*/"
+                 :post-handlers '(("||\n[i]" "RET") ("[d-1]< | " "SPC")))
 
   ;; Enable smartparens-strict-mode in the minibuffer, during eval-expression
   ;; https://emacsredux.com/blog/2013/04/18/evaluate-emacs-lisp-in-the-minibuffer/
@@ -5089,6 +5087,22 @@ as the pyenv version then also return nil. This works around https://github.com/
     :keymaps 'python-mode-map
     "bp" 'python-black))
 
+(use-package gendoxy
+  :ensure nil
+  :general
+  (my/leader-keys
+    "at" 'gendoxy-tag
+    "ah" 'gendoxy-header))
+
+(use-package highlight-doxygen
+  :ensure nil
+  :hook
+  (c-mode . highlight-doxygen-mode)
+  (c++-mode . highlight-doxygen-mode))
+
+(use-package meson-mode
+  :config
+  (add-hook 'meson-mode-hook 'company-mode))
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
