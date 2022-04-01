@@ -41,7 +41,8 @@ created."
        (push (lambda () ,@body) spacemacs--after-display-system-init-list))))
 
 (spacemacs|do-after-display-system-init
- (set-face-attribute 'default nil :font (font-spec :family "Sarasa Mono SC" :size 24))
+ ;; (set-face-attribute 'default nil :font (font-spec :family "Sarasa Mono SC" :size 24))
+ (set-face-attribute 'default nil :font (font-spec :family "M+ 1mn" :size 22))
  (set-face-attribute 'variable-pitch nil :family "IBM Plex Serif")
  (set-face-attribute 'fixed-pitch nil :family "Sarasa Mono SC")
  (set-fontset-font t 'han "Sarasa Mono SC")
@@ -4829,10 +4830,6 @@ Version 2016-08-09"
   :config
   (add-hook 'geiser-mode-hook #'macrostep-geiser-setup)
   (add-hook 'geiser-repl-mode-hook #'macrostep-geiser-setup))
-
-(use-package org-modern
-  :config
-  (add-hook 'org-mode-hook #'org-modern-mode))
 
 (use-package shelldon
   :config
