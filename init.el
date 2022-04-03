@@ -42,7 +42,7 @@ created."
 
 (spacemacs|do-after-display-system-init
  ;; (set-face-attribute 'default nil :font (font-spec :family "Sarasa Mono SC" :size 24))
- (set-face-attribute 'default nil :font (font-spec :family "M+ 1mn" :size 23))
+ (set-face-attribute 'default nil :font (font-spec :family "M+ 1mn" :size 22))
  (set-face-attribute 'variable-pitch nil :family "IBM Plex Serif")
  (set-face-attribute 'fixed-pitch nil :family "Sarasa Mono SC")
  (set-fontset-font t 'han "Sarasa Mono SC")
@@ -5103,6 +5103,14 @@ as the pyenv version then also return nil. This works around https://github.com/
 (use-package meson-mode
   :config
   (add-hook 'meson-mode-hook 'company-mode))
+
+(use-package gdb-mi
+  :ensure nil
+  :general
+  (my/local-leader-keys
+    "og" 'gdb)
+  :init
+  (setq gdb-many-windows t))
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
