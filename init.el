@@ -1261,7 +1261,15 @@ Start `ielm' in a split window if it's not already running."
     "t" '(:ignore t :which-key "toggle")
     "tl" 'display-line-numbers-mode
     "ts" 'sly
-    "ti" '(imenu-list-smart-toggle :wk "imenu-list"))
+    "ti" '(imenu-list-smart-toggle :wk "imenu-list")
+
+    ;; Inspired by https://emacs-china.org/t/topic/20504
+    "x" '(:ignore t :which-key "execute")
+    "x0" 'delete-window
+    "x1" 'delete-other-windows
+    "-" 'split-window-horizontally
+    "/" 'split-window-vertically
+    )
 
   (defun my/open-vterm-in-new-tab ()
     "Open vterm in new tab"
@@ -4172,6 +4180,13 @@ Version 2016-08-09"
   :if(> emacs-major-version 26)
   :bind
   ([remap project-switch-project] . my/switch-project-in-new-tab)
+  :general
+  (general-define-key
+   :keymaps 'override
+   :states '(normal visual)
+   "g[" #'tab-bar-switch-to-prev-tab
+   "g]" #'tab-bar-switch-to-next-tab
+   "M-g t" #'tab-bar-switch-to-tab)
   :config
   (setq-default tab-bar-border 5
                 tab-bar-close-button nil
