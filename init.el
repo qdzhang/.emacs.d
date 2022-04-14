@@ -3185,7 +3185,8 @@ FACE defaults to inheriting from default and highlight."
     "oE" 'eglot-shutdown)
   :config
   (add-to-list 'eglot-server-programs '((c++-mode c-mode) "ccls"))
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio"))))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs '(d-mode . ("/usr/bin/serve-d"))))
 
 (use-package sly
   :defer t
@@ -5169,6 +5170,8 @@ as the pyenv version then also return nil. This works around https://github.com/
     "og" 'gdb)
   :init
   (setq gdb-many-windows t))
+
+(use-package d-mode)
 
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
