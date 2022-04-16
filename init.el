@@ -1267,9 +1267,9 @@ Start `ielm' in a split window if it's not already running."
     "x" '(:ignore t :which-key "execute")
     "x0" 'delete-window
     "x1" 'delete-other-windows
+    "xx" 'kill-buffer-and-window
     "-" 'split-window-horizontally
-    "/" 'split-window-vertically
-    )
+    "/" 'split-window-vertically)
 
   (defun my/open-vterm-in-new-tab ()
     "Open vterm in new tab"
