@@ -672,14 +672,13 @@ Source: https://git.io/vQKzv"
 
 
 (defcustom simple-modeline-segments
-  '((simple-modeline-segment-evil-indicator
-     simple-modeline-segment-modified
+  '((simple-modeline-segment-modified
      simple-modeline-segment-pretty-buffer-and-path
      simple-modeline-segment-percent-location
      ;; simple-modeline-segment-nyan
      simple-modeline-pdf-pages
      simple-modeline-segment-position
-     simple-modeline-evil-substitute
+     ;; simple-modeline-evil-substitute
      simple-modeline-iedit)
     (simple-modeline-client-status
      simple-modeline-rime-indicator
@@ -1136,689 +1135,10 @@ Start `ielm' in a split window if it's not already running."
   :diminish which-key-mode
   :config
   (which-key-mode)
+  ;;  (which-key-setup-side-window-right)
+  (which-key-setup-side-window-right-bottom)
   (setq which-key-idle-delay 1))
 
-;; Evil and keybinding settings
-;;=============================
-
-(use-package general
-  :demand t
-  :config
-  (general-evil-setup)
-
-  (general-create-definer my/leader-keys
-    :states '(normal insert visual emacs)
-    :keymaps 'override
-    :prefix "SPC"
-    :global-prefix "C-SPC")
-
-  (general-create-definer my/local-leader-keys
-    :states '(normal visual)
-    :keymaps 'override
-    :prefix ","
-    :global-prefix "C-,")
-
-  (my/leader-keys
-    "SPC" '(counsel-M-x :which-key "execute command")
-    "TAB" 'evil-indent-line
-    ";" '(my/sp-comment-with-two-semicolon :wk "sp-comment")
-
-    "b" '(:ignore t :which-key "buffer")
-    "br"  'revert-buffer
-    "bR" '(my/rename-file-and-buffer :wk "rename-file")
-    "bs" '((lambda () (interactive)
-             (pop-to-buffer "*scratch*"))
-           :wk "scratch")
-    "bd" 'kill-current-buffer
-    "bb" 'ivy-switch-buffer
-    "bi" 'counsel-ibuffer
-    "bk" 'kill-current-buffer
-    "bl" '(my/switch-to-previous-buffer :wk "last buffer")
-
-    "a" '(:ignore t :which-key "append")
-    "a;" '(my/semicolon-at-end-of-line :which-key "semicolon(end)")
-    "ac" 'capitalize-word
-    "ad" 'downcase-word
-    "ag" '(my/sp-comment-with-three-semicolon :wk "sp-comment-3-semicolon")
-    "ai" 'auto-insert
-    "au" 'upcase-word
-
-    "e" '(:ignore t :which-key "eval")
-    "eb" 'eval-buffer
-    "ed" 'sly-eval-defun
-    "ee" 'eval-last-sexp
-    "ef" 'package-refresh-contents
-    "el" 'sly-eval-last-expression
-    "ep" 'sly-eval-print-last-expression
-    "er" 'sly-eval-region
-
-    "f" '(:ignore t :which-key "file")
-    "fd" '(dired :wk "directory")
-    "fD" '((lambda () (interactive) (delete-file (buffer-file-name))) :wk "delete")
-    "ff" 'counsel-find-file
-    "fs" 'save-buffer
-    "fr" '(my/counsel-recentf :wk "counsel-recentf")
-    "fn" '(my/org-journal-next-day-file :wk "next file")
-    "fp" '(my/org-journal-previous-day-file :wk "previous file")
-
-    ;; TODO: This can use nested keystroke to invoke more commands in groups
-    ;; Learn the `map!' macro of doom emacs
-    "g" '(:ignore t :which-key "git")
-    "gg" 'magit-status
-    "gf" 'magit-file-dispatch
-    "gs" 'counsel-git-grep
-    "gL" 'counsel-git-log
-
-    "h" '(:ignore t :which-key "describe")
-    "hb" 'describe-bindings
-    "he" 'view-echo-area-messages
-    "hf" '(counsel-describe-function :wk "describe-function")
-    "hF" 'describe-face
-    "hi" 'info
-    "hl" 'view-lossage
-    "hL" 'find-library
-    "hm" 'describe-mode
-    "hk" 'describe-key
-    "hK" '(my/describe-keymap :wk "describe-keymap")
-    "hs" 'use-package-report
-    "hp" 'describe-package
-    "hv" '(counsel-describe-variable :wk "describe-variable")
-
-    "m" '(:ignore t :which-key "bookmark")
-    "mb" '(counsel-bookmark :wk "bookmarks")
-    "md" '(counsel-bookmarked-directory :wk "bookmarks(dir)")
-    "mm" 'bookmark-set
-    "me" '(counsel-evil-marks :wk "evil-marks")
-    "mr" '(counsel-mark-ring :wk "mark-ring")
-
-    "o" '(:ignore t :which-key "open")
-    "ob" '(my/browse-current-file :wk "open-in-browser")
-    "od" '(dired-jump :wk "dired")
-    "oe" 'eshell
-    "og" '(google-search :wk "google")
-    "oi" '(my/open-ielm-in-split-window :wk "ielm")
-    "om" 'man
-    ;; "ot" '(my/open-vterm-in-split-window :wk "split-term")
-    ;; "oT" '(my/open-vterm-in-new-tab :wk "vterm")
-    ;; "oT" '(my/ansi-term-bash :wk "term")
-
-    "s" '(:ignore t :which-key "search")
-    "sB" 'swiper-all
-    "sf" '((lambda ()
-             (interactive)
-             (let ((home-dir (expand-file-name "~/")))
-               (if (equal home-dir (expand-file-name default-directory))
-                   (progn (message "Current directory is HOME directory. Choose a directory first!")
-                          (sit-for 0.5)
-                          (counsel-find-file))
-                 (counsel-fzf)))) :wk "counsel-fzf")
-    "sg" 'counsel-grep-or-swiper
-    "sm" '(counsel-semantic-or-imenu :wk "semantic/imenu")
-    "sr" 'counsel-rg
-    "st" '(counsel-load-theme :wk "themes")
-    "sy" 'ivy-yasnippet
-
-    "t" '(:ignore t :which-key "toggle")
-    "tl" 'display-line-numbers-mode
-    "ts" 'sly
-    "ti" '(imenu-list-smart-toggle :wk "imenu-list")
-
-    ;; Inspired by https://emacs-china.org/t/topic/20504
-    "x" '(:ignore t :which-key "execute")
-    "x0" 'delete-window
-    "x1" 'delete-other-windows
-    "xx" 'kill-buffer-and-window
-    "-" 'split-window-horizontally
-    "/" 'split-window-vertically)
-
-  (defun my/open-vterm-in-new-tab ()
-    "Open vterm in new tab"
-    (interactive)
-    (tab-bar-new-tab)
-    (multi-vterm))
-
-  ;; https://stackoverflow.com/a/36994486
-  (defun my/describe-keymap (keymap)
-    "Describe a keymap using `substitute-command-keys'."
-    (interactive
-     (list (completing-read
-            "Keymap: " (let (maps)
-                         (mapatoms (lambda (sym)
-                                     (and (boundp sym)
-                                          (keymapp (symbol-value sym))
-                                          (push sym maps))))
-                         maps)
-            nil t)))
-    (with-output-to-temp-buffer (format "*keymap: %s*" keymap)
-      (princ (format "%s\n\n" keymap))
-      (princ (substitute-command-keys (format "\\{%s}" keymap)))
-      (with-current-buffer standard-output ;; temp buffer
-        (setq help-xref-stack-item (list #'my/describe-keymap keymap)))))
-
-  ;; Comment sexps and keep parentheses balanced
-  ;; Keybinding is SPC+;
-  ;; https://github.com/Fuco1/smartparens/issues/942
-  ;; There is another method to comment and keep balanced:
-  ;; Use C+= to expand selecting sexp, then use M+;(comment-dwim) to comment this sexp
-  (defun my/sp-comment-with-two-semicolon ()
-    "Indent sexp with all parentheses balanced, and use two semicolon to express comment"
-    (interactive)
-    (my/smarter-move-beginning-of-line 1)
-    (sp-comment)
-    (insert "; "))
-
-  (defun my/sp-comment-with-three-semicolon ()
-    "Indent sexp with all parentheses balanced, and use three semicolon to express comment"
-    (interactive)
-    (my/smarter-move-beginning-of-line 1)
-    (sp-comment)
-    (insert ";; "))
-
-  ;; Smart beginning of the line
-  ;; https://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
-
-  (defun my/smarter-move-beginning-of-line (arg)
-    "Move point back to indentation of beginning of line.
-
-Move point to the first non-whitespace character on this line.
-If point is already there, move to the beginning of the line.
-Effectively toggle between the first non-whitespace character and
-the beginning of the line.
-
-If ARG is not nil or 1, move forward ARG - 1 lines first.  If
-point reaches the beginning or end of the buffer, stop there."
-    (interactive "^p")
-    (setq arg (or arg 1))
-
-    ;; Move lines first
-    (when (/= arg 1)
-      (let ((line-move-visual nil))
-        (forward-line (1- arg))))
-
-    (let ((orig-point (point)))
-      (back-to-indentation)
-      (when (= orig-point (point))
-        (move-beginning-of-line 1))))
-
-  ;; Move to next/previous file
-  ;; Adapted from https://github.com/howardabrams/dot-files/blob/master/emacs-fixes.org#next-and-previous-file
-  (defun my/org-extract-filename-date-day-mon (string)
-    "Use parse-time-string to parse org-journal file name.
-parse-time-string return (SEC MIN HOUR DAY MON YEAR DOW DST TZ)
-DAY is 3rd of the list, and MON is 4th of the list.
-This function return a list contains two element:
-first is filename DAY, second is filename MONTH"
-    (let ((filename-date (parse-time-string string)))
-      (list (nth 3 filename-date)
-            (nth 4 filename-date))))
-
-  (defun my/org-journal-file-number-change (f)
-    "Receive a function and apply this function to org-journal file name
-Such as 1+ to increment the org file according to the date number"
-    (let* ((file-directory (file-name-directory (buffer-file-name)))
-           (filename-day (nth 0 (my/org-extract-filename-date-day-mon (buffer-name))))
-           (retain-parts-index (string-match (concat "-" (number-to-string filename-day)) (buffer-name)))
-           (retain-parts (substring (buffer-name) 0 retain-parts-index))
-           (new-day (number-to-string
-                     (funcall f filename-day))))
-      (concat file-directory
-              retain-parts
-              "-"
-              new-day
-              ".org")))
-
-  (defun my/org-journal-next-day-file ()
-    "Move to next journal file"
-    (interactive)
-    (find-file (my/org-journal-file-number-change '1+)))
-
-  (defun my/org-journal-previous-day-file ()
-    "Move to previous journal file"
-    (interactive)
-    (find-file (my/org-journal-file-number-change '1-)))
-
-
-  ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
-  (defun my/rename-file-and-buffer (new-name)
-    "Renames both current buffer and file it's visiting to NEW-NAME."
-    (interactive "sNew name: ")
-    (let ((name (buffer-name))
-          (filename (buffer-file-name)))
-      (if (not filename)
-          (message "Buffer '%s' is not visiting a file!" name)
-        (if (get-buffer new-name)
-            (message "A buffer named '%s' already exists!" new-name)
-          (progn
-            (rename-file name new-name 1)
-            (rename-buffer new-name)
-            (set-visited-file-name new-name)
-            (set-buffer-modified-p nil))))))
-
-;;;###autoload
-  (defun my/counsel-recentf ()
-    "Find a file on `recentf-list'."
-    (interactive)
-    (require 'recentf)
-    (recentf-mode)
-    (ivy-read "Recentf: " (mapcar 'abbreviate-file-name (counsel-recentf-candidates))
-              :action (lambda (f)
-                        (with-ivy-window
-                          (find-file f)))
-              :require-match t
-              :caller 'counsel-recentf))
-
-  (defun my/semicolon-at-end-of-line ()
-    (interactive)
-    (save-excursion
-      (end-of-line)
-      (insert ";")))
-
-  ;; Same function to `evil-switch-to-windows-last-buffer'
-  ;; If you dont't using evil, use this function
-  ;; https://emacsredux.com/blog/2013/04/28/switch-to-previous-buffer/
-  (defun my/switch-to-previous-buffer ()
-    "Switch to previously open buffer.
-Repeated invocations toggle between the two most recently open buffers."
-    (interactive)
-    (switch-to-buffer (other-buffer (current-buffer) 1)))
-
-
-  ;; Browse current HTML file
-  ;; https://github.com/purcell/emacs.d/blob/master/lisp/init-utils.el#L78
-
-  (defun my/browse-current-file ()
-    "Open the current file as a URL using `browse-url'."
-    (interactive)
-    (let ((file-name (buffer-file-name)))
-      (if (and (fboundp 'tramp-tramp-file-p)
-               (tramp-tramp-file-p file-name))
-          (error "Cannot open tramp file")
-        (setq browse-url-browser-function 'browse-url-firefox)
-        (browse-url (concat "file://" file-name)))))
-
-  ;; Search google for the keywords from minibuffer
-  ;; https://www.lucacambiaghi.com/vanilla-emacs/readme.html#h:01E26AB9-2829-4076-9665-E218832FB1A3
-  (defun google-search-str (str)
-    (browse-url
-     (concat "https://www.google.com/search?q=" str)))
-  (defun google-search ()
-    "Google search region, if active, or ask for search string."
-    (interactive)
-    (if (region-active-p)
-        (google-search-str
-         (buffer-substring-no-properties (region-beginning)
-                                         (region-end)))
-      (google-search-str (read-from-minibuffer "Google Search: "))))
-
-  ;; https://emacsredux.com/blog/2013/04/21/edit-files-as-root/
-  (defun my/sudo-edit (&optional arg)
-    "Edit currently visited file as root.
-
-With a prefix ARG prompt for a file to visit.
-Will also prompt for a file to visit if current
-buffer is not visiting a file."
-    (interactive "P")
-    (if (or arg (not buffer-file-name))
-        (find-file (concat "/sudo:root@localhost:"
-                           (ido-read-file-name "Find file(as root): ")))
-      (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name)))))
-
-(use-package evil
-  :ensure t
-  :init
-  (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
-  (setq evil-want-keybinding nil)
-  (setq evil-undo-system 'undo-fu)
-  (setq evil-respect-visual-line-mode t)
-  (setq isearch-lazy-count t)
-  (setq evil-move-beyond-eol t)
-  (setq evil-highlight-closing-paren-at-point-states nil)
-  :config
-  ;; Move evil-mode-line-tag to beginning of modeline
-  ;; If mode-line-format is not configured explicitly, following line can move
-  ;; evil-mode-line-tag to beginning of mode-line
-  ;; (setq evil-mode-line-format '(before . mode-line-front-space))
-
-  ;; https://www.reddit.com/r/emacs/comments/70rjc9/which_modeline_package_integrates_well_with_evil/
-  ;; (setq evil-normal-state-tag   (propertize " NORMAL " 'face '((:foreground "dark khaki")))
-  ;;    evil-emacs-state-tag    (propertize " EMACS " 'face '((:foreground "turquoise")))
-  ;;    evil-insert-state-tag   (propertize " INSERT " 'face '((:foreground "dark sea green")))
-  ;;    evil-replace-state-tag  (propertize " REPLACE " 'face '((:foreground "dark orange")))
-  ;;    evil-motion-state-tag   (propertize " MOTION " 'face '((:foreground "khaki")))
-  ;;    evil-visual-state-tag   (propertize " VISUAL " 'face '((:foreground "light salmon")))
-  ;;    evil-operator-state-tag (propertize " OPERATE " 'face '((:foreground "sandy brown"))))
-
-  (setq evil-normal-state-tag   (propertize " N  " 'face 'bold)
-        evil-emacs-state-tag    (propertize " E  " 'face 'bold)
-        evil-insert-state-tag   (propertize " I  " 'face 'bold)
-        evil-replace-state-tag  (propertize " R  " 'face 'bold)
-        evil-motion-state-tag   (propertize " M  " 'face 'bold)
-        evil-visual-state-tag   (propertize " V  " 'face 'bold)
-        evil-operator-state-tag (propertize " O  " 'face 'bold))
-  (evil-mode 1)
-
-  (general-define-key
-   :keymaps 'evil-insert-state-map
-   "C-]" 'up-list)
-
-  ;; Add XML attributes text object
-  (require 'exato)
-
-  ;;==================================================
-  ;; Evil text objects
-  ;; https://github.com/karthink/.emacs.d/blob/master/lisp/setup=evil.el
-  ;;==================================================
-
-  (evil-define-text-object +evil:whole-buffer-txtobj (count &optional _beg _end type)
-    "Text object to select the whole buffer."
-    (evil-range (point-min) (point-max) type))
-
-  (evil-define-text-object +evil:defun-txtobj (count &optional _beg _end type)
-    "Text object to select the top-level Lisp form or function definition at
-point."
-    (cl-destructuring-bind (beg . end)
-        (bounds-of-thing-at-point 'defun)
-      (evil-range beg end type)))
-
-  (general-def
-    :keymaps 'evil-inner-text-objects-map
-    "f" #'+evil:defun-txtobj
-    "g" #'+evil:whole-buffer-txtobj
-    :keymaps 'evil-outer-text-objects-map
-    "f" #'+evil:defun-txtobj
-    "g" #'+evil:whole-buffer-txtobj)
-
-  ;; Define some functions in `evil-window-map'
-  (general-define-key
-   :keymaps 'evil-window-map
-   "e" 'doom/window-enlargen
-   "g" 'my/window-split-toggle
-   "m" 'my/toggle-maximize-window)
-
-  (defun doom/window-enlargen (&optional arg)
-    "Enlargen the current window to focus on this one. Does not close other
-windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
-    (interactive "P")
-    (let ((param 'doom--enlargen-last-wconf))
-      (cl-destructuring-bind (window . wconf)
-          (or (frame-parameter nil param)
-              (cons nil nil))
-        (set-frame-parameter
-         nil param
-         (if (and (equal window (selected-window))
-                  (not arg)
-                  wconf)
-             (ignore
-              (let ((source-window (selected-window)))
-                (set-window-configuration wconf)
-                (when (window-live-p source-window)
-                  (select-window source-window))))
-           (prog1 (cons (selected-window) (or wconf (current-window-configuration)))
-             (let* ((window (selected-window))
-                    (dedicated-p (window-dedicated-p window))
-                    (preserved-p (window-parameter window 'window-preserved-size))
-                    (ignore-window-parameters t)
-                    (window-resize-pixelwise nil)
-                    (frame-resize-pixelwise nil))
-               (unwind-protect
-                   (progn
-                     (when dedicated-p
-                       (set-window-dedicated-p window nil))
-                     (when preserved-p
-                       (set-window-parameter window 'window-preserved-size nil))
-                     (maximize-window window))
-                 (set-window-dedicated-p window dedicated-p)
-                 (when preserved-p
-                   (set-window-parameter window 'window-preserved-size preserved-p))
-                 (add-hook 'doom-switch-window-hook #'doom--enlargened-forget-last-wconf-h)))))))))
-
-  (defun my/toggle-maximize-window ()
-    "Maximize current window"
-    (interactive)
-    (if (and (= 1 (length (window-list)))
-             (assoc ?_ register-alist))
-        (jump-to-register ?_)
-      (progn
-        (window-configuration-to-register ?_)
-        (delete-other-windows))))
-
-  ;; Change Emacs windows from vertical split to horizontal split
-  ;; https://emacs.stackexchange.com/questions/5371/how-to-change-emacs-windows-from-vertical-split-to-horizontal-split
-  (defun my/window-split-toggle ()
-    "Toggle between horizontal and vertical split with two windows."
-    (interactive)
-    (if (> (length (window-list)) 2)
-        (error "Can't toggle with more than 2 windows!")
-      (let ((func (if (window-full-height-p)
-                      #'split-window-vertically
-                    #'split-window-horizontally)))
-        (delete-other-windows)
-        (funcall func)
-        (save-selected-window
-          (other-window 1)
-          (switch-to-buffer (other-buffer))))))
-
-
-  ;; Config `evil-shift-width' depending on `evil-indent-variable-alist'
-  ;; https://github.com/tshu-w/.emacs.d/blob/05c1d6240a4ab76dccc316ff5bab40729fb39476/lisp/core-keybinds.el#L258
-  (progn
-    ;; Thanks to `editorconfig-emacs' for many of these
-    (defvar evil-indent-variable-alist
-      ;; Note that derived modes must come before their sources
-      '(((awk-mode c-mode c++-mode java-mode
-                   idl-mode java-mode objc-mode pike-mode) . c-basic-offset)
-        (groovy-mode . groovy-indent-offset)
-        (python-mode . python-indent-offset)
-        (cmake-mode . cmake-tab-width)
-        (coffee-mode . coffee-tab-width)
-        (cperl-mode . cperl-indent-level)
-        (css-mode . css-indent-offset)
-        (elixir-mode . elixir-smie-indent-basic)
-        ((emacs-lisp-mode lisp-mode) . lisp-indent-offset)
-        (enh-ruby-mode . enh-ruby-indent-level)
-        (erlang-mode . erlang-indent-level)
-        (js2-mode . js2-basic-offset)
-        (js3-mode . js3-indent-level)
-        ((js-mode json-mode) . js-indent-level)
-        (latex-mode . (LaTeX-indent-level tex-indent-basic))
-        (livescript-mode . livescript-tab-width)
-        (mustache-mode . mustache-basic-offset)
-        (nxml-mode . nxml-child-indent)
-        (perl-mode . perl-indent-level)
-        (puppet-mode . puppet-indent-level)
-        (ruby-mode . ruby-indent-level)
-        (rust-mode . rust-indent-offset)
-        (scala-mode . scala-indent:step)
-        (sgml-mode . sgml-basic-offset)
-        (sh-mode . sh-basic-offset)
-        (typescript-mode . typescript-indent-level)
-        (web-mode . web-mode-markup-indent-offset)
-        (yaml-mode . yaml-indent-offset))
-      "An alist where each key is either a symbol corresponding
-  to a major mode, a list of such symbols, or the symbol t,
-  acting as default. The values are either integers, symbols
-  or lists of these.")
-
-    (defun set-evil-shift-width ()
-      "Set the value of `evil-shift-width' based on the indentation settings of the
-  current major mode."
-      (let ((shift-width
-             (catch 'break
-               (dolist (test evil-indent-variable-alist)
-                 (let ((mode (car test))
-                       (val (cdr test)))
-                   (when (or (and (symbolp mode) (derived-mode-p mode))
-                             (and (listp mode) (apply 'derived-mode-p mode))
-                             (eq 't mode))
-                     (when (not (listp val))
-                       (setq val (list val)))
-                     (dolist (v val)
-                       (cond
-                        ((integerp v) (throw 'break v))
-                        ((and (symbolp v) (boundp v))
-                         (throw 'break (symbol-value v))))))))
-               (throw 'break (default-value 'evil-shift-width)))))
-        (when (and (integerp shift-width)
-                   (< 0 shift-width))
-          (setq-local evil-shift-width shift-width))))
-
-    ;; after major mode has changed, reset evil-shift-width
-    (add-hook 'after-change-major-mode-hook #'set-evil-shift-width 'append))
-
-  ;; This will keep eldoc active when you are in a method and you go in insert mode.
-  (with-eval-after-load 'eldoc
-    (eldoc-add-command #'evil-insert)
-    (eldoc-add-command #'evil-insert-line)
-    (eldoc-add-command #'evil-append)
-    (eldoc-add-command #'evil-append-line)
-    (eldoc-add-command #'evil-force-normal-state)
-    (eldoc-add-command #'evil-cp-insert)
-    (eldoc-add-command #'evil-cp-insert-at-end-of-form)
-    (eldoc-add-command #'evil-cp-insert-at-beginning-of-form)
-    (eldoc-add-command #'evil-cp-append)))
-
-(use-package evil-collection
-  :after evil
-  :ensure t
-  :diminish evil-collection-unimpaired-mode
-  :config
-  (evil-collection-init))
-
-(use-package evil-commentary
-  :after evil
-  :diminish
-  :config
-  (evil-commentary-mode))
-
-(use-package better-jumper
-  :after evil
-  :init
-  (global-set-key [remap evil-jump-forward]  #'better-jumper-jump-forward)
-  (global-set-key [remap evil-jump-backward] #'better-jumper-jump-backward)
-  (global-set-key [remap xref-pop-marker-stack] #'better-jumper-jump-backward)
-  :config
-  (better-jumper-mode 1)
-  (define-key evil-motion-state-map (kbd "C-o") 'better-jumper-jump-backward)
-  (define-key evil-motion-state-map (kbd "<C-i>") 'better-jumper-jump-forward)
-
-  (defun evil-better-jumper/set-jump-a (orig-fn &rest args)
-    "Set a jump point and ensure ORIG-FN doesn't set any new jump points."
-    (better-jumper-set-jump (if (markerp (car args)) (car args)))
-    (let ((evil--jumps-jumping t)
-          (better-jumper--jumping t))
-      (apply orig-fn args)))
-
-  ;; Creates a jump point before killing a buffer. This allows you to undo
-  ;; killing a buffer easily (only works with file buffers though; it's not
-  ;; possible to resurrect special buffers).
-  (advice-add #'kill-current-buffer :around #'evil-better-jumper/set-jump-a)
-
-  ;; Create a jump point before jumping with imenu.
-  (advice-add #'imenu :around #'evil-better-jumper/set-jump-a))
-
-(use-package evil-lion
-  :after evil
-  :config
-  (evil-lion-mode))
-
-(use-package evil-surround
-  :after evil
-  :config
-  (global-evil-surround-mode 1))
-
-(use-package embrace
-  :defer t)
-
-(use-package evil-embrace
-  :after (evil evil-surround)
-  :commands embrace-add-pair embrace-add-pair-regexp
-  :hook (LaTeX-mode . embrace-LaTeX-mode-hook)
-  :hook (LaTeX-mode . +evil-embrace-latex-mode-hook-h)
-  :hook (org-mode . embrace-org-mode-hook)
-  :hook (ruby-mode . embrace-ruby-mode-hook)
-  :hook (emacs-lisp-mode . embrace-emacs-lisp-mode-hook)
-  :hook ((lisp-mode emacs-lisp-mode clojure-mode racket-mode hy-mode)
-         . +evil-embrace-lisp-mode-hook-h)
-  :hook ((c++-mode rustic-mode csharp-mode java-mode swift-mode typescript-mode)
-         . +evil-embrace-angle-bracket-modes-hook-h)
-  :hook (scala-mode . +evil-embrace-scala-mode-hook-h)
-  :init
-  (evil-embrace-enable-evil-surround-integration)
-  :config
-  (setq evil-embrace-show-help-p nil)
-
-;;;###autoload
-  (defun +evil--embrace-get-pair (char)
-    (if-let* ((pair (cdr-safe (assoc (string-to-char char) evil-surround-pairs-alist))))
-        pair
-      (if-let* ((pair (assoc-default char embrace--pairs-list)))
-          (if-let* ((real-pair (and (functionp (embrace-pair-struct-read-function pair))
-                                    (funcall (embrace-pair-struct-read-function pair)))))
-              real-pair
-            (cons (embrace-pair-struct-left pair) (embrace-pair-struct-right pair)))
-        (cons char char))))
-
-;;;###autoload
-  (defun +evil--embrace-escaped ()
-    "Backslash-escaped surround character support for embrace."
-    (let ((char (read-char "\\")))
-      (if (eq char 27)
-          (cons "" "")
-        (let ((pair (+evil--embrace-get-pair (string char)))
-              (text (if (sp-point-in-string) "\\\\%s" "\\%s")))
-          (cons (format text (car pair))
-                (format text (cdr pair)))))))
-
-;;;###autoload
-  (defun +evil--embrace-latex ()
-    "LaTeX command support for embrace."
-    (cons (format "\\%s{" (read-string "\\")) "}"))
-
-;;;###autoload
-  (defun +evil--embrace-elisp-fn ()
-    "Elisp function support for embrace."
-    (cons (format "(%s " (or (read-string "(") "")) ")"))
-
-;;;###autoload
-  (defun +evil--embrace-angle-brackets ()
-    "Type/generic angle brackets."
-    (cons (format "%s<" (or (read-string "") ""))
-          ">"))
-
-  (defun +evil-embrace-scala-mode-hook-h ()
-    (embrace-add-pair ?$ "${" "}"))
-
-  (defun +evil-embrace-latex-mode-hook-h ()
-    (embrace-add-pair-regexp ?l "\\[a-z]+{" "}" #'+evil--embrace-latex))
-
-  (defun +evil-embrace-lisp-mode-hook-h ()
-    ;; Avoid `embrace-add-pair-regexp' because it would overwrite the default
-    ;; `f' rule, which we want for other modes
-    (push (cons ?f (make-embrace-pair-struct
-                    :key ?f
-                    :read-function #'+evil--embrace-elisp-fn
-                    :left-regexp "([^ ]+ "
-                    :right-regexp ")"))
-          embrace--pairs-list))
-
-  (defun +evil-embrace-angle-bracket-modes-hook-h ()
-    (let ((var (make-local-variable 'evil-embrace-evil-surround-keys)))
-      (set var (delq ?< evil-embrace-evil-surround-keys))
-      (set var (delq ?> evil-embrace-evil-surround-keys)))
-    (embrace-add-pair-regexp ?< "\\_<[a-z0-9-_]+<" ">" #'+evil--embrace-angle-brackets)
-    (embrace-add-pair ?> "<" ">"))
-
-  ;; Add escaped-sequence support to embrace
-  (setf (alist-get ?\\ (default-value 'embrace--pairs-list))
-        (make-embrace-pair-struct
-         :key ?\\
-         :read-function #'+evil--embrace-escaped
-         :left-regexp "\\[[{(]"
-         :right-regexp "\\[]})]")))
-
-
-;;==================
-;; Evil settings end
 
 (use-package ivy
   :diminish
@@ -1837,9 +1157,6 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
          :map ivy-reverse-i-search-map
          ("C-k" . ivy-previous-line)
          ("C-d" . ivy-reverse-i-search-kill))
-  :general
-  (my/leader-keys
-    "sj" '(+ivy/jump-list :wk "jump-list"))
   :config
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) ")
@@ -1910,14 +1227,6 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
           (undo)
         (user-error "Filter stack is empty"))))
 
-  (evil-define-key 'normal ivy-occur-mode-map
-    "/" 'ivy-occur/filter-lines
-    "C-/" 'ivy-occur/undo)
-
-  (evil-define-key 'normal ivy-occur-grep-mode-map
-    "/" 'ivy-occur/filter-lines
-    "C-/" 'ivy-occur/undo)
-
 
 ;;;###autoload
   (defun +ivy/jump-list ()
@@ -1972,8 +1281,8 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
             (setq +ivy--origin (point-marker))))))
 
 (use-package ace-window
-  :general
-  ("M-p" 'ace-window)
+  :bind
+  ("M-o" . 'ace-window)
   :custom
   (aw-keys '(?h ?j ?k ?l ?y ?u ?i ?o ?p))
   (aw-scope 'frame)
@@ -2038,11 +1347,6 @@ windows (unlike `doom/window-maximize-buffer'). Activate again to undo."
   (("C-x C-f" . counsel-find-file)
    :map counsel-find-file-map
    ("C-~" . my/counsel-goto-local-home))
-  :general
-  (my/leader-keys
-    "fR" '(my/counsel-recent-directory :wk "recent-dir")
-    "si" '(my/counsel-rg-in :wk "rg-in-dir")
-    "bj" '(my/counsel-all-opened-dired-buffer :wk "jump-dired"))
   :config
 
   (defconst my/rg-arguments
@@ -2193,10 +1497,8 @@ repository, then the corresponding root is used instead."
     (counsel-rg nil (read-directory-name "rg in: ") "")))
 
 (use-package swiper
-  :general
-  (my/leader-keys
-    ;; "sc" '(my/swiper-region-or-point :wk "swiper-current")
-    "ss" 'swiper-isearch)
+  :bind
+  (("\C-s" . swiper-isearch))
   :config
 
   ;;https://emacs.stackexchange.com/questions/28355/how-to-unmark-selection-in-elisp
@@ -2275,17 +1577,10 @@ repository, then the corresponding root is used instead."
         (save-excursion
           (insert (propertize sym 'face 'shadow)))))))
 
-(use-package amx
-  :defer t
-  :after ivy)
+(use-package amx)
 
 (use-package avy
   :init
-
-  ;;========================================
-  ;; Replace evil f/F/t/T motions with avy
-  ;; Adapted from https://github.com/louy2/evil-avy
-  ;;========================================
   (defun avy-forward-char-in-line (char &optional back)
     "Jump forward to the currently visible CHAR in the current line.
 If BACK is t, jump backward."
@@ -2302,79 +1597,14 @@ If BACK is t, jump backward."
                                (point)))
            (avy--regex-candidates (regexp-quote (string char))))
          (avy--style-fn avy-style)))))
-
-  (evil-define-motion evil-avy-find-char (count char)
-    "Use avy to move forward to char in line."
-    :jump t
-    :type inclusive
-    (interactive "<c><C>")
-    (if (null count) (avy-forward-char-in-line char)
-      (evil-find-char count char)))
-
-  (evil-define-motion evil-avy-find-char-to (count char)
-    "Use avy to move till char in line"
-    :jump t
-    :type inclusive
-    (interactive "<c><C>")
-    (if (null count)
-        (progn
-          (avy-forward-char-in-line char)
-          (backward-char))
-      (evil-find-char-to count char)))
-
-  (evil-define-motion evil-avy-find-char-backward (count char)
-    "Use avy to move backward to char in line."
-    :jump t
-    :type exclusive
-    (interactive "<c><C>")
-    (if (null count)
-        (avy-forward-char-in-line char t)
-      (evil-find-char-backward count char)))
-
-  (evil-define-motion evil-avy-find-char-to-backward (count char)
-    "Use avy to move backward till char in line."
-    :jump t
-    :type exclusive
-    (interactive "<c><C>")
-    (if (null count)
-        (progn
-          (avy-forward-char-in-line char t)
-          (forward-char))
-      (evil-find-char-to-backward count char)))
-
+  :bind
+  (("C-;" . avy-goto-char)
+   ("C-'" . avy-goto-char-2)
+   ("M-g l" . avy-goto-line)
+   ("M-g w" . avy-goto-word-1)
+   ("M-g e" . avy-goto-word-0)
+   )
   :config
-  ;; Replace motions
-
-  (evil-define-key 'normal 'global
-    "f" 'evil-avy-find-char
-    "F" 'evil-avy-find-char-backward
-    "t" 'evil-avy-find-char-to
-    "T" 'evil-avy-find-char-to-backward
-    "s" 'evil-avy-goto-char-2)
-
-  (evil-define-key 'operator 'global
-    "f" 'evil-avy-find-char
-    "F" 'evil-avy-find-char-backward
-    "t" 'evil-avy-find-char-to
-    "T" 'evil-avy-find-char-to-backward)
-
-  (evil-define-key 'visual 'global
-    "f" 'evil-avy-find-char
-    "F" 'evil-avy-find-char-backward
-    "t" 'evil-avy-find-char-to
-    "T" 'evil-avy-find-char-to-backward)
-
-  (evil-define-key 'motion 'global
-    "f" 'evil-avy-find-char
-    "F" 'evil-avy-find-char-backward
-    "t" 'evil-avy-find-char-to
-    "T" 'evil-avy-find-char-to-backward)
-
-  (evil-define-key 'normal 'global
-    (kbd "C-s") 'evil-avy-goto-char-timer)
-
-  (evil-define-key 'normal 'global
-    (kbd "M-g l") 'evil-avy-goto-line)
 
   ;;===========================
   ;; Config avy dispatch list
@@ -2469,15 +1699,6 @@ If BACK is t, jump backward."
   (("C-x g" . magit-status)
    (:map magit-status-mode-map
          ("M-RET" . magit-diff-visit-file-other-window)))
-  :general
-  (my/leader-keys
-    "gl" 'magit-log-buffer-file
-    "gc" '(my/git-clone-clipboard-url :wk "clone-clipboard")
-    "gd" '(my/magit-dotfiles-status :wk "dotfiles")
-    "ga" '(my/magit-add-current-file-to-dotfiles :wk "dotfiles add")
-
-    "ev" '(my/run-in-vterm :wk "run-in-vterm"))
-
   :config
   (setq magit-diff-refine-hunk 'all)
 
@@ -2612,15 +1833,13 @@ become defined after invocation."
     ;; open the revision
     (general-simulate-RET))
 
-  (general-define-key
-   :keymaps '(magit-log-mode-map)
-   :states 'normal
-   "C-<return>" #'my/magit-log-visit-changed-file))
+  )
 
 (use-package undo-fu
   :config
-  (define-key evil-normal-state-map "u" 'undo-fu-only-undo)
-  (define-key evil-normal-state-map "\C-r" 'undo-fu-only-redo))
+  (global-unset-key (kbd "C-z"))
+  (global-set-key (kbd "C-z")   'undo-fu-only-undo)
+  (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
 
 (use-package undo-fu-session
   :config
@@ -2664,9 +1883,6 @@ become defined after invocation."
                                current-input-method)
                           input-method-cursor-color
                         default-cursor-color)))
-
-  (add-hook 'post-command-hook 'change-cursor-color-on-input-method)
-
   :custom
   (default-input-method "rime"))
 
@@ -2729,14 +1945,6 @@ respectively."
                        (&optional arg)
                      (interactive "p")
                      (sp-wrap-with-pair ,val))))))
-
-(use-package evil-cleverparens
-  :diminish
-  :hook
-  (smartparens-strict-mode . evil-cleverparens-mode)
-  :bind
-  (:map  evil-cleverparens-mode-map
-         ("<normal-state> s" . nil)))
 
 (use-package paren
   :ensure nil
@@ -2817,19 +2025,6 @@ FACE defaults to inheriting from default and highlight."
   (org-mode . my-org-mode-hook)
   (org-mode . (lambda ()
                 (push '(?= . ("=" . "=")) evil-surround-pairs-alist)))
-  :general
-  (my/leader-keys
-    "n" '(:ignore t :which-key "notes")
-    "n TAB" 'org-indent-item-tree
-    "na" 'org-agenda
-    "nc" 'org-capture
-    "nd" '(my/toggle-side-bullet-org-buffer :wk "daily plan")
-    "nD" '(my/toggle-bullet-org-buffer :wk "daily(fullframe)")
-    "nl" 'org-store-link
-    "nn" 'org-add-note
-    "nf" '(my/org--indent-src-block :wk "format src block")
-    "np" 'org-toggle-inline-images
-    "nt" 'org-todo)
   :config
   ;; ensure TAB is bound to org-cycle in normal mode
   (with-eval-after-load 'evil
@@ -3101,9 +2296,6 @@ FACE defaults to inheriting from default and highlight."
 
 (use-package org-journal
   :defer t
-  :general
-  (my/leader-keys
-    "nj" #'org-journal-new-entry)
   :config
   (setq org-journal-dir "~/org/journal/"
         org-journal-date-prefix "#+TITLE: "
@@ -3164,9 +2356,7 @@ FACE defaults to inheriting from default and highlight."
    ("C-+" . er/contract-region)))
 
 (use-package helpful
-  :after evil
   :init
-  (setq evil-lookup-func #'helpful-at-point)
   (setq counsel-describe-function-function #'helpful-callable)
   (setq counsel-describe-variable-function #'helpful-variable)
   :bind
@@ -3179,10 +2369,6 @@ FACE defaults to inheriting from default and highlight."
   ;; :hook
   ;; (c-mode . eglot-ensure)
   ;; (c++-mode . eglot-ensure)
-  :general
-  (my/local-leader-keys
-    "oe" 'eglot
-    "oE" 'eglot-shutdown)
   :config
   (add-to-list 'eglot-server-programs '((c++-mode c-mode) "ccls"))
   (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio")))
@@ -3265,11 +2451,6 @@ FACE defaults to inheriting from default and highlight."
                                (my/vterm-directory-sync))
                              (call-interactively 'counsel-find-file))))
   :config
-  ;; Set evil initial state to `emacs' in vterm-mode
-  (evil-set-initial-state 'vterm-mode 'emacs)
-
-  ;; Make vterm render corrent evil state cursor shape
-  (advice-add #'vterm--redraw :after (lambda (&rest args) (evil-refresh-cursor evil-state)))
 
   (defun my/vterm-exit-kill-buffer-window (process event)
     "Kill buffer and window on shell process termination."
@@ -3280,25 +2461,6 @@ FACE defaults to inheriting from default and highlight."
             (kill-buffer)
             (unless (one-window-p)
               (delete-window)))))))
-
-  (evil-define-key 'emacs vterm-mode-map
-    (kbd "C-\\") 'toggle-input-method
-    (kbd "C-a") 'vterm-send-C-a
-    (kbd "C-b") 'vterm-send-C-b
-    (kbd "C-c") 'vterm-send-C-c
-    (kbd "C-d") 'vterm-send-C-d
-    (kbd "C-e") 'vterm-send-C-e
-    (kbd "C-f") 'vterm-send-C-f
-    (kbd "C-g") 'vterm-send-C-g
-    (kbd "C-k") 'vterm-send-C-k
-    (kbd "C-l") 'vterm-send-C-l
-    (kbd "C-n") 'vterm-send-C-n
-    (kbd "C-p") 'vterm-send-C-p
-    (kbd "C-r") 'vterm-send-C-r
-    (kbd "C-s") 'vterm-send-C-s
-    (kbd "C-t") 'vterm-send-C-t
-    (kbd "C-u") 'vterm-send-C-u
-    (kbd "C-S-v") 'vterm-yank)
 
   ;; Directory synchronization (linux-only)
   (with-system gnu/linux
@@ -3319,20 +2481,6 @@ FACE defaults to inheriting from default and highlight."
 
 (use-package dired
   :ensure nil
-  :general
-  (my/leader-keys
-    "d" '(:ignore t :which-key "dired")
-    "db" '(my/browse-marked-file :wk "open-in-browser")
-    "dc" '(tda/rsync :wk "async-rsync")
-    "de" '(my/ediff-files :wk "ediff-files")
-    "di" 'image-dired
-    "dp" '(tda/zip :wk "async-zip")
-    "d RET" 'dired-start-process
-    "du" '(tda/unzip :wk "async-unzip")
-    "ds" 'xah-dired-sort
-    "dw" '(wdired-change-to-wdired-mode :wk "wdired")
-    "dz" '(tda/get-files-size :wk "async-files-size")
-    "d /" '(my/dired-filter :wk "narrow"))
   :hook
   (dired-mode . dired-hide-details-mode)
   (dired-mode . auto-revert-mode)
@@ -3482,11 +2630,7 @@ Version 2018-12-23"
   :after dired
   :custom
   (dired-subtree-use-backgrounds nil)
-  :general
-  (dired-mode-map
-   :states 'normal
-   "<tab>" 'dired-subtree-toggle
-   "<C-tab>" 'dired-subtree-cycle))
+  )
 
 (use-package aggressive-indent
   :defer t
@@ -3527,9 +2671,6 @@ Version 2018-12-23"
 
 (use-package xref
   :ensure nil
-  :general
-  (:keymaps 'evil-normal-state-map
-            "gr" 'xref-find-references)
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
@@ -3588,10 +2729,6 @@ Version 2018-12-23"
 (use-package tide
   :hook
   (web-mode . my/setup-tide-mode)
-  :general
-  (general-nmap
-    :keymaps 'tide-mode-map
-    "<f2>" 'tide-rename-symbol)
   :config
   (setq tide-completion-ignore-case t
         tide-server-max-response-length (* 1024 1024))
@@ -3638,17 +2775,6 @@ Version 2018-12-23"
 
 (use-package flycheck
   :defer t
-  :general
-  (my/leader-keys
-    "of" 'flycheck-mode)
-  (my/local-leader-keys
-    "f" '(:ignore t :which-key "flycheck")
-    "fl" '(spacemacs/goto-flycheck-error-list :wk "flycheck-error-list")
-    "fn" 'flycheck-next-error
-    "fp" 'flycheck-previous-error
-    "ff" '(spacemacs/toggle-flycheck-error-list :wk "togglg-flycheck-error-list")
-    "fv" 'flycheck-verify-setup
-    "fs" 'flycheck-select-checker)
   :init
   (setq flycheck-global-modes '(not text-mode outline-mode fundamental-mode lisp-interaction-mode
                                     org-mode diff-mode shell-mode eshell-mode term-mode vterm-mode
@@ -3804,10 +2930,6 @@ If the error list is visible, hide it.  Otherwise, show it."
 (use-package prettier
   ;; :hook
   ;; ((web-mode css-mode my-json-mode) . prettier-mode)
-  :general
-  (my/leader-keys
-    :keymaps '(web-mode-map css-mode-map my-json-mode-map)
-    "bp" '(my/prettier-prettify-and-message :wk "prettier-buffer"))
   :config
   (defun my/prettier-prettify-and-message ()
     (interactive)
@@ -3817,19 +2939,6 @@ If the error list is visible, hide it.  Otherwise, show it."
 ;; DONE config built-in project or projectile
 (use-package project
   :ensure nil
-  :general
-  (my/leader-keys
-    "p" '(:ignore t :which-key "project")
-    "p!" 'project-shell-command
-    "p&" 'project-async-shell-command
-    "pb" 'project-switch-to-buffer
-    "pd" 'project-dired
-    "pf" 'project-find-file
-    "pg" 'project-find-regexp
-    "pk" 'project-kill-buffers
-    "pp" 'project-switch-project
-    "pr" '(my/counsel-rg-project :wk "project-rg")
-    "pt" '(my/counsel-rg-extra-glob-project :wk "project-filetype-rg"))
   :config
 
   ;; More example about add a new file to specify project root
@@ -3949,12 +3058,6 @@ Reference: https://philjackson.github.io//emacs/search/rg/2021/06/25/search-spec
   (go-mode . eglot-ensure)
   (before-save . gofmt-before-save)
   ;; (before-save . eglot-format-buffer)
-  :general
-  (my/leader-keys
-    :keymaps 'go-mode-map
-    "hg" 'my/godoc-package
-    "hd" 'godoc
-    "bp" 'gofmt)
   ;; Use smartparens post-handler to replace this function
   ;; (general-def go-mode-map
   ;;   "{" 'my/go-electric-brace)
@@ -4075,9 +3178,6 @@ Version 2016-08-09"
 (use-package ediff
   :ensure nil
   :defer t
-  :general
-  (my/leader-keys
-    "ol" 'ediff)
   :config
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
   (setq ediff-split-window-function (if (> (frame-width) 150)
@@ -4101,9 +3201,6 @@ Version 2016-08-09"
 (use-package darkroom
   :ensure nil
   :defer t
-  :general
-  (my/leader-keys
-    "td" '(my/toggle-darkroom-tentative-mode :wk "darkroom"))
   :config
   (defun my/toggle-darkroom-tentative-mode ()
     (interactive)
@@ -4119,9 +3216,7 @@ Version 2016-08-09"
 
 (use-package quickrun
   :defer t
-  :general
-  (my/leader-keys
-    "or" 'quickrun))
+  )
 
 ;; Package `hl-todo'
 (require 'hl-todo)
@@ -4181,13 +3276,6 @@ Version 2016-08-09"
   :if(> emacs-major-version 26)
   :bind
   ([remap project-switch-project] . my/switch-project-in-new-tab)
-  :general
-  (general-define-key
-   :keymaps 'override
-   :states '(normal visual)
-   "g[" #'tab-bar-switch-to-prev-tab
-   "g]" #'tab-bar-switch-to-next-tab
-   "M-g t" #'tab-bar-switch-to-tab)
   :config
   (setq-default tab-bar-border 5
                 tab-bar-close-button nil
@@ -4263,9 +3351,6 @@ Version 2016-08-09"
   (:map global-map ("C-;" . nil)))
 
 (use-package flyspell
-  :general
-  (my/leader-keys
-    "os" 'flyspell-mode)
   :config
   (setq ispell-program-name (executable-find "hunspell")
         ispell-dictionary "en_US"))
@@ -4277,24 +3362,24 @@ Version 2016-08-09"
 (use-package flyspell-correct-ivy
   :after flyspell-correct)
 
-(use-package evil-iedit-state
-  :after iedit
-  :config
-  (setq evil-iedit-state-tag (propertize " [E]  ")
-        evil-iedit-insert-state-tag (propertize " [Ei]  ")))
+;; (use-package evil-iedit-state
+;;   :after iedit
+;;   :config
+;;   (setq evil-iedit-state-tag (propertize " [E]  ")
+;;         evil-iedit-insert-state-tag (propertize " [Ei]  ")))
 
 (use-package git-gutter
   :init
   (which-key-add-key-based-replacements "C-c g" "git-gutter")
-  :general
-  ("C-c g l" '(my/ivy-goto-git-gutter :wk "git-gutter-list"))
-  ("C-c g j" 'git-gutter:next-hunk)
-  ("C-c g k" 'git-gutter:previous-hunk)
-  ("C-c g r" 'git-gutter:revert-hunk)
-  ("C-c g s" 'git-gutter:stage-hunk)
-  ("C-c g p" 'git-gutter:popup-hunk)
-  ("C-c g v" 'git-gutter:statistic)
-  ("C-c g m" 'git-gutter:mark-hunk)
+  :bind
+  ;;("C-c g l" . '(my/ivy-goto-git-gutter ))
+  ("C-c g j" . git-gutter:next-hunk)
+  ("C-c g k" . git-gutter:previous-hunk)
+  ("C-c g r" . git-gutter:revert-hunk)
+  ("C-c g s" . git-gutter:stage-hunk)
+  ("C-c g p" . git-gutter:popup-hunk)
+  ("C-c g v" . git-gutter:statistic)
+  ("C-c g m" . git-gutter:mark-hunk)
   :config
   (global-git-gutter-mode 1)
 
@@ -4337,13 +3422,11 @@ Version 2016-08-09"
                             ;; we handle both data structure
                             (unless (numberp e) (setq e (cdr e)))
                             (goto-line e)))
-      (message "NO git-gutters!"))))
+      (message "NO git-gutters!")))
 
-(use-package git-overlay
-  :ensure nil
-  :general
-  (my/leader-keys
-    "tg" 'git-overlay))
+  (use-package git-overlay
+    :ensure nil
+    ))
 
 (use-package too-long-lines-mode
   :ensure nil
@@ -4414,13 +3497,6 @@ Version 2016-08-09"
 
 (use-package reformatter
   :defer t
-  :general
-  (my/leader-keys
-    :keymaps '(c-mode-map c++-mode-map)
-    "bp" 'clang-format)
-  (my/leader-keys
-    :keymaps 'sh-mode-map
-    "bp" 'shfmt)
   :config
 
   ;; Config shfmt
@@ -4572,10 +3648,6 @@ Version 2016-08-09"
   :hook
   (c-mode . my/c-semantic-hooks)
   (c++-mode . my/c-semantic-hooks)
-  :general
-  (my/leader-keys
-    :keymaps '(emacs-lisp-mode-map lisp-mode-map)
-    "bp" '(srefactor-lisp-format-buffer :wk "lisp-format"))
   :config
   (advice-add 'semantic-idle-scheduler-function :around #'ignore)
   (use-package srefactor
@@ -4610,13 +3682,6 @@ Version 2016-08-09"
 (use-package doom-lookup
   :ensure nil
   :config
-  (general-define-key
-   :keymaps 'override
-   :states '(normal visual)
-   "gd" #'+lookup/definition
-   "gr" #'+lookup/references
-   "gf" #'+lookup/file)
-
   (set-lookup-handlers! 'emacs-lisp-mode
     :definition #'elisp-def)
   (set-lookup-handlers! 'ggtags-mode
@@ -4634,9 +3699,6 @@ Version 2016-08-09"
   :init
   (setq newsticker-retrieval-interval 0
         newsticker-ticker-interval 0)
-  :general
-  (my/leader-keys
-    "on" '(my/newsticker-treeview-in-new-tab :wk "newsticker"))
   :config
   (defun my/newsticker-treeview-in-new-tab ()
     (interactive)
@@ -4656,10 +3718,6 @@ Version 2016-08-09"
     (newsticker-stop)
     (tab-close))
 
-  (general-define-key
-   :keymaps 'newsticker-treeview-mode-map
-   :states 'normal
-   "q" 'my/newsticker-treeview-quit-and-close-tab)
 
   :custom
   (newsticker-url-list '(
@@ -4694,50 +3752,34 @@ Version 2016-08-09"
   :config
   ;; Full syntax:
   ;; m{range start:=0}{separator:= }{range end}{Lisp expr:=indentity}|{format expr:=%d}
-  (general-define-key
-   :states 'insert
-   "C-;" 'tiny-expand))
+  )
 
 (use-package annotate
-  :general
-  (my/leader-keys
-    "oa" 'annotate-mode))
+  )
 
 (use-package proced
   :ensure nil
   :init
   (setq-default proced-auto-update-flag t
                 proced-auto-update-interval 3)
-  :general
-  (my/leader-keys
-    "op" 'proced))
+  )
 
 (use-package redacted
-  :general
-  (my/local-leader-keys
-    "o" '(:ignore t :wk "open")
-    "or" 'redacted-mode)
   :config
   ;; Enable `read-only-mode' to ensure that we don't change what we can't read.
   (add-hook 'redacted-mode-hook (lambda () (read-only-mode (if redacted-mode 1 -1)))))
 
 (use-package cbm
   :ensure nil
-  :general
-  (my/leader-keys
-    "bc" 'cbm-switch-buffer))
+  )
 
 (use-package wwg
   :ensure nil
-  :general
-  (my/leader-keys
-    "ow" 'wwg-mode))
+  )
 
 (use-package pdf-tools
   :commands (pdf-loader-install)
   :magic ("%PDF" . pdf-view-mode)
-  :init
-  (evil-set-initial-state 'pdf-view-mode 'normal)
   :config
   (pdf-tools-install :no-query)
   (setq-default pdf-view-display-size 'fit-width)
@@ -4774,10 +3816,6 @@ Version 2016-08-09"
     (add-hook 'pdf-view-mode-hook
               (lambda () (setq-local isearch-wrap-pause nil)))
 
-    (defun my/pdf-view-force-normal-state ()
-      (interactive)
-      (evil-force-normal-state)
-      (my/pdf-isearch-cleanup-highlight))
 
     (advice-add #'pdf-isearch-mode-initialize
                 :before
@@ -4807,11 +3845,10 @@ Version 2016-08-09"
                ,@body)))))
 
     (my/modify-evil-collection-key-bindings pdf
-      (evil-define-key 'normal pdf-view-mode-map
-        ;; 按n/N 向前/向后搜索，按ESC则返回normal state的同时清除搜索高亮
-        (kbd "n") #'my/pdf-isearch-repeat-forward
-        (kbd "N") #'my/pdf-isearch-repeat-backward
-        (kbd "<escape>") #'my/pdf-view-force-normal-state)))
+                                            (evil-define-key 'normal pdf-view-mode-map
+                                              ;; 按n/N 向前/向后搜索，按ESC则返回normal state的同时清除搜索高亮
+                                              (kbd "n") #'my/pdf-isearch-repeat-forward
+                                              (kbd "N") #'my/pdf-isearch-repeat-backward)))
 
   (add-hook 'pdf-view-mode-hook
             (lambda ()
@@ -4821,31 +3858,14 @@ Version 2016-08-09"
   (use-package saveplace-pdf-view
     :after pdf-tools)
 
-  (general-define-key
-   :keymaps 'pdf-view-mode-map
-   :states 'normal
-   "y" 'pdf-view-kill-ring-save
-   "I" 'pdf-misc-display-metadata
-   "o" 'pdf-outline
-   "al" 'pdf-annot-list-annotations
-   "ad" 'pdf-annot-delete
-   "aa" 'pdf-annot-attachment-dired
-   "am" 'pdf-annot-add-markup-annotation
-   "at" 'pdf-annot-add-text-annotation
-   "h" 'image-backward-hscroll
-   "l" 'image-forward-hscroll
-   "j" 'pdf-view-next-line-or-next-page
-   "k" 'pdf-view-previous-line-or-previous-page))
+  )
 
 (use-package org-noter
   :config
   (setq org-noter-always-create-frame nil
         org-noter-notes-search-path '("~/org/pdf-annotation"))
 
-  (general-define-key
-   :keymaps 'pdf-view-mode-map
-   :states 'normal
-   "i" 'org-noter))
+  )
 
 (use-package gif-screencast
   :defer t
@@ -4859,9 +3879,6 @@ Version 2016-08-09"
   :bind (("C-`"   . popper-toggle-latest)
          ("M-`"   . popper-cycle)
          ("C-M-`" . popper-toggle-type))
-  :general
-  (my/leader-keys
-    "ot" 'multi-vterm)
   :init
   (setq popper-reference-buffers
         '("\\*Messages\\*"
@@ -4908,19 +3925,7 @@ Version 2016-08-09"
   )
 
 (use-package bongo
-  :general
-  (my/local-leader-keys
-    "b" '(:ignore t :wk "bongo")
-    "bb" 'bongo-list-buffers
-    "bd" 'bongo-dired-library-mode
-    "bk" 'bongo-kill
-    "bl" 'bongo-dired-play-line
-    "be" 'bongo-dired-append-enqueue-lines
-    "bi" 'bongo-dired-insert-enqueue-lines
-    "bp" 'bongo-playlist
-    "bq" 'bongo-quit
-    "b RET" 'bongo-dired-dwim
-    "b SPC" 'bongo-pause/resume))
+  )
 
 (use-package ruby-mode
   :ensure nil
@@ -4992,10 +3997,7 @@ Version 2016-08-09"
 
 (use-package cython-mode
   :defer t
-  :general
-  (my/leader-keys 'cython-mode
-    "hh" 'anaconda-mode-show-doc
-    "gu" 'anaconda-mode-find-references))
+  )
 
 (defvar my/project-after-switch-project-hook nil
   "Hoook for `project-switch-project'. Hook functions are called after switching project")
@@ -5141,17 +4143,11 @@ as the pyenv version then also return nil. This works around https://github.com/
 (use-package python-black
   :demand t
   :after python
-  :general
-  (my/leader-keys
-    :keymaps 'python-mode-map
-    "bp" 'python-black))
+  )
 
 (use-package gendoxy
   :ensure nil
-  :general
-  (my/leader-keys
-    "at" 'gendoxy-tag
-    "ah" 'gendoxy-header))
+  )
 
 (use-package highlight-doxygen
   :ensure nil
@@ -5165,9 +4161,6 @@ as the pyenv version then also return nil. This works around https://github.com/
 
 (use-package gdb-mi
   :ensure nil
-  :general
-  (my/local-leader-keys
-    "og" 'gdb)
   :init
   (setq gdb-many-windows t))
 
