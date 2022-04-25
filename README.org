@@ -1,1 +1,3 @@
 * .emacs.d
+
+This configuration is using evil to make emacs operate like vim. But now I am using vanilla emacs key-bindings. This is my new [[https://github.com/qdzhang/vanilla-emacs][configuration]].

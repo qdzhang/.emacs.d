@@ -5173,5 +5173,8 @@ as the pyenv version then also return nil. This works around https://github.com/
 
 (use-package d-mode)
 
+(use-package show-keys
+  :ensure nil)
+
 ;;; Restore file-name-hander-alist
 (add-hook 'emacs-startup-hook (lambda () (setq file-name-handler-alist doom--file-name-handler-alist)))
